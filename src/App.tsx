@@ -6,6 +6,7 @@ import './App.css'
 interface Product {
   id: number
   image: string
+  hoverImage?: string
   brand: string
   name: string
   price: number
@@ -59,6 +60,7 @@ const products: Product[] = [
 
   // SALSAS
   { id: 27, image: '/images/salsadetomate1.png', brand: 'Fritz', name: 'Salsa de Tomate Fritz (12x397g) - Caja', price: 15.92, badge: 'Nuevo', category: 'Salsas' },
+  { id: 28, image: '/images/salsadetomate3.png', hoverImage: '/images/salsadetomate2.png', brand: 'Heinz', name: 'Ketchup Heinz Sachet 10G (396 unds) Caja', price: 33.61, badge: 'Nuevo', category: 'Salsas' },
 ]
 
 // Promociones camufladas (usando las nuevas imágenes)
@@ -493,11 +495,18 @@ function ProductCard({ product, onAddToCart }: { product: Product; onAddToCart: 
         )}
 
         {/* Product Image */}
-        <img 
+        <img
           src={product.image}
           alt={product.name}
-          className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-110 drop-shadow-sm group-hover:drop-shadow-xl"
+          className={`w-full h-full object-contain transition-all duration-500 group-hover:scale-110 drop-shadow-sm group-hover:drop-shadow-xl ${product.hoverImage ? 'group-hover:opacity-0' : ''}`}
         />
+        {product.hoverImage && (
+          <img
+            src={product.hoverImage}
+            alt={product.name}
+            className="absolute inset-0 w-full h-full object-contain p-6 md:p-10 opacity-0 transition-all duration-500 group-hover:opacity-100 group-hover:scale-110 drop-shadow-sm group-hover:drop-shadow-xl"
+          />
+        )}
       </div>
 
       {/* Product Info */}
