@@ -44,6 +44,8 @@ const inferPackaging = (name: string): string => {
   if (n.includes('caja')) return 'Caja'
   if (n.includes('pote')) return 'Pote'
   if (n.includes('bolsa')) return 'Bolsa'
+  if (n.includes('lata')) return 'Lata'
+  if (n.includes('unidad')) return 'Unidad'
   return 'Otro'
 }
 
@@ -75,13 +77,37 @@ const baseProducts: Product[] = [
   { id: 24, image: '/images/producto35.png', brand: 'La Marca', name: 'Mostaza La Marca (4x3.65) - Bulto', price: 56.68, category: 'Mostazas' },
   { id: 25, image: '/images/producto36.png', brand: 'Da Gusto', name: 'Mostaza Oscareñota (4x4) - Bulto', price: 15.07, category: 'Mostazas' },
   { id: 26, image: '/images/producto37.png', brand: 'La Viña', name: 'Mostaza La Viña Galón Pote (4x4) - Bulto', price: 28.98, category: 'Mostazas' },
-  { id: 27, image: '/images/salsadetomate1.png', brand: 'Fritz', name: 'Salsa de Tomate Fritz (12x397g) - Caja', price: 15.92, badge: 'Nuevo', category: 'Salsas' },
-  { id: 28, image: '/images/salsadetomate3.png', hoverImage: '/images/salsadetomate2.png', brand: 'Heinz', name: 'Ketchup Heinz Sachet 10G (396 unds) Caja', price: 33.61, badge: 'Nuevo', category: 'Salsas' },
+  { id: 27, image: '/images/salsadetomate1.png', hoverImage: '/images/productosalsa1.png', brand: 'Fritz', name: 'Salsa de Tomate Fritz (12x397g) - Caja', price: 15.92, badge: 'Nuevo', category: 'Salsas' },
+  { id: 28, image: '/images/salsadetomate2.png', hoverImage: '/images/productosalsa2.png', brand: 'Coma', name: 'Salsa Coma Ketchup (12x1KG) - Caja', price: 43.26, category: 'Salsas' },
+  { id: 29, image: '/images/salsadetomate3.png', hoverImage: '/images/productosalsa3.png', brand: 'Coma', name: 'Salsa Base Coma (4x4) - Bulto', price: 36.36, category: 'Salsas' },
+  { id: 30, image: '/images/salsadetomate4.png', hoverImage: '/images/productosalsa4.png', brand: 'Heinz', name: 'Ketchup Heinz Sachet 10G (396 unds) - Caja', price: 33.61, badge: 'Más Vendido', category: 'Salsas' },
+  { id: 31, image: '/images/salsadetomate5.png', hoverImage: '/images/productosalsa5.png', brand: 'Heinz', name: 'Ketchup Volpack Heinz 12.7KG - Unidad', price: 54.06, category: 'Salsas' },
+  { id: 32, image: '/images/salsadetomate6.png', hoverImage: '/images/productosalsa6.png', brand: 'Genérico', name: 'Pasta de Tomate (4und x 4KG) - Bulto', price: 63.96, category: 'Salsas' },
+  { id: 33, image: '/images/salsadetomate7.png', hoverImage: '/images/productosalsa7.png', brand: 'Genérico', name: 'Pasta de Tomate (12und x 1KG) - Bulto', price: 35.14, category: 'Salsas' },
+  { id: 34, image: '/images/salsadetomate8.png', hoverImage: '/images/productosalsa8.png', brand: 'Genérico', name: 'Pasta de Tomate (12und x 500gr) - Bulto', price: 35.04, category: 'Salsas' },
+  { id: 35, image: '/images/salsadetomate9.png', hoverImage: '/images/productosalsa9.png', brand: 'Genérico', name: 'Pasta de Tomate (24und x 200gr) - Bulto', price: 34.07, category: 'Salsas' },
+  { id: 36, image: '/images/salsadetomate10.png', hoverImage: '/images/productosalsa10.png', brand: 'Fritz', name: 'Base Fritz Bolsa (6x1KG) - Bulto', price: 19.70, category: 'Salsas' },
+  { id: 37, image: '/images/salsadetomate11.png', hoverImage: '/images/productosalsa11.png', brand: 'Heinz', name: 'Salsa Ketchup Heinz 397gr (16und plástico) - Caja', price: 38.98, category: 'Salsas' },
+  { id: 38, image: '/images/salsadetomate12.png', hoverImage: '/images/productosalsa12.png', brand: 'Heinz', name: 'Salsa Ketchup Heinz 397gr (24und vidrio) - Caja', price: 51.41, category: 'Salsas' },
+  { id: 39, image: '/images/salsadetomate13.png', hoverImage: '/images/productosalsa13.png', brand: 'Fritz', name: 'Salsa Doypack Fritz (24x165g) - Caja', price: 16.58, category: 'Salsas' },
+  { id: 40, image: '/images/salsadetomate14.png', hoverImage: '/images/productosalsa14.png', brand: 'Doña Nelly', name: 'Ketchup Doña Nelly (5und x 4KG) - Bulto', price: 17.06, category: 'Salsas' },
+  { id: 41, image: '/images/salsadetomate15.png', hoverImage: '/images/productosalsa15.png', brand: 'Fritz', name: 'Base Fritz (4x4) - Bulto', price: 36.90, category: 'Salsas' },
+  { id: 42, image: '/images/salsadetomate16.png', hoverImage: '/images/productosalsa16.png', brand: 'La Viña', name: 'Salsa Ketchup La Viña (1KG x 6 Bolsa) - Bulto', price: 16.32, category: 'Salsas' },
+  { id: 43, image: '/images/salsadetomate17.png', hoverImage: '/images/productosalsa17.png', brand: 'La Viña', name: 'Salsa Base Tomatico Viña (4x4) - Bulto', price: 17.24, category: 'Salsas' },
+  { id: 44, image: '/images/salsadetomate18.png', hoverImage: '/images/productosalsa18.png', brand: 'Paraíso', name: 'Salsa de Tomate Paraíso (4x4) - Bulto', price: 17.05, category: 'Salsas' },
+  { id: 45, image: '/images/salsadetomate19.png', hoverImage: '/images/productosalsa19.png', brand: 'La Ideal', name: 'Salsa La Ideal Ketchup (1KG x 6unds) - Bulto', price: 22.99, category: 'Salsas' },
+  { id: 46, image: '/images/salsadetomate20.png', hoverImage: '/images/productosalsa20.png', brand: 'Venato', name: 'Pasta de Tomate Venato (12x375g) - Caja', price: 31.11, category: 'Salsas' },
+  { id: 47, image: '/images/salsadetomate21.png', hoverImage: '/images/productosalsa21.png', brand: 'Fritz', name: 'Salsa Tomate Doypack Fritz (6x930g) - Caja', price: 20.02, category: 'Salsas' },
+  { id: 48, image: '/images/salsadetomate22.png', hoverImage: '/images/productosalsa22.png', brand: 'Coma', name: 'Salsa Coma Ketchup Plástico (4x4) - Bulto', price: 47.18, category: 'Salsas' },
+  { id: 49, image: '/images/salsadetomate23.png', hoverImage: '/images/productosalsa23.png', brand: 'Mayotropi', name: 'Salsa Mayotropi (4x4 und) - Bulto', price: 35.80, category: 'Salsas' },
+  { id: 50, image: '/images/salsadetomate24.png', hoverImage: '/images/productosalsa24.png', brand: 'Tomatico', name: 'Salsa Tomatico (12 x 397gr) - Caja', price: 14.01, category: 'Salsas' },
+  { id: 51, image: '/images/salsadetomate25.png', hoverImage: '/images/productosalsa25.png', brand: 'Coma', name: 'Salsa Base Coma (12 x 1KG) - Caja', price: 35.82, category: 'Salsas' },
+  { id: 52, image: '/images/salsadetomate26.png', hoverImage: '/images/productosalsa26.png', brand: 'Fragua', name: 'Salsa para Pizza Fragua 4KG - Lata', price: 21.93, category: 'Salsas' },
 ]
 
 // Generate placeholder products to simulate large catalog (300+)
 const placeholderBrands = ['Novo', 'Fritz', 'La Viña', 'Heinz', 'Diana', 'Coma', 'La Marca', 'Deli', 'Paraíso', 'OBA']
-const placeholderCategories = ['Mayonesas', 'Mostazas', 'Salsas', 'Aderezos', 'Especias']
+const placeholderCategories = ['Mayonesas', 'Mostazas', 'Aderezos', 'Especias']
 const placeholderPackagings = ['Bulto', 'Caja', 'Galón', 'Sachet', 'Bolsa']
 
 const generatedProducts: Product[] = Array.from({ length: 280 }, (_, i) => {
