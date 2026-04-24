@@ -76,7 +76,7 @@ const baseProducts: Product[] = [
   { id: 25, image: '/images/producto36.png', brand: 'Da Gusto', name: 'Mostaza Oscareñota (4x4) - Bulto', price: 15.07, category: 'Mostazas' },
   { id: 26, image: '/images/producto37.png', brand: 'La Viña', name: 'Mostaza La Viña Galón Pote (4x4) - Bulto', price: 28.98, category: 'Mostazas' },
   { id: 27, image: '/images/salsadetomate1.png', brand: 'Fritz', name: 'Salsa de Tomate Fritz (12x397g) - Caja', price: 15.92, badge: 'Nuevo', category: 'Salsas' },
-  { id: 28, image: '/images/salsadetomate3.png', hoverImage: '/images/salsadetomate2.png', brand: 'Heinz', name: 'Ketchup Heinz Sachet 10G (396 unds) Caja', price: 33.61, badge: 'Nuevo', category: 'Salsas' },
+  { id: 28, image: '/images/salsadetomate2.png', hoverImage: '/images/salsadetomate3.png', brand: 'Heinz', name: 'Ketchup Heinz Sachet 10G (396 unds) Caja', price: 33.61, badge: 'Nuevo', category: 'Salsas' },
 ]
 
 // Generate placeholder products to simulate large catalog (300+)
