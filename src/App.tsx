@@ -82,7 +82,7 @@ const baseProducts: Product[] = [
   { id: 29, image: '/images/salsadetomate6.png', hoverImage: '/images/productosalsa3.png', brand: 'Coma', name: 'Salsa Base Coma (4x4) - Bulto', price: 36.36, category: 'Salsas' },
   { id: 30, image: '/images/salsadetomate3.png', hoverImage: '/images/salsadetomate2.png', brand: 'Heinz', name: 'Ketchup Heinz Sachet 10G (396 unds) - Caja', price: 33.61, badge: 'Más Vendido', category: 'Salsas' },
   { id: 31, image: '/images/salsadetomate7.png', hoverImage: '/images/productosalsa4b.png', brand: 'Heinz', name: 'Ketchup Volpack Heinz 12.7KG - Unidad', price: 54.06, category: 'Salsas' },
-  { id: 32, image: '/images/salsadetomate8.png', hoverImage: '/images/productosalsa5.png', brand: 'Coma', name: 'Pasta de Tomate (4und x 4KG) - Bulto', price: 63.96, category: 'Salsas' },
+  { id: 32, image: '/salsas-de-tomate/Pasta-de-Tomate-(4und x 4KG)-caja.png', hoverImage: '/salsas-de-tomate/Pasta-de-Tomate-(4und x 4KG)-unidad.png', brand: 'Coma', name: 'Pasta de Tomate (4und x 4KG) - Bulto', price: 63.96, category: 'Salsas' },
   { id: 33, image: '', brand: 'Genérico', name: 'Pasta de Tomate (12und x 1KG) - Bulto', price: 35.14, category: 'Salsas' },
   { id: 34, image: '', brand: 'Genérico', name: 'Pasta de Tomate (12und x 500gr) - Bulto', price: 35.04, category: 'Salsas' },
   { id: 35, image: '/images/salsadetomate9.png', hoverImage: '/images/productosalsa9.png', brand: 'Genérico', name: 'Pasta de Tomate (24und x 200gr) - Bulto', price: 34.07, category: 'Salsas' },
