@@ -1,4 +1,4 @@
-Categoría	Código	Producto / Descripción	Unidad de Venta	Precio ($)	Estatus
+Categoría Código	Producto / Descripción	Unidad de Venta	Precio ($)	Estatus
 Aceites de Cocina	6040	Aceite de Palma Reyes 17KG	Bidón	59.5	Disponible
 Aceites de Cocina	6038	Aceite Palma Ixora 17L	Bidón	59.9	Por Llegar
 Aceites de Cocina	6051	Aceite Oliva Extra Virgen Pedriza 250ml	Unidad	5.88	Disponible
@@ -381,6 +381,8 @@ Mostazas	1432	Mostacita La Viña Bolsa (4x3.8KG)	Bulto	21.93	Disponible
 Mostazas	1414	Mostaza Fritz (6x1K)	Bulto	22.11	Disponible
 Mostazas	1402	Mostaza Sachet Heinz (408 unds)	Caja	38.0	Disponible
 Mostazas	1439	Mostaza Doypack Fritz (6x930g)	Caja	16.34	Disponible
+Mostazas	1437	Mostaza da gusto 6x1KG 	Caja	27,68	Disponible
+Mostazas	1412	Mostaza da gusto 4x4 gl 	Caja	56,68	Disponible
 Papelería e Higiene	2011	Servilleta Z Peq (20x160)	Bulto (3200 Unds)	18.07	Disponible
 Papelería e Higiene	2004	Servilleta Brilux (12x120)	Bulto (1440 Unds)	19.54	Disponible
 Papelería e Higiene	2013	Servilleta Brilux (16x200)	Bulto (3200 Unds)	15.6	Disponible
