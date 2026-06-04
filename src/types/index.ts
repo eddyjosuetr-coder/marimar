@@ -28,4 +28,7 @@ export interface HeroSlide {
   highlight: string;
   eyebrow: string;
   description: string;
+  isLogoSlide?: boolean;
+  cssVariant?: 1 | 2;
+  imageSlide?: boolean;
 }

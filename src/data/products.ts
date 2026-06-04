@@ -2,25 +2,28 @@ import type { Product, Promo, HeroSlide } from '@/types';
 
 export const heroSlides: HeroSlide[] = [
   {
-    image: '/images/publicidad3.JPG',
-    eyebrow: 'Mayorista de Víveres',
-    title: 'Tu cocina, mejor abastecida',
-    highlight: 'al por mayor',
-    description: 'Más de 300 productos alimenticios en un solo lugar. Calidad, precio y entrega a tiempo.',
+    image: '',
+    isLogoSlide: true,
+    eyebrow: 'Distribuidora Mayorista · Venezuela',
+    title: 'El sabor del mayoreo,',
+    highlight: 'en tu negocio',
+    description: 'Más de 500 productos de las mejores marcas. Calidad garantizada, precios competitivos y entrega confiable en todo el país.',
   },
   {
-    image: '/images/publicidad6.JPG',
-    eyebrow: 'Nuevas Ofertas',
-    title: 'Precios especiales',
-    highlight: 'este mes',
-    description: 'Descuentos en marcas líderes de mayonesas, mostazas, salsas y aderezos.',
+    image: '/images/hero_warehouse.png',
+    imageSlide: true,
+    eyebrow: 'Calidad Garantizada',
+    title: 'El mayoreo que',
+    highlight: 'Venezuela elige',
+    description: 'Fritz, Heinz, La Viña, Krystal, McCormick y más marcas líderes. Tu negocio siempre surtido con lo mejor.',
   },
   {
-    image: '/images/publicidad11.JPG',
-    eyebrow: 'Delivery Nacional',
-    title: 'Envío gratis',
-    highlight: 'sobre $100',
-    description: 'Recibe tu pedido en cualquier ciudad de Venezuela con nuestro servicio logístico.',
+    image: '/images/hero_delivery.png',
+    imageSlide: true,
+    eyebrow: 'Delivery en toda Venezuela',
+    title: 'Tu negocio,',
+    highlight: 'nuestra misión',
+    description: 'Aderezos, embutidos, bebidas y víveres con logística confiable a la puerta de tu negocio. Comprometidos con tu éxito.',
   },
 ];
 

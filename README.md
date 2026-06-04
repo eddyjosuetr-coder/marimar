@@ -8,6 +8,8 @@
   <strong>Plataforma de comercio electrónico B2B para la distribución de víveres, embutidos y productos alimenticios en toda Venezuela.</strong>
 </p>
 
+> ⚠️ **Nota:** Este proyecto se encuentra actualmente **en proceso de finalización**.
+
 <p align="center">
   <img src="https://img.shields.io/badge/React-19.2-61DAFB?style=for-the-badge&logo=react&logoColor=white" alt="React" />
   <img src="https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
@@ -37,6 +39,22 @@
 La interfaz está construida con un diseño moderno, responsivo y profesional, optimizada para que los negocios puedan explorar el catálogo, filtrar productos y gestionar sus pedidos de forma rápida e intuitiva.
 
 > 🇻🇪 **Enfocada al mercado venezolano** — Precios en USD, métodos de pago locales (Zelle, Pago Móvil, Efectivo) y delivery a nivel nacional.
+
+---
+
+## 📸 Muestras de la Interfaz
+
+<p align="center">
+  <img src="muestras/Screenshot%202026-05-31%20161741.png" alt="Muestra 1" width="800" />
+  <br/><br/>
+  <img src="muestras/Screenshot%202026-05-31%20162405.png" alt="Muestra 2" width="800" />
+  <br/><br/>
+  <img src="muestras/Screenshot%202026-05-31%20162449.png" alt="Muestra 3" width="800" />
+  <br/><br/>
+  <img src="muestras/Screenshot%202026-05-31%20162529.png" alt="Muestra 4" width="800" />
+  <br/><br/>
+  <img src="muestras/Screenshot%202026-05-31%20162550.png" alt="Muestra 5" width="800" />
+</p>
 
 ---
 
