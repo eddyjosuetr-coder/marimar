@@ -1,7 +1,9 @@
-import { Eye, Plus } from 'lucide-react'
+import { useRef, useState } from 'react'
+import { Eye, Plus, Check, MessageCircle, ListChecks } from 'lucide-react'
 import type { Product } from '@/types'
-import { formatPrice } from '@/lib/utils'
+import { formatAmount, getPackaging, waLink, cn, productLabel } from '@/lib/utils'
 import { ProductImage } from './ProductImage'
+import { flyToCart } from '@/lib/flyToCart'
 
 interface ProductCardProps {
   product: Product
@@ -9,84 +11,169 @@ interface ProductCardProps {
   onQuickView: (p: Product) => void
 }
 
+/**
+ * El color de la etiqueta comunica el significado; el texto lo confirma.
+ * Nunca se depende sólo del color.
+ */
 const BADGE_STYLES: Record<string, string> = {
-  'Oferta':      'bg-red-500 text-white',
-  'Nuevo':       'bg-[#FF6B00] text-white',
-  'Más Vendido': 'bg-[#1A1A1A] text-white',
+  'Oferta': 'bg-brand text-white',
+  'Nuevo': 'bg-ink text-paper',
+  'Más Vendido': 'bg-brand-tint text-brand-ink ring-1 ring-brand/30',
 }
 
 export function ProductCard({ product, onAddToCart, onQuickView }: ProductCardProps) {
+  const packaging = getPackaging(product.name)
+  const fotoRef = useRef<HTMLButtonElement>(null)
+  const [agregado, setAgregado] = useState(false)
+
+  /* El vuelo sale de la foto; el botón confirma con un visto durante 1s. */
+  const agregar = () => {
+    flyToCart(fotoRef.current, product.image)
+    onAddToCart(product)
+    setAgregado(true)
+    window.setTimeout(() => setAgregado(false), 1000)
+  }
+
   return (
-    <div className="group relative bg-white rounded-2xl overflow-hidden border border-gray-100 hover:border-orange-200 hover:shadow-xl hover:shadow-orange-100/60 transition-all duration-300 hover:-translate-y-1.5 flex flex-col">
+    <article className="group relative flex flex-col bg-paper-raised rounded-xl border border-line overflow-hidden transition-all duration-300 ease-out-expo hover:border-brand/45 hover:shadow-card-hover hover:-translate-y-1">
 
-      {/* ── Área de imagen ── */}
-      <div className="relative aspect-square bg-gradient-to-br from-gray-50 via-orange-50/20 to-gray-50 flex items-center justify-center overflow-hidden">
-
-        {/* Badge */}
-        {product.badge && (
-          <span className={`absolute top-2.5 left-2.5 text-[9px] md:text-[10px] font-bold px-2.5 py-[3px] rounded-full z-10 tracking-wide shadow-sm ${BADGE_STYLES[product.badge] ?? 'bg-[#FF6B00] text-white'}`}>
-            {product.badge}
-          </span>
-        )}
-
-        {/* Botón vista rápida */}
-        <button
-          onClick={() => onQuickView(product)}
-          className="absolute top-2.5 right-2.5 w-8 h-8 bg-white shadow-md rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 z-10 hover:bg-[#FF6B00] hover:text-white text-gray-500"
-          aria-label="Vista rápida"
-        >
-          <Eye className="w-3.5 h-3.5" />
-        </button>
-
-        {/* ── ANIMACIÓN HOVER: caja → unidad (se conserva exactamente) ── */}
+      {/* ── Panel de imagen (toda el área abre la vista rápida) ── */}
+      <button
+        ref={fotoRef}
+        type="button"
+        onClick={() => onQuickView(product)}
+        className="relative aspect-square bg-vitrina overflow-hidden cursor-pointer text-left"
+        aria-label={`Vista rápida de ${product.name}`}
+      >
         <ProductImage
           product={product}
-          className={`scale-110 group-hover:scale-125 ${product.hoverImage ? 'group-hover:opacity-0' : ''} transition-all duration-300`}
+          className={cn(
+            'p-3 transition-transform duration-500 ease-out-expo group-hover:scale-[1.07]',
+            product.hoverImage && 'group-hover:opacity-0'
+          )}
         />
+
+        {/* Segunda toma: la caja se abre y muestra la unidad */}
         {product.hoverImage && (
           <img
             src={product.hoverImage}
             alt=""
             loading="lazy"
-            className="absolute inset-0 w-full h-full object-contain p-2 opacity-0 scale-110 group-hover:scale-125 group-hover:opacity-100 transition-all duration-300"
+            width={320}
+            height={320}
+            className="absolute inset-0 w-full h-full object-contain p-3 opacity-0 scale-100 group-hover:scale-[1.07] group-hover:opacity-100 transition-all duration-500 ease-out-expo"
           />
         )}
 
-        {/* Botón agregar (aparece al hover en desktop) */}
-        <button
-          onClick={() => onAddToCart(product)}
-          className="absolute bottom-2 left-2 right-2 bg-[#FF6B00] text-white text-xs font-bold py-2.5 rounded-xl opacity-0 group-hover:opacity-100 translate-y-3 group-hover:translate-y-0 transition-all duration-300 hover:bg-[#E55F00] flex items-center justify-center gap-1.5 shadow-lg shadow-orange-200/50 z-10"
-        >
-          <Plus className="w-3.5 h-3.5" /> Agregar al pedido
-        </button>
-      </div>
+        {/* Vidrio de aumento — sólo en escritorio, al pasar el cursor */}
+        <span className="hidden md:flex absolute top-2.5 right-2.5 w-9 h-9 rounded-full bg-paper-raised/90 backdrop-blur-sm text-ink-soft items-center justify-center opacity-0 -translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 shadow-card">
+          <Eye className="w-4 h-4" strokeWidth={2.2} />
+        </span>
+      </button>
 
-      {/* ── Información del producto ── */}
-      <div className="p-3 md:p-4 flex flex-col flex-1 border-t border-gray-50">
-        <p className="text-[9px] md:text-[10px] text-[#FF6B00] font-bold uppercase tracking-widest truncate">
-          {product.brand}
-        </p>
-        <h3 className="mt-1 text-xs md:text-sm font-semibold text-gray-800 line-clamp-2 min-h-[2.5rem] leading-snug">
-          {product.name}
+      {/* Etiqueta */}
+      {product.badge && (
+        <span
+          className={cn(
+            'absolute top-2.5 left-2.5 text-[10px] font-bold px-2 py-1 rounded-md tracking-wide z-10 pointer-events-none',
+            BADGE_STYLES[product.badge] ?? 'bg-ink text-paper'
+          )}
+        >
+          {product.badge}
+        </span>
+      )}
+
+      {/* ── Ficha ── */}
+      <div className="flex flex-col flex-1 p-3.5 md:p-4 border-t border-line">
+
+        <div className="flex items-center gap-2 mb-2">
+          <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-ink-muted truncate">
+            {product.brand}
+          </p>
+          <span className="ml-auto flex-shrink-0 text-[10px] font-semibold text-ink-soft bg-paper-sunken rounded px-1.5 py-0.5">
+            {packaging}
+          </span>
+        </div>
+
+        <h3 className="text-[13px] md:text-[14px] font-medium text-ink leading-snug line-clamp-2 min-h-[2.6em]">
+          {productLabel(product.name)}
         </h3>
 
-        <div className="mt-auto pt-3 flex items-end justify-between">
-          <div>
-            <p className="text-[9px] text-gray-400 font-medium uppercase tracking-wide">Precio</p>
-            <p className="text-base md:text-lg font-extrabold text-[#FF6B00] leading-tight">
-              {formatPrice(product.price)}
+        {/*
+          Sin precio de lista no se muestra una cifra ni se deja agregar al
+          carrito: la ficha manda a consultar por WhatsApp con el producto ya
+          escrito en el mensaje.
+        */}
+        <div className="mt-auto pt-4 flex items-end justify-between gap-2">
+          {product.priceOnRequest ? (
+            <p className="min-w-0">
+              <span className="block text-[9px] font-bold uppercase tracking-[0.16em] text-ink-muted mb-0.5">
+                Precio
+              </span>
+              <span className="font-display text-[15px] md:text-[16px] font-bold text-ink-soft leading-none tracking-tight">
+                A consultar
+              </span>
             </p>
-          </div>
-          {/* Botón móvil (siempre visible) */}
-          <button
-            onClick={() => onAddToCart(product)}
-            className="md:hidden w-9 h-9 bg-[#FF6B00] text-white rounded-full flex items-center justify-center shadow-md shadow-orange-200/50 active:scale-95 transition-transform"
-            aria-label="Agregar"
-          >
-            <Plus className="w-4 h-4" />
-          </button>
+          ) : (
+            <p className="min-w-0">
+              <span className="block text-[9px] font-bold uppercase tracking-[0.16em] text-ink-muted mb-0.5">
+                {product.soldByWeight ? 'USD por KG' : 'USD'}
+              </span>
+              <span className="font-display text-[19px] md:text-[22px] font-extrabold text-ink leading-none tracking-tight tabular-nums">
+                {formatAmount(product.price)}
+              </span>
+              {/* En oferta: primero cuánto cuesta hoy, luego de cuánto bajó */}
+              {product.listPrice !== undefined && (
+                <span className="ml-1.5 text-[13px] font-semibold text-ink-muted line-through tabular-nums">
+                  {formatAmount(product.listPrice)}
+                </span>
+              )}
+              {product.soldByWeight && (
+                <span className="block text-[10px] text-ink-muted mt-1">Desde 100 gr</span>
+              )}
+            </p>
+          )}
+
+          {product.priceOnRequest ? (
+            <a
+              href={waLink(product.name)}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-tap-target
+              className="flex-shrink-0 inline-flex items-center gap-1.5 h-10 px-3 md:px-3.5 rounded-full bg-leaf text-white font-semibold text-[12.5px] hover:brightness-95 active:scale-95 transition-all duration-200"
+              aria-label={`Consultar el precio de ${product.name} por WhatsApp`}
+            >
+              <MessageCircle className="w-4 h-4" strokeWidth={2.4} />
+              <span className="hidden xl:inline">Consultar</span>
+            </a>
+          ) : product.comboSalsas ? (
+            <button
+              type="button"
+              onClick={() => onQuickView(product)}
+              className="flex-shrink-0 inline-flex items-center gap-1.5 h-10 px-3 md:px-3.5 rounded-full bg-brand text-white font-semibold text-[12.5px] hover:bg-brand-deep active:scale-95 transition-all duration-200"
+              aria-label={`Elegir las salsas de ${product.name}`}
+            >
+              <ListChecks className="w-4 h-4" strokeWidth={2.4} />
+              <span className="hidden xl:inline">Elegir salsas</span>
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={agregar}
+              className={cn(
+                'flex-shrink-0 inline-flex items-center gap-1.5 h-10 px-3 md:px-3.5 rounded-full text-white font-semibold text-[12.5px] active:scale-95 transition-all duration-200',
+                agregado ? 'bg-leaf' : 'bg-brand hover:bg-brand-deep'
+              )}
+              aria-label={`Agregar ${product.name} al pedido`}
+            >
+              {agregado
+                ? <Check className="w-4 h-4" strokeWidth={3} />
+                : <Plus className="w-4 h-4" strokeWidth={2.6} />}
+              <span className="hidden xl:inline">{agregado ? 'Listo' : 'Agregar'}</span>
+            </button>
+          )}
         </div>
       </div>
-    </div>
+    </article>
   )
 }

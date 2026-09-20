@@ -3,12 +3,53 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Marimar Milenium - Distribuidora mayorista de víveres, embutidos y productos alimenticios en Venezuela. Más de 500 productos al mejor precio. Delivery nacional." />
-  <meta name="keywords" content="mayorista víveres Venezuela, distribuidora alimentos, salsas al mayor, mayonesas mayoreo, embutidos Venezuela" />
-  <meta name="theme-color" content="#FF6B00" />
-  <link rel="icon" type="image/png" href="/images/logo.png" />
-  <title>Marimar Milenium | Distribuidora Mayorista de Víveres · Venezuela</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="description" content="Distribuidora Marimar C.A. - Tienda en línea de víveres, charcutería, salsas, bebidas y desechables en Venezuela. Compra al detal con delivery nacional." />
+  <meta name="keywords" content="víveres Venezuela, tienda en línea, charcutería, salsas, mayonesas, embutidos, combos de perros y hamburguesas, Marimar" />
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#FAF6F0" />
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#141110" />
+  <meta name="color-scheme" content="light dark" />
+
+  <!--
+    Aplica el tema ANTES del primer pintado. Sin esto la página se dibuja en
+    claro y salta a oscuro cuando React monta: un parpadeo blanco molesto en
+    cada carga. Va en línea y es minúsculo, a propósito — cualquier retraso
+    aquí es un parpadeo visible.
+  -->
+  <script>
+    (function () {
+      try {
+        var guardado = localStorage.getItem('theme');
+        var oscuro = guardado === 'dark' ||
+          ((!guardado || guardado === 'system') &&
+            window.matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.classList.toggle('dark', oscuro);
+        document.documentElement.style.colorScheme = oscuro ? 'dark' : 'light';
+      } catch (e) { /* modo privado sin almacenamiento: se queda en claro */ }
+    })();
+  </script>
+
+  <!-- Marca: el emblema troquelado sirve de icono en pestaña, iOS y Android -->
+  <link rel="icon" href="/brand/favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" sizes="96x96" href="/brand/marimar-emblema-96.png" />
+  <link rel="apple-touch-icon" href="/brand/apple-touch-icon.png" />
+  <link rel="mask-icon" href="/brand/marimar-emblema-256.png" color="#FF6600" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="es_VE" />
+  <meta property="og:site_name" content="Distribuidora Marimar C.A." />
+  <meta property="og:title" content="Distribuidora Marimar C.A. | Víveres y charcutería con delivery" />
+  <meta property="og:description" content="Las mejores marcas al detal: mayonesas, salsas, charcutería, víveres y combos, con delivery en toda Venezuela." />
+  <meta property="og:image" content="/brand/marimar-emblema-512.png" />
+  <meta name="twitter:card" content="summary" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap"
+    rel="stylesheet" />
+
+  <title>Distribuidora Marimar C.A. | Víveres y Charcutería · Venezuela</title>
 </head>
 
 <body>

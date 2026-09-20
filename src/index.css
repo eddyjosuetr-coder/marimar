@@ -1,69 +1,158 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/*
+  ────────────────────────────────────────────────────────────
+  DISTRIBUIDORA MARIMAR C.A. — Sistema de diseño "Emblema y papel"
+
+  La identidad nace del propio logo: un emblema troquelado de disco
+  negro, aro dorado y rotulación con degradado oro → naranja → brasa.
+  De ahí salen las tres constantes del sitio:
+
+    · PAPEL   fondo cálido de catálogo impreso; es el 90% de la página.
+    · CARBÓN  superficies oscuras que sostienen el emblema (header de
+              servicio, hero, pie). Mismo negro del disco del logo.
+    · BARRIDO el degradado oro→naranja→brasa de la rotulación, usado
+              siempre como señal (reglas, subrayados, estados activos),
+              nunca como fondo de lectura.
+
+  Regla de color: el oro vive sobre oscuro o como superficie; para
+  texto naranja sobre papel se usa --brand-ink, que sí cumple AA.
+  ────────────────────────────────────────────────────────────
+*/
+
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 240 5.9% 10%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 240 5.9% 10%;
-    --radius: 0.625rem;
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    color-scheme: light;
+
+    /* ── Tokens de marca ── */
+    --paper: 36 50% 96%;          /* #FAF6F0 — fondo de página */
+    --paper-raised: 0 0% 100%;    /* #FFFFFF — tarjetas */
+    --paper-sunken: 35 40% 92%;   /* #F2EBE1 — paneles hundidos */
+    --vitrina: 35 40% 92%;        /* fondo de las fotos de producto */
+
+    --ink: 26 18% 8%;             /* #171310 — texto principal */
+    --ink-soft: 23 12% 26%;       /* #4A403A — texto secundario */
+    --ink-muted: 27 10% 44%;      /* #7A6E64 — terciario (AA sobre paper) */
+
+    --line: 35 33% 84%;           /* #E4D9CA — hairline cálido */
+    --line-strong: 34 28% 76%;    /* #D3C4B0 */
+
+    /* ── Barrido de marca: los tres colores de la rotulación del logo ── */
+    --gold: 45 100% 50%;          /* #FFBF00 — oro del aro y la "M" */
+    --gold-deep: 40 96% 44%;      /* #DC9105 — oro en sombra */
+    --gold-ink: 38 92% 27%;       /* #85520A — oro legible sobre papel (AA 6.4:1) */
+    --ember: 12 100% 47%;         /* #F03000 — brasa, cierre del degradado */
+
+    --brand: 24 100% 50%;         /* #FF6600 — naranja central del logo */
+    --brand-deep: 22 100% 44%;    /* #E05300 — hover */
+    --brand-ink: 22 100% 36%;     /* #B84300 — texto naranja legible (AA 5.0:1) */
+    --brand-tint: 30 100% 95%;    /* #FFF1E3 */
+
+    --espresso: 20 16% 6%;        /* #120F0D — mismo negro del disco del emblema */
+    --espresso-raised: 22 18% 11%;/* #211A15 */
+
+    --leaf: 145 63% 42%;          /* verde WhatsApp/éxito legible */
+
+    /* Degradado de marca reutilizable — se declara una vez y se hereda */
+    --sweep: linear-gradient(
+      100deg,
+      hsl(var(--gold)) 0%,
+      hsl(38 100% 52%) 32%,
+      hsl(var(--brand)) 66%,
+      hsl(var(--ember)) 100%
+    );
+
+    /* ── Ritmo / movimiento ── */
+    --radius: 0.75rem;
+    --dur-fast: 160ms;
+    --dur-base: 240ms;
+    --dur-slow: 420ms;
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+    /* ── Puente shadcn/ui → paleta cálida ── */
+    --background: var(--paper);
+    --foreground: var(--ink);
+    --card: var(--paper-raised);
+    --card-foreground: var(--ink);
+    --popover: var(--paper-raised);
+    --popover-foreground: var(--ink);
+    --primary: var(--ink);
+    --primary-foreground: var(--paper);
+    --secondary: var(--paper-sunken);
+    --secondary-foreground: var(--ink);
+    --muted: var(--paper-sunken);
+    --muted-foreground: var(--ink-muted);
+    --accent: var(--brand-tint);
+    --accent-foreground: var(--brand-ink);
+    --destructive: 0 72% 46%;
+    --destructive-foreground: 0 0% 100%;
+    --border: var(--line);
+    --input: var(--line);
+    --ring: var(--brand);
+    --sidebar-background: var(--paper-raised);
+    --sidebar-foreground: var(--ink-soft);
+    --sidebar-primary: var(--brand);
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: var(--brand-tint);
+    --sidebar-accent-foreground: var(--brand-ink);
+    --sidebar-border: var(--line);
+    --sidebar-ring: var(--brand);
   }
 
+  /*
+    ── MODO OSCURO ───────────────────────────────────────────────────────
+    No es el tema claro invertido: es la misma marca contada sobre carbón.
+    El sitio ya tenía superficies oscuras propias (hero, pie) con el negro
+    del disco del emblema, así que en oscuro esa superficie pasa a ser el
+    fondo de toda la página y el papel crema se retira.
+
+    Dos reglas que cambian de sentido respecto al tema claro:
+      · los "ink" de color (--brand-ink, --gold-ink) aquí ACLARAN en vez de
+        oscurecer — sobre carbón lo legible es el tono claro;
+      · --espresso baja aún más para que hero y pie sigan separándose del
+        fondo, en vez de fundirse con él.
+    Sólo se redefinen tokens: ningún componente sabe que existe el tema.
+  */
   .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 240 5.9% 10%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 240 4.9% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Los controles nativos (scrollbars, campos, selects) siguen al tema */
+    color-scheme: dark;
+
+    --paper: 24 14% 7%;           /* #141110 — fondo de página */
+    --paper-raised: 22 14% 11%;   /* #201B18 — tarjetas */
+    --paper-sunken: 22 12% 15%;   /* #2B2521 — paneles hundidos */
+
+    /* Las fotos del cliente se recortaron sobre blanco: sus bordes y sombras
+       llevan blanco mezclado y sobre carbón dibujan un halo pálido. Por eso
+       la foto se exhibe en una vitrina clara incluso en oscuro — un crema
+       apagado, no blanco, para que la cuadrícula no encandile. */
+    --vitrina: 33 22% 84%;        /* #DDD6CD */
+
+    --ink: 34 32% 95%;            /* #F8F2EA — texto principal */
+    --ink-soft: 30 14% 76%;       /* #C9BFB3 — texto secundario */
+    --ink-muted: 28 11% 60%;      /* #A09386 — terciario (AA 6:1 sobre paper) */
+
+    --line: 24 10% 21%;           /* #3A322D — hairline cálida */
+    --line-strong: 24 10% 31%;    /* #57493F */
+
+    --gold: 45 100% 58%;          /* el oro brilla un punto más sobre oscuro */
+    --gold-deep: 42 92% 48%;
+    --gold-ink: 44 96% 63%;       /* oro legible SOBRE carbón */
+    --ember: 12 100% 55%;
+
+    --brand: 24 100% 54%;
+    --brand-deep: 24 100% 46%;
+    --brand-ink: 30 100% 66%;     /* naranja legible sobre carbón (AA 7.4:1) */
+    --brand-tint: 24 38% 15%;     /* tinte de estado activo, ahora en cálido oscuro */
+
+    --espresso: 20 18% 4%;        /* hero y pie: más hondos que la página */
+    --espresso-raised: 22 16% 9%;
+
+    --leaf: 145 52% 50%;          /* verde WhatsApp, aclarado para el fondo oscuro */
+
+    --destructive: 0 78% 62%;
+    --destructive-foreground: 0 0% 100%;
   }
 }
 
@@ -72,7 +161,63 @@
     @apply border-border;
   }
 
+  html {
+    scroll-behavior: smooth;
+    /* El header sticky no debe tapar el destino del anclaje */
+    scroll-padding-top: 7rem;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
   body {
-    @apply bg-background text-foreground;
+    @apply bg-paper text-ink font-sans antialiased;
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  /* El buscador que trae su propio botón de limpiar lleva esta clase: el
+     nativo del navegador sobra y aparecía como una segunda "×" al lado.
+     Los demás buscadores conservan el nativo, que es su único botón. */
+  input.sin-limpiar-nativo::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  /* Titulares: cara display, siempre apretados */
+  h1, h2, h3, h4 {
+    @apply font-display;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  /* Párrafos: sin viudas al final */
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Cifras tabulares en todo el sitio: los precios no bailan al hover */
+  :where(body) {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
+  }
+
+  ::selection {
+    background-color: hsl(var(--brand));
+    color: #fff;
+  }
+
+  /* Foco visible y consistente — nunca se elimina */
+  :focus-visible {
+    outline: 2px solid hsl(var(--brand));
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Scrollbar cálida (WebKit) */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--line-strong)) transparent;
   }
 }

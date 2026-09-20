@@ -1,176 +1,364 @@
-/* Marimar Milenium — estilos propios (Tailwind maneja el resto) */
+/*
+  ────────────────────────────────────────────────────────────
+  MARIMAR MILENIUM — Capa de movimiento, texturas y utilidades
+  (los tokens y la base tipográfica viven en index.css)
+  ────────────────────────────────────────────────────────────
+*/
 
-/* Smooth scroll global */
-html {
-  scroll-behavior: smooth;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* ══════════════════════════════════════════════════════════
+   1. TEXTURAS Y ATMÓSFERA
+   ══════════════════════════════════════════════════════════ */
+
+/* Grano sutil: le quita el plano "plástico" a las superficies grandes */
+.texture-grain::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.4;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.42'/%3E%3C/svg%3E");
 }
 
-/* Ocultar scrollbar en carruseles */
-.scrollbar-hide {
+/* Retícula de catálogo: hairlines apenas visibles, ancla la composición */
+.texture-grid {
+  background-image:
+    linear-gradient(to right, hsl(var(--line) / 0.55) 1px, transparent 1px),
+    linear-gradient(to bottom, hsl(var(--line) / 0.55) 1px, transparent 1px);
+  background-size: 72px 72px;
+}
+
+.texture-grid-dark {
+  background-image:
+    linear-gradient(to right, rgb(255 255 255 / 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 255 255 / 0.035) 1px, transparent 1px);
+  background-size: 72px 72px;
+}
+
+/* Máscara de desvanecido lateral para carruseles y marquesinas */
+.mask-fade-x {
+  -webkit-mask-image: linear-gradient(90deg, transparent, black 5%, black 95%, transparent);
+  mask-image: linear-gradient(90deg, transparent, black 5%, black 95%, transparent);
+}
+
+/* Subrayado editorial: el barrido del logo pintado bajo una palabra */
+.mark-underline {
+  position: relative;
+  display: inline-block;
+}
+.mark-underline::after {
+  content: '';
+  position: absolute;
+  left: -0.04em;
+  right: -0.04em;
+  bottom: 0.04em;
+  height: 0.26em;
+  background: var(--sweep);
+  opacity: 0.92;
+  border-radius: 2px;
+  z-index: -1;
+  transform-origin: left center;
+  animation: markSweep 0.7s var(--ease-out-expo) 0.25s both;
+}
+
+/* ══════════════════════════════════════════════════════════
+   1 bis. IDENTIDAD — emblema y barrido de marca
+   ══════════════════════════════════════════════════════════ */
+
+/*
+  El barrido oro→naranja→brasa del logo. Es la firma visual del sitio:
+  aparece como regla, como filo de sección y como estado activo, siempre
+  en piezas finas. Nunca como fondo de un bloque de texto.
+*/
+.brand-sweep {
+  background-image: var(--sweep);
+}
+
+/* Filo de sección: la regla de 3px que abre pie de página y bloques oscuros */
+.brand-edge {
+  height: 3px;
+  background-image: var(--sweep);
+}
+
+/*
+  El emblema es troquelado: lleva su propio disco negro y su aro dorado,
+  así que se usa tal cual, sin placa. Sobre superficies oscuras se le pone
+  detrás un halo cálido para que el disco no se hunda en el fondo.
+*/
+.emblem-halo {
+  position: relative;
+  isolation: isolate;
+}
+.emblem-halo::before {
+  content: '';
+  position: absolute;
+  inset: -18%;
+  border-radius: 9999px;
+  background: radial-gradient(
+    closest-side,
+    hsl(var(--brand) / 0.42) 0%,
+    hsl(var(--ember) / 0.16) 55%,
+    transparent 100%
+  );
+  z-index: -1;
+}
+
+/*
+  Escenario del emblema en el hero.
+
+  El logo es lo único verdaderamente propio de la marca, así que en la portada
+  se le da un escenario en vez de una miniatura: foco cálido detrás, un aro de
+  barrido que gira despacio y dos aros finos que repiten los del propio
+  troquel. Todo son capas decorativas en `transform`/`opacity`, detrás del
+  emblema, sin tocar el flujo del documento.
+*/
+.emblem-ring {
+  /* El degradado cónico se recorta en un anillo fino con máscara radial */
+  -webkit-mask-image: radial-gradient(closest-side, transparent 70%, #000 73%, #000 77%, transparent 80%);
+  mask-image: radial-gradient(closest-side, transparent 70%, #000 73%, #000 77%, transparent 80%);
+  animation: emblemSpin 22s linear infinite;
+}
+
+.emblem-ring-slow {
+  -webkit-mask-image: radial-gradient(closest-side, transparent 84%, #000 86%, #000 88%, transparent 91%);
+  mask-image: radial-gradient(closest-side, transparent 84%, #000 86%, #000 88%, transparent 91%);
+  animation: emblemSpin 38s linear infinite reverse;
+}
+
+@keyframes emblemSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* El foco respira: da vida al fondo sin distraer de la lectura */
+@keyframes emblemGlow {
+  0%, 100% { opacity: 0.75; transform: scale(1); }
+  50%      { opacity: 1;    transform: scale(1.06); }
+}
+.emblem-glow {
+  animation: emblemGlow 7s ease-in-out infinite;
+}
+
+/* Rotulación de apoyo: acompaña al emblema donde su texto ya no se lee */
+.wordmark {
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 0.92;
+  text-transform: uppercase;
+}
+.wordmark-kicker {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+/* ══════════════════════════════════════════════════════════
+   2. SCROLLBARS
+   ══════════════════════════════════════════════════════════ */
+
+.scrollbar-hide,
+.hide-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
-.scrollbar-hide::-webkit-scrollbar {
+.scrollbar-hide::-webkit-scrollbar,
+.hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
 
-/* Scrollbar personalizado en sidebars */
 .custom-scrollbar::-webkit-scrollbar {
-  width: 4px;
+  width: 6px;
+  height: 6px;
 }
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 10px;
+  background: transparent;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #FF6B00;
+  background: hsl(var(--line-strong));
   border-radius: 10px;
 }
-
-/* Selección de texto */
-::selection {
-  background-color: #FF6B00;
-  color: #fff;
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--brand) / 0.6);
 }
 
-/* Focus visible */
-*:focus-visible {
-  outline: 2px solid #FF6B00;
-  outline-offset: 2px;
+/* ══════════════════════════════════════════════════════════
+   3. REVELADO AL SCROLL (IntersectionObserver → useReveal)
+   ══════════════════════════════════════════════════════════ */
+
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity 0.7s var(--ease-out-expo),
+    transform 0.7s var(--ease-out-expo);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+[data-reveal='shown'] {
+  opacity: 1;
+  transform: none;
 }
 
-/* Animación de entrada para tarjetas */
+/* ══════════════════════════════════════════════════════════
+   4. KEYFRAMES
+   ══════════════════════════════════════════════════════════ */
+
+@keyframes markSweep {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
 @keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-.animate-fade-in-up {
-  animation: fadeInUp 0.5s ease-out both;
-}
+.animate-fade-in-up { animation: fadeInUp 0.5s var(--ease-out-expo) both; }
 
-/* Animación slide-in para menú móvil */
 @keyframes slideIn {
   from { transform: translateX(-100%); }
   to   { transform: translateX(0); }
 }
-.animate-slide-in {
-  animation: slideIn 0.3s ease-out;
+.animate-slide-in { animation: slideIn 0.32s var(--ease-out-expo); }
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+.animate-slide-in-right { animation: slideInRight 0.32s var(--ease-out-expo); }
+
+/* ══ Compra: el carrito acusa recibo ══
+   El producto vuela hasta el botón (ver lib/flyToCart.ts) y al aterrizar el
+   botón devuelve un aro dorado que se expande. Sólo transform y box-shadow
+   sobre un pseudo-elemento: no mueve nada del layout. */
+@keyframes cartRecibe {
+  0%   { transform: scale(1); }
+  35%  { transform: scale(1.11); }
+  70%  { transform: scale(0.97); }
+  100% { transform: scale(1); }
+}
+@keyframes cartAro {
+  0%   { opacity: 0.9; transform: scale(0.85); }
+  100% { opacity: 0;   transform: scale(1.55); }
 }
 
-/* Pulso del botón WhatsApp */
+.cart-recibe {
+  animation: cartRecibe 520ms var(--ease-out-expo);
+}
+.cart-recibe::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 9999px;
+  border: 2px solid hsl(var(--gold));
+  pointer-events: none;
+  animation: cartAro 520ms ease-out forwards;
+}
+
+/* La cifra del carrito salta cuando cambia (React la remonta con key) */
+@keyframes badgePop {
+  0%   { transform: scale(0.4); opacity: 0; }
+  60%  { transform: scale(1.25); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.cart-badge-pop {
+  animation: badgePop 380ms var(--ease-out-expo);
+}
+
+/* Pulso del botón flotante de WhatsApp */
 @keyframes waPulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.5); }
-  50%       { box-shadow: 0 0 0 12px rgba(37, 211, 102, 0); }
+  0%, 100% { box-shadow: 0 0 0 0 hsl(var(--leaf) / 0.45); }
+  50%      { box-shadow: 0 0 0 14px hsl(var(--leaf) / 0); }
 }
-.wa-pulse {
-  animation: waPulse 2.5s ease-in-out infinite;
+.wa-pulse { animation: waPulse 2.8s ease-in-out infinite; }
+
+/* Hero — flotación del logo */
+@keyframes heroLogoFloat {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-16px); }
 }
 
-/* Botón activo */
-button:active {
-  transform: scale(0.97);
+/* Hero — respiración del resplandor solar dorado */
+@keyframes sunPulse {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50%      { transform: scale(1.08); opacity: 1; }
 }
 
-/* Evitar tap highlight en móvil */
-button, [role="button"], a {
+/* Hero — flotación de destellos cálidos */
+@keyframes emberFloat {
+  0%, 100% { transform: translateY(0) translateX(0); opacity: 0.6; }
+  50%      { transform: translateY(-12px) translateX(6px); opacity: 0.9; }
+}
+
+/* Hero — respiración del degradado de malla */
+@keyframes heroMeshShift {
+  0%   { opacity: 0.75; transform: scale(1); }
+  100% { opacity: 1;    transform: scale(1.04); }
+}
+
+/* Hero — entrada del texto al cambiar de slide */
+@keyframes heroFadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Marquesinas infinitas (pistas duplicadas → -50%) */
+@keyframes marqueeLeft {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+@keyframes marqueeRight {
+  0%   { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+
+/* ══════════════════════════════════════════════════════════
+   5. INTERACCIÓN Y ACCESIBILIDAD
+   ══════════════════════════════════════════════════════════ */
+
+button,
+[role="button"],
+a {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Imágenes responsive */
 img {
   max-width: 100%;
-  height: auto;
 }
 
-/* Touch targets mínimos */
+/*
+  Objetivos táctiles de 44px SOLO en controles reales.
+  (La regla global anterior inflaba también los enlaces en línea del texto.)
+*/
 @media (pointer: coarse) {
-  button, a {
+  button:not(.tap-inline),
+  [role="button"]:not(.tap-inline),
+  a[data-tap-target]:not(.tap-inline) {
     min-height: 44px;
     min-width: 44px;
   }
 }
 
-/* Hero – logo flotante */
-@keyframes heroLogoFloat {
-  0%, 100% { transform: translateY(0px); }
-  50%       { transform: translateY(-14px); }
-}
+/* ══════════════════════════════════════════════════════════
+   6. MOVIMIENTO REDUCIDO — se respeta la preferencia del sistema
+   ══════════════════════════════════════════════════════════ */
 
-/* Hero – anillos decorativos giratorios */
-@keyframes heroRingRotate {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 
-/* Hero – degradado animado en el texto highlight */
-@keyframes heroGradientShift {
-  0%   { background-position: 0% center; }
-  50%  { background-position: 100% center; }
-  100% { background-position: 0% center; }
-}
+  /* El contenido revelado debe quedar visible, no atrapado en su estado inicial */
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
 
-/* Hero – halo pulsante detrás del logo */
-@keyframes heroPulse {
-  0%, 100% { opacity: 0.6; transform: scale(1); }
-  50%       { opacity: 1;   transform: scale(1.12); }
-}
-
-/* Hero – texto fade-up al cambiar slide */
-@keyframes heroFadeUp {
-  from { opacity: 0; transform: translateY(22px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* Hero – partículas flotantes */
-@keyframes heroParticleFloat {
-  0%, 100% { transform: translateY(0) translateX(0); opacity: 0.3; }
-  25%       { transform: translateY(-18px) translateX(6px); opacity: 0.7; }
-  50%       { transform: translateY(-8px) translateX(-4px); opacity: 0.4; }
-  75%       { transform: translateY(-22px) translateX(8px); opacity: 0.6; }
-}
-
-/* Hero – aurora breathing */
-@keyframes heroAurora {
-  0%   { transform: translate(0, 0) scale(1); opacity: 0.8; }
-  100% { transform: translate(30px, -15px) scale(1.05); opacity: 1; }
-}
-
-/* Hero – geometric shapes rotation */
-@keyframes heroShapeSpin {
-  from { transform: rotate(45deg); }
-  to   { transform: rotate(405deg); }
-}
-
-/* Hero – blob morphing */
-@keyframes heroBlobMorph {
-  0%   { border-radius: 42% 58% 62% 38% / 45% 55% 45% 55%; transform: rotate(0deg) scale(1); }
-  33%  { border-radius: 55% 45% 38% 62% / 60% 40% 55% 45%; transform: rotate(60deg) scale(1.05); }
-  66%  { border-radius: 38% 62% 50% 50% / 42% 58% 48% 52%; transform: rotate(120deg) scale(0.98); }
-  100% { border-radius: 42% 58% 62% 38% / 45% 55% 45% 55%; transform: rotate(180deg) scale(1); }
-}
-
-/* Hero – mesh gradient breathing */
-@keyframes heroMeshShift {
-  0%   { opacity: 0.7; transform: scale(1); }
-  100% { opacity: 1; transform: scale(1.03); }
-}
-
-/* Instagram marquee – izquierda */
-@keyframes marqueeLeft {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-
-/* Instagram marquee – derecha */
-@keyframes marqueeRight {
-  0%   { transform: translateX(-50%); }
-  100% { transform: translateX(0); }
+  .mark-underline::after {
+    transform: scaleX(1);
+  }
 }

@@ -1,10 +1,10 @@
-import { useState, useMemo } from 'react'
-import { SlidersHorizontal, LayoutGrid, Package2 } from 'lucide-react'
+import { useState, useMemo, useEffect } from 'react'
+import { SlidersHorizontal, PackageOpen, X, ChevronDown } from 'lucide-react'
 
 // Components
 import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
-import { HeroCarousel } from '@/components/HeroCarousel'
+import { Hero } from '@/components/Hero'
 import { TrustBar } from '@/components/TrustBar'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { ProductCard } from '@/components/ProductCard'
@@ -12,18 +12,27 @@ import { QuickView } from '@/components/QuickView'
 import { FilterSidebar } from '@/components/FilterSidebar'
 import { Pagination } from '@/components/Pagination'
 import { RelatedCarousel } from '@/components/RelatedCarousel'
-import { PromoRow } from '@/components/PromoRow'
+import { FeaturedRail } from '@/components/FeaturedRail'
 import { CartDrawer } from '@/components/CartDrawer'
 import { InstagramGallery } from '@/components/InstagramGallery'
 
 // Data & Hooks
-import { products, heroSlides, promos, PER_PAGE, CATEGORIES } from '@/data/products'
+import { heroSlides, PER_PAGE, CATEGORIES } from '@/data/products'
+import { useCatalogo } from '@/hooks/useCatalogo'
 import { useCart } from '@/hooks/useCart'
+import { getPackaging, cn } from '@/lib/utils'
 import type { Product } from '@/types'
 
 const WA_LINK = 'https://wa.me/584241234567?text=Hola%20Marimar%2C%20quiero%20hacer%20un%20pedido'
 
-// Icono SVG de WhatsApp
+const SORT_OPTIONS = [
+  { value: 'relevance', label: 'Relevancia' },
+  { value: 'bestseller', label: 'Más vendidos' },
+  { value: 'price_asc', label: 'Precio: menor a mayor' },
+  { value: 'price_desc', label: 'Precio: mayor a menor' },
+  { value: 'name_asc', label: 'Nombre: A – Z' },
+] as const
+
 function WhatsAppIcon() {
   return (
     <svg className="w-7 h-7" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -32,58 +41,127 @@ function WhatsAppIcon() {
   )
 }
 
-export default function App() {
-  const { cart, addToCart, removeFromCart, updateQuantity, cartCount, cartTotal } = useCart()
+/** Ficha compacta de un filtro activo, con su propia acción de quitar. */
+function FilterChip({ label, onRemove }: { label: string; onRemove: () => void }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 h-8 pl-3 pr-2 rounded-full bg-paper-raised border border-line text-[12.5px] font-medium text-ink">
+      {label}
+      <button
+        type="button"
+        onClick={onRemove}
+        className="tap-inline p-0.5 rounded-full text-ink-muted hover:text-ink hover:bg-paper-sunken transition-colors"
+        aria-label={`Quitar filtro ${label}`}
+      >
+        <X className="w-3.5 h-3.5" strokeWidth={2.4} />
+      </button>
+    </span>
+  )
+}
 
-  // Estado de la app
+export default function App() {
+  /*
+    El catálogo ya viene con lo que el dueño cambió en el panel: precios
+    corregidos, ofertas puestas y sin los productos que ocultó. La tienda
+    nunca lee el catálogo crudo, así no hay forma de mostrar algo retirado.
+  */
+  const products = useCatalogo()
+
+  const { cart, addToCart, removeFromCart, updateQuantity, cartCount, cartTotal } = useCart(products)
+
   const [searchQuery, setSearchQuery] = useState('')
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null)
   const [page, setPage] = useState(1)
-  const [sortOrder, setSortOrder] = useState('relevance')
+  const [sortOrder, setSortOrder] = useState<string>('relevance')
 
-  // Filtros
-  const allBrands = useMemo(() => Array.from(new Set(products.map(p => p.brand))).sort(), [])
+  const allBrands = useMemo(() => Array.from(new Set(products.map(p => p.brand))).sort(), [products])
   const allPackagings = useMemo(
-    () => Array.from(new Set(products.map(p => p.name.split('-')[1]?.trim() || 'Unidad'))).sort(),
-    []
+    () => Array.from(new Set(products.map(p => getPackaging(p.name)))).sort(),
+    [products]
   )
-  const maxProductPrice = useMemo(() => Math.max(...products.map(p => p.price)), [])
+  const maxProductPrice = useMemo(() => Math.max(...products.map(p => p.price)), [products])
+
+  /*
+    Muestra del riel de portada: el primer producto con precio de cada
+    categoría. Da un recorrido por todo el catálogo sin repetir familia y se
+    mantiene solo cuando entran productos nuevos.
+  */
+  const featuredProducts = useMemo(() => {
+    const categoriasVistas = new Set<string>()
+    return products.filter(p => {
+      if (p.priceOnRequest || !p.image || categoriasVistas.has(p.category)) return false
+      categoriasVistas.add(p.category)
+      return true
+    })
+  }, [products])
+  const defaultMaxPrice = maxProductPrice.toString()
 
   const [selectedCategory, setSelectedCategory] = useState('Todos')
   const [selectedBrands, setSelectedBrands] = useState<string[]>([])
   const [selectedPackagings, setSelectedPackagings] = useState<string[]>([])
   const [minPrice, setMinPrice] = useState('')
-  const [maxPrice, setMaxPrice] = useState(maxProductPrice.toString())
+  const [maxPrice, setMaxPrice] = useState(defaultMaxPrice)
   const [showFiltersMobile, setShowFiltersMobile] = useState(false)
+  const [soloOfertas, setSoloOfertas] = useState(false)
+
+  const hayOfertas = useMemo(() => products.some(p => p.listPrice !== undefined), [products])
 
   const filteredProducts = useMemo(() => {
     return products
       .filter(p => {
+        if (soloOfertas && p.listPrice === undefined) return false
         if (selectedCategory !== 'Todos' && p.category !== selectedCategory) return false
         if (selectedBrands.length > 0 && !selectedBrands.includes(p.brand)) return false
-        const pkg = p.name.split('-')[1]?.trim() || 'Unidad'
-        if (selectedPackagings.length > 0 && !selectedPackagings.includes(pkg)) return false
-        if (minPrice && p.price < parseFloat(minPrice)) return false
-        if (maxPrice && p.price > parseFloat(maxPrice)) return false
+        if (selectedPackagings.length > 0 && !selectedPackagings.includes(getPackaging(p.name))) return false
+        // Los productos "a consultar" no tienen cifra que comparar: si el
+        // usuario acota por precio, quedan fuera en lugar de colarse con 0.
+        const hayFiltroDePrecio = Boolean(minPrice) || maxPrice !== defaultMaxPrice
+        if (p.priceOnRequest) {
+          if (hayFiltroDePrecio) return false
+        } else {
+          if (minPrice && p.price < parseFloat(minPrice)) return false
+          if (maxPrice && p.price > parseFloat(maxPrice)) return false
+        }
         if (searchQuery) {
           const q = searchQuery.toLowerCase()
-          return p.name.toLowerCase().includes(q) || p.brand.toLowerCase().includes(q)
+          return p.name.toLowerCase().includes(q)
+            || p.brand.toLowerCase().includes(q)
+            || (p.description?.toLowerCase().includes(q) ?? false)
         }
         return true
       })
       .sort((a, b) => {
-        if (sortOrder === 'price_asc') return a.price - b.price
-        if (sortOrder === 'price_desc') return b.price - a.price
+        // Al ordenar por precio, lo que no tiene precio va siempre al final.
+        if (sortOrder === 'price_asc' || sortOrder === 'price_desc') {
+          if (a.priceOnRequest !== b.priceOnRequest) return a.priceOnRequest ? 1 : -1
+          if (a.priceOnRequest) return 0
+          return sortOrder === 'price_asc' ? a.price - b.price : b.price - a.price
+        }
         if (sortOrder === 'name_asc') return a.name.localeCompare(b.name)
         if (sortOrder === 'bestseller')
           return (b.badge === 'Más Vendido' ? 1 : 0) - (a.badge === 'Más Vendido' ? 1 : 0)
-        return 0
+        // Por relevancia, lo rebajado va primero: es lo que el dueño quiere
+        // empujar y lo que el cliente agradece ver de entrada.
+        return (b.listPrice !== undefined ? 1 : 0) - (a.listPrice !== undefined ? 1 : 0)
       })
-  }, [selectedCategory, selectedBrands, selectedPackagings, minPrice, maxPrice, searchQuery, sortOrder])
+  }, [products, soloOfertas, selectedCategory, selectedBrands, selectedPackagings, minPrice, maxPrice, defaultMaxPrice, searchQuery, sortOrder])
 
   const totalPages = Math.ceil(filteredProducts.length / PER_PAGE)
   const paginatedProducts = filteredProducts.slice((page - 1) * PER_PAGE, page * PER_PAGE)
+
+  const activeFilterCount =
+    (soloOfertas ? 1 : 0) +
+    (selectedCategory !== 'Todos' ? 1 : 0) +
+    selectedBrands.length +
+    selectedPackagings.length +
+    (minPrice ? 1 : 0) +
+    (maxPrice !== defaultMaxPrice ? 1 : 0)
+
+  // El sheet de filtros bloquea el scroll de fondo mientras está abierto.
+  useEffect(() => {
+    document.body.style.overflow = showFiltersMobile ? 'hidden' : ''
+    return () => { document.body.style.overflow = '' }
+  }, [showFiltersMobile])
 
   const handleCategorySelect = (cat: string) => {
     setSelectedCategory(cat)
@@ -96,115 +174,175 @@ export default function App() {
   }
 
   const clearAllFilters = () => {
+    setSoloOfertas(false)
     setSelectedCategory('Todos')
     setSelectedBrands([])
     setSelectedPackagings([])
     setMinPrice('')
-    setMaxPrice(maxProductPrice.toString())
+    setMaxPrice(defaultMaxPrice)
     setSearchQuery('')
     setPage(1)
   }
 
+  /** Al cambiar de página se vuelve al inicio de la rejilla, no del documento. */
+  const handlePageChange = (nextPage: number) => {
+    setPage(nextPage)
+    document.getElementById('catalogo')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
+  const filterSidebar = (
+    <FilterSidebar
+      categories={CATEGORIES}
+      selectedCategory={selectedCategory}
+      onCategoryChange={handleCategorySelect}
+      brands={allBrands}
+      selectedBrands={selectedBrands}
+      onBrandChange={b => toggleFilter(selectedBrands, b, setSelectedBrands)}
+      packagings={allPackagings}
+      selectedPackagings={selectedPackagings}
+      onPackagingChange={p => toggleFilter(selectedPackagings, p, setSelectedPackagings)}
+      minPrice={minPrice}
+      maxPrice={maxPrice}
+      onMinPriceChange={v => { setMinPrice(v); setPage(1) }}
+      onMaxPriceChange={v => { setMaxPrice(v); setPage(1) }}
+      activeFilterCount={activeFilterCount}
+      onClearAll={clearAllFilters}
+    />
+  )
+
   return (
-    <div className="min-h-screen bg-white font-sans text-gray-900 selection:bg-[#FF6B00] selection:text-white">
+    <div className="min-h-dvh bg-paper text-ink">
+      <a
+        href="#catalogo"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2.5 focus:rounded-full focus:bg-ink focus:text-paper focus:text-sm focus:font-semibold"
+      >
+        Saltar al catálogo
+      </a>
+
       <Header
         cartCount={cartCount}
         cartTotal={cartTotal}
         onCartClick={() => setIsCartOpen(true)}
         onCategorySelect={handleCategorySelect}
+        selectedCategory={selectedCategory}
+        hayOfertas={hayOfertas}
+        onOfertasClick={() => { setSoloOfertas(true); setPage(1) }}
         searchQuery={searchQuery}
         setSearchQuery={q => { setSearchQuery(q); setPage(1) }}
       />
 
       <main>
-        <HeroCarousel slides={heroSlides} />
+        <Hero slides={heroSlides} />
         <TrustBar />
+        <FeaturedRail products={featuredProducts} onQuickView={setQuickViewProduct} />
 
-        {/* ── Catálogo ── */}
-        <div id="catalogo" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14">
+        {/* ══════════ Catálogo ══════════ */}
+        <div id="catalogo" className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-12 md:py-16 scroll-mt-40">
 
-          {/* Encabezado de sección */}
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-8">
-            <div>
-              <p className="text-xs font-bold text-[#FF6B00] uppercase tracking-widest mb-1">Distribuidora Mayorista</p>
-              <h2 className="text-2xl md:text-3xl font-extrabold text-gray-900 leading-tight">
-                Nuestro Catálogo
-              </h2>
-            </div>
+          {/* Encabezado editorial de sección */}
+          <header className="mb-8 md:mb-10">
             <Breadcrumbs category={selectedCategory} />
-          </div>
-
-          <div className="flex flex-col lg:flex-row gap-8">
-
-            {/* Toggle filtros en móvil */}
-            <div className="lg:hidden flex items-center justify-between">
-              <button
-                onClick={() => setShowFiltersMobile(!showFiltersMobile)}
-                className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 px-4 py-2.5 rounded-xl text-sm font-semibold text-gray-700 transition-colors"
-              >
-                <SlidersHorizontal className="w-4 h-4" />
-                Filtros
-                {(selectedBrands.length > 0 || selectedCategory !== 'Todos') && (
-                  <span className="w-5 h-5 bg-[#FF6B00] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-                    {selectedBrands.length + (selectedCategory !== 'Todos' ? 1 : 0)}
-                  </span>
-                )}
-              </button>
-              <p className="text-sm text-gray-500 font-medium">
-                <span className="font-bold text-gray-900">{filteredProducts.length}</span> productos
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mt-4 pb-6 border-b border-line">
+              <div>
+                <p className="text-eyebrow font-bold uppercase text-brand-ink mb-2.5">
+                  Tienda en línea
+                </p>
+                <h2 className="font-display text-display-md font-extrabold text-ink">
+                  {soloOfertas
+                    ? 'Ofertas de la semana'
+                    : selectedCategory === 'Todos' ? 'Nuestro catálogo' : selectedCategory}
+                </h2>
+              </div>
+              <p className="text-[14px] text-ink-muted md:text-right md:pb-1.5">
+                <span className="font-display text-[22px] font-extrabold text-ink tabular-nums align-middle mr-1.5">
+                  {filteredProducts.length}
+                </span>
+                productos disponibles
               </p>
             </div>
+          </header>
 
-            {/* Sidebar filtros */}
-            <aside className={`lg:w-72 flex-shrink-0 ${showFiltersMobile ? 'block' : 'hidden lg:block'}`}>
-              <FilterSidebar
-                categories={CATEGORIES}
-                selectedCategory={selectedCategory}
-                onCategoryChange={handleCategorySelect}
-                brands={allBrands}
-                selectedBrands={selectedBrands}
-                onBrandChange={b => toggleFilter(selectedBrands, b, setSelectedBrands)}
-                packagings={allPackagings}
-                selectedPackagings={selectedPackagings}
-                onPackagingChange={p => toggleFilter(selectedPackagings, p, setSelectedPackagings)}
-                minPrice={minPrice}
-                maxPrice={maxPrice}
-                onMinPriceChange={v => { setMinPrice(v); setPage(1) }}
-                onMaxPriceChange={v => { setMaxPrice(v); setPage(1) }}
-              />
+          <div className="flex flex-col lg:flex-row gap-8 xl:gap-10">
+
+            {/* ── Barra lateral de filtros ── */}
+            <aside className="hidden lg:block lg:w-[280px] xl:w-[300px] flex-shrink-0">
+              {filterSidebar}
             </aside>
 
-            {/* Contenido principal */}
+            {/* ── Contenido ── */}
             <div className="flex-1 min-w-0">
-              <PromoRow promos={promos} />
 
-              {/* Barra de ordenamiento */}
-              <div className="bg-gradient-to-r from-gray-50 to-orange-50/30 border border-gray-100 rounded-2xl px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-3 mb-6">
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <LayoutGrid className="w-4 h-4 text-[#FF6B00]" />
-                  <span className="hidden sm:inline">Mostrando</span>
-                  <span className="font-bold text-gray-900">{filteredProducts.length}</span>
-                  <span>productos</span>
-                </div>
-                <div className="flex items-center gap-3 w-full sm:w-auto">
-                  <span className="text-sm font-bold text-gray-700 whitespace-nowrap hidden sm:inline">Ordenar:</span>
+              {/* Controles: filtros (móvil), fichas activas y ordenamiento */}
+              <div className="flex flex-wrap items-center gap-3 mb-5">
+                <button
+                  type="button"
+                  onClick={() => setShowFiltersMobile(true)}
+                  className="lg:hidden inline-flex items-center gap-2 h-10 px-4 rounded-full bg-ink text-paper text-[13.5px] font-semibold transition-colors hover:bg-ink-soft"
+                >
+                  <SlidersHorizontal className="w-4 h-4" strokeWidth={2.2} />
+                  Filtros
+                  {activeFilterCount > 0 && (
+                    <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-brand text-[10px] font-bold flex items-center justify-center tabular-nums">
+                      {activeFilterCount}
+                    </span>
+                  )}
+                </button>
+
+                <div className="relative ml-auto">
+                  <label htmlFor="sort-order" className="sr-only">Ordenar productos</label>
                   <select
+                    id="sort-order"
                     value={sortOrder}
                     onChange={e => { setSortOrder(e.target.value); setPage(1) }}
-                    className="w-full sm:w-52 bg-white border border-gray-200 text-gray-700 text-sm rounded-xl focus:ring-2 focus:ring-[#FF6B00]/30 focus:border-[#FF6B00]/50 p-2.5 outline-none cursor-pointer"
+                    className="appearance-none h-10 pl-4 pr-10 rounded-full bg-paper-raised border border-line text-[13.5px] font-medium text-ink cursor-pointer outline-none focus:border-brand focus:ring-2 focus:ring-brand/15 transition-all"
                   >
-                    <option value="relevance">Relevancia</option>
-                    <option value="bestseller">Más Vendidos</option>
-                    <option value="price_asc">Precio: Menor a Mayor</option>
-                    <option value="price_desc">Precio: Mayor a Menor</option>
-                    <option value="name_asc">Nombre: A – Z</option>
+                    {SORT_OPTIONS.map(option => (
+                      <option key={option.value} value={option.value}>
+                        Ordenar: {option.label}
+                      </option>
+                    ))}
                   </select>
+                  <ChevronDown
+                    className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-muted"
+                    strokeWidth={2.2}
+                  />
                 </div>
               </div>
 
-              {/* Grid de productos */}
+              {/* Fichas de filtros activos: siempre visible qué está acotando la lista */}
+              {activeFilterCount > 0 && (
+                <div className="flex flex-wrap items-center gap-2 mb-6 pb-6 border-b border-line">
+                  {soloOfertas && (
+                    <FilterChip label="Solo ofertas" onRemove={() => { setSoloOfertas(false); setPage(1) }} />
+                  )}
+                  {selectedCategory !== 'Todos' && (
+                    <FilterChip label={selectedCategory} onRemove={() => handleCategorySelect('Todos')} />
+                  )}
+                  {selectedBrands.map(b => (
+                    <FilterChip key={b} label={b} onRemove={() => toggleFilter(selectedBrands, b, setSelectedBrands)} />
+                  ))}
+                  {selectedPackagings.map(p => (
+                    <FilterChip key={p} label={p} onRemove={() => toggleFilter(selectedPackagings, p, setSelectedPackagings)} />
+                  ))}
+                  {minPrice && (
+                    <FilterChip label={`Desde $${minPrice}`} onRemove={() => { setMinPrice(''); setPage(1) }} />
+                  )}
+                  {maxPrice !== defaultMaxPrice && (
+                    <FilterChip label={`Hasta $${maxPrice}`} onRemove={() => { setMaxPrice(defaultMaxPrice); setPage(1) }} />
+                  )}
+                  <button
+                    type="button"
+                    onClick={clearAllFilters}
+                    className="tap-inline ml-1 text-[12.5px] font-semibold text-brand-ink hover:underline underline-offset-2"
+                  >
+                    Limpiar todo
+                  </button>
+                </div>
+              )}
+
+              {/* Rejilla */}
               {paginatedProducts.length > 0 ? (
-                <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4 lg:gap-5">
+                <div className="grid grid-cols-2 md:grid-cols-3 2xl:grid-cols-4 gap-3.5 md:gap-5">
                   {paginatedProducts.map(product => (
                     <ProductCard
                       key={product.id}
@@ -215,30 +353,35 @@ export default function App() {
                   ))}
                 </div>
               ) : (
-                <div className="py-24 text-center">
-                  <Package2 className="w-16 h-16 text-gray-200 mx-auto mb-4" />
-                  <p className="text-lg font-semibold text-gray-500 mb-2">
-                    No encontramos productos con esos criterios.
+                <div className="py-24 px-6 text-center border border-dashed border-line-strong rounded-2xl bg-paper-raised">
+                  <PackageOpen className="w-12 h-12 text-ink-muted/50 mx-auto mb-5" strokeWidth={1.5} />
+                  <h3 className="font-display text-display-sm font-bold text-ink mb-2">
+                    Sin resultados
+                  </h3>
+                  <p className="text-[14.5px] text-ink-muted max-w-sm mx-auto mb-7">
+                    No encontramos productos con esos criterios. Prueba ampliando el rango de precio o quitando alguna marca.
                   </p>
-                  <p className="text-sm text-gray-400 mb-6">Intenta ajustar los filtros o la búsqueda.</p>
                   <button
+                    type="button"
                     onClick={clearAllFilters}
-                    className="bg-[#FF6B00] hover:bg-[#E55F00] text-white font-bold px-6 py-3 rounded-full transition-colors text-sm"
+                    className="inline-flex items-center h-11 px-6 rounded-full bg-brand text-white font-semibold text-[14px] hover:bg-brand-deep transition-colors"
                   >
                     Limpiar todos los filtros
                   </button>
                 </div>
               )}
 
-              <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
+              <Pagination currentPage={page} totalPages={totalPages} onPageChange={handlePageChange} />
             </div>
           </div>
         </div>
 
-        {/* Carrusel de productos relacionados */}
         {selectedCategory !== 'Todos' && (
           <RelatedCarousel
-            products={products.filter(p => p.category === selectedCategory && p.badge === 'Oferta').slice(0, 8)}
+            products={[...products]
+              .filter(p => p.category === selectedCategory && !p.priceOnRequest)
+              .sort((a, b) => a.price - b.price)
+              .slice(0, 8)}
             onAddToCart={addToCart}
             onQuickView={setQuickViewProduct}
           />
@@ -248,11 +391,56 @@ export default function App() {
       <InstagramGallery />
       <Footer />
 
-      {/* ── Modales y drawers ── */}
+      {/* ══ Sheet de filtros en móvil ══ */}
+      {showFiltersMobile && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          <div
+            className="absolute inset-0 bg-espresso/60 backdrop-blur-sm"
+            onClick={() => setShowFiltersMobile(false)}
+            aria-hidden="true"
+          />
+          <div className="absolute inset-x-0 bottom-0 top-16 bg-paper rounded-t-2xl flex flex-col animate-fade-in-up shadow-lift">
+            <div className="flex items-center justify-between px-5 h-16 border-b border-line flex-shrink-0">
+              <h2 className="font-display text-[17px] font-bold text-ink tracking-tight">Filtros</h2>
+              <button
+                type="button"
+                onClick={() => setShowFiltersMobile(false)}
+                className="p-2 -mr-2 rounded-lg text-ink-soft hover:bg-paper-sunken transition-colors"
+                aria-label="Cerrar filtros"
+              >
+                <X className="w-5 h-5" strokeWidth={2.2} />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto custom-scrollbar p-4">
+              {filterSidebar}
+            </div>
+
+            <div className="p-4 border-t border-line flex-shrink-0 flex gap-3">
+              <button
+                type="button"
+                onClick={clearAllFilters}
+                className="h-12 px-5 rounded-full border border-line text-ink font-semibold text-[14px] hover:bg-paper-sunken transition-colors"
+              >
+                Limpiar
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowFiltersMobile(false)}
+                className="flex-1 h-12 rounded-full bg-brand text-white font-semibold text-[15px] hover:bg-brand-deep transition-colors tabular-nums"
+              >
+                Ver {filteredProducts.length} productos
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <CartDrawer
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
         cart={cart}
+        cartCount={cartCount}
         cartTotal={cartTotal}
         updateQuantity={updateQuantity}
         removeFromCart={removeFromCart}
@@ -263,12 +451,17 @@ export default function App() {
         onAddToCart={addToCart}
       />
 
-      {/* ── Botón flotante de WhatsApp ── */}
+      {/* Botón flotante de WhatsApp */}
       <a
         href={WA_LINK}
         target="_blank"
         rel="noopener noreferrer"
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-[#25D366] hover:bg-[#20BD5C] text-white rounded-full flex items-center justify-center shadow-2xl shadow-green-500/40 transition-all hover:scale-110 active:scale-95 wa-pulse"
+        data-tap-target
+        className={cn(
+          'fixed bottom-5 right-5 z-40 w-14 h-14 rounded-full flex items-center justify-center',
+          'bg-leaf text-white shadow-lift wa-pulse',
+          'transition-transform duration-200 hover:scale-105 active:scale-95'
+        )}
         aria-label="Contactar por WhatsApp"
       >
         <WhatsAppIcon />
