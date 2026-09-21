@@ -4,6 +4,7 @@ import type { Product } from '@/types'
 import { formatAmount, getPackaging, cn, productLabel } from '@/lib/utils'
 import { waLink } from '@/lib/negocio'
 import { ProductImage } from './ProductImage'
+import { PrecioBs } from './PrecioBs'
 import { flyToCart } from '@/lib/flyToCart'
 import { nombresElegidos, totalElegidas } from '@/lib/salsas'
 import { SalsaPicker } from './SalsaPicker'
@@ -90,7 +91,8 @@ export function QuickView({ product, onClose, onAddToCart }: QuickViewProps) {
             {productLabel(product.name)}
           </h2>
 
-          <div className="flex items-baseline gap-2 pb-6 mb-6 border-b border-line">
+          <div className="pb-6 mb-6 border-b border-line">
+            <div className="flex items-baseline gap-2">
             {product.priceOnRequest ? (
               <span className="font-display text-[28px] font-extrabold text-ink-soft leading-none tracking-tight">
                 Precio a consultar
@@ -115,6 +117,10 @@ export function QuickView({ product, onClose, onAddToCart }: QuickViewProps) {
                   </span>
                 )}
               </>
+            )}
+            </div>
+            {!product.priceOnRequest && (
+              <PrecioBs dolares={product.price} className="mt-2 text-[14px] text-ink-soft" />
             )}
           </div>
 

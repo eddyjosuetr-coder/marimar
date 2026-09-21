@@ -1,6 +1,7 @@
 import type { CartItem } from '@/types'
 import { formatAmount, formatWeight, lineTotal, productLabel } from './utils'
 import { NEGOCIO } from './negocio'
+import { aBolivares, formatBs, formatTasa } from './tasa'
 
 /**
  * El pedido: su código, su mensaje de WhatsApp y el enlace que lo muestra
@@ -64,17 +65,19 @@ function deBase64Url(codificado: string): string {
 export function codificarPedido(
   cart: CartItem[],
   codigo: string,
-  cliente: DatosCliente
+  cliente: DatosCliente,
+  tasa: number | null
 ): string {
   const lineas = cart.map(item => {
     const salsas = item.salsas?.length ? item.salsas.map(limpiar).join(',') : ''
     return `${item.id}:${item.quantity}:${Math.round(item.price * 100)}:${salsas}`
   })
   const cuerpo = [
-    '1',
+    '2',
     codigo,
     limpiar(cliente.nombre),
     limpiar(cliente.zona),
+    tasa === null ? '' : String(tasa),
     lineas.join(';'),
   ].join('|')
   return aBase64Url(cuerpo)
@@ -90,6 +93,8 @@ export interface LineaPedido {
 export interface PedidoLeido {
   codigo: string
   cliente: DatosCliente
+  /** Tasa del día en que se hizo el pedido. `null` si no se conocía. */
+  tasa: number | null
   lineas: LineaPedido[]
 }
 
@@ -100,10 +105,16 @@ export interface PedidoLeido {
 export function leerPedido(codificado: string): PedidoLeido | null {
   try {
     const partes = deBase64Url(codificado).split('|')
-    if (partes.length < 5 || partes[0] !== '1') return null
+    // La versión 1 no llevaba tasa; los enlaces que ya circulan siguen valiendo
+    const version = partes[0]
+    if (version !== '1' && version !== '2') return null
+    if (partes.length < (version === '1' ? 5 : 6)) return null
+
+    const tasaCruda = version === '2' ? Number(partes[4]) : NaN
+    const tasa = Number.isFinite(tasaCruda) && tasaCruda > 0 ? tasaCruda : null
 
     const lineas: LineaPedido[] = []
-    for (const cruda of partes[4].split(';')) {
+    for (const cruda of partes[version === '1' ? 4 : 5].split(';')) {
       if (!cruda) continue
       const [id, cantidad, centavos, salsas = ''] = cruda.split(':')
       const linea: LineaPedido = {
@@ -121,6 +132,7 @@ export function leerPedido(codificado: string): PedidoLeido | null {
     return {
       codigo: partes[1] || '—',
       cliente: { nombre: partes[2] || '', zona: partes[3] || '' },
+      tasa,
       lineas,
     }
   } catch {
@@ -166,7 +178,8 @@ export function mensajeDePedido(
   total: number,
   codigo: string,
   cliente: DatosCliente,
-  enlace: string
+  enlace: string,
+  tasa: number | null
 ): string {
   const articulos = cart.reduce((suma, item) => suma + (item.soldByWeight ? 1 : item.quantity), 0)
   const resumido = cart.length > PRODUCTOS_ANTES_DE_RESUMIR
@@ -204,6 +217,9 @@ export function mensajeDePedido(
     ...lineas,
     '',
     `*TOTAL: USD ${formatAmount(total)}*`,
+    ...(tasa === null ? [] : [
+      `*Bs ${formatBs(aBolivares(total, tasa))}*  (tasa ${formatTasa(tasa)})`,
+    ]),
     '',
     `Ver el pedido con fotos:`,
     enlace,

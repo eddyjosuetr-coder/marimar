@@ -4,6 +4,7 @@ import type { Product } from '@/types'
 import { formatAmount, getPackaging, cn, productLabel } from '@/lib/utils'
 import { waLink } from '@/lib/negocio'
 import { ProductImage } from './ProductImage'
+import { PrecioBs } from './PrecioBs'
 import { flyToCart } from '@/lib/flyToCart'
 
 interface ProductCardProps {
@@ -129,8 +130,9 @@ export function ProductCard({ product, onAddToCart, onQuickView }: ProductCardPr
                   {formatAmount(product.listPrice)}
                 </span>
               )}
+              <PrecioBs dolares={product.price} className="mt-1" />
               {product.soldByWeight && (
-                <span className="block text-[10px] text-ink-muted mt-1">Desde 100 gr</span>
+                <span className="block text-[10px] text-ink-muted mt-0.5">Desde 100 gr</span>
               )}
             </p>
           )}

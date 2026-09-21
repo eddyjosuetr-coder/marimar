@@ -3,6 +3,7 @@ import { Printer, ArrowLeft, Package, MapPin, User } from 'lucide-react'
 import { products } from '@/data/products'
 import { leerPedido, type LineaPedido } from '@/lib/pedido'
 import { formatAmount, formatWeight, lineTotal, productLabel } from '@/lib/utils'
+import { aBolivares, formatBs, formatTasa } from '@/lib/tasa'
 import { BrandLockup } from '@/components/BrandLockup'
 import { ProductImage } from '@/components/ProductImage'
 
@@ -88,20 +89,33 @@ export default function VistaPedido({ codificado }: VistaPedidoProps) {
 
         <ul className="space-y-3">
           {pedido.lineas.map((linea, i) => (
-            <Fila key={`${linea.id}-${i}`} linea={linea} posicion={i + 1} />
+            <Fila key={`${linea.id}-${i}`} linea={linea} posicion={i + 1} tasa={pedido.tasa} />
           ))}
         </ul>
 
-        <div className="mt-6 pt-5 border-t border-line flex items-baseline justify-between">
+        <div className="mt-6 pt-5 border-t border-line flex items-baseline justify-between gap-4">
           <span className="font-display text-[18px] font-bold text-ink">Total</span>
-          <span className="font-display text-[30px] font-extrabold text-ink tabular-nums tracking-tight">
-            USD {formatAmount(total)}
+          <span className="text-right">
+            <span className="block font-display text-[30px] font-extrabold text-ink tabular-nums tracking-tight">
+              USD {formatAmount(total)}
+            </span>
+            {/* Con la tasa del día en que se pidió, no con la de hoy */}
+            {pedido.tasa !== null && (
+              <>
+                <span className="block font-display text-[22px] font-extrabold text-brand-ink tabular-nums">
+                  Bs {formatBs(aBolivares(total, pedido.tasa))}
+                </span>
+                <span className="block text-[11.5px] text-ink-muted mt-0.5">
+                  tasa {formatTasa(pedido.tasa)}
+                </span>
+              </>
+            )}
           </span>
         </div>
 
         <p className="mt-6 text-[12.5px] leading-relaxed text-ink-muted">
-          Los precios son los que el cliente vio al hacer el pedido. Si alguno
-          cambió después, manda el de la lista vigente.
+          Los precios y la tasa son los del momento en que el cliente hizo el
+          pedido. Si algo cambió después, manda la lista vigente.
         </p>
       </main>
     </div>
@@ -130,7 +144,7 @@ function Dato({ icono, titulo, valor }: { icono: React.ReactNode; titulo: string
   )
 }
 
-function Fila({ linea, posicion }: { linea: LineaPedido; posicion: number }) {
+function Fila({ linea, posicion, tasa }: { linea: LineaPedido; posicion: number; tasa: number | null }) {
   const producto = catalogo.get(linea.id)
   const cantidad = producto?.soldByWeight
     ? formatWeight(linea.cantidad)
@@ -181,6 +195,11 @@ function Fila({ linea, posicion }: { linea: LineaPedido; posicion: number }) {
         <p className="text-[14px] font-semibold text-ink mt-1 tabular-nums">
           USD {formatAmount(importe(linea))}
         </p>
+        {tasa !== null && (
+          <p className="text-[12px] font-semibold text-ink-muted tabular-nums">
+            Bs {formatBs(aBolivares(importe(linea), tasa))}
+          </p>
+        )}
       </div>
     </li>
   )

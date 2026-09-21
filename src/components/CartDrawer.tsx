@@ -5,6 +5,9 @@ import { formatAmount, formatPrice, scrollToCatalog, formatWeight, lineTotal, cn
 import { waHref } from '@/lib/negocio'
 import { codificarPedido, enlaceDelPedido, generarCodigo, mensajeDePedido } from '@/lib/pedido'
 import { useDatosCliente } from '@/hooks/useDatosCliente'
+import { useTasa } from '@/hooks/useTasa'
+import { PrecioBs } from './PrecioBs'
+import { aBolivares, formatBs, formatTasa } from '@/lib/tasa'
 
 const CAMPO =
   'w-full h-11 px-4 rounded-xl bg-paper border border-line text-[15px] text-ink ' +
@@ -22,6 +25,7 @@ interface CartDrawerProps {
 
 export function CartDrawer({ isOpen, onClose, cart, cartCount, cartTotal, updateQuantity, removeFromCart }: CartDrawerProps) {
   const { datos, actualizar } = useDatosCliente()
+  const tasa = useTasa()
 
   /* Un código por visita: el mismo pedido no puede cambiar de nombre entre
      que se revisa el carrito y se pulsa enviar. */
@@ -30,9 +34,9 @@ export function CartDrawer({ isOpen, onClose, cart, cartCount, cartTotal, update
   const listo = datos.nombre.trim().length >= 2 && datos.zona.trim().length >= 2
 
   const mensaje = useMemo(() => {
-    const codificado = codificarPedido(cart, codigo, datos)
-    return mensajeDePedido(cart, cartTotal, codigo, datos, enlaceDelPedido(codificado))
-  }, [cart, cartTotal, codigo, datos])
+    const codificado = codificarPedido(cart, codigo, datos, tasa.valor)
+    return mensajeDePedido(cart, cartTotal, codigo, datos, enlaceDelPedido(codificado), tasa.valor)
+  }, [cart, cartTotal, codigo, datos, tasa.valor])
 
   useEffect(() => {
     if (!isOpen) return
@@ -154,6 +158,7 @@ export function CartDrawer({ isOpen, onClose, cart, cartCount, cartTotal, update
                       <p className="font-display text-[15px] font-extrabold text-ink tabular-nums tracking-tight">
                         {formatAmount(lineTotal(item, item.quantity))}
                         <span className="ml-1 text-[10px] font-bold uppercase tracking-[0.14em] text-ink-muted">USD</span>
+                        <PrecioBs dolares={lineTotal(item, item.quantity)} className="mt-0.5 text-[11px]" />
                       </p>
 
                       <div className="flex items-center gap-1 rounded-full border border-line bg-paper p-0.5">
@@ -203,8 +208,21 @@ export function CartDrawer({ isOpen, onClose, cart, cartCount, cartTotal, update
               </div>
               <div className="flex justify-between items-baseline pt-3 border-t border-line">
                 <dt className="font-display text-[16px] font-bold text-ink">Total</dt>
-                <dd className="font-display text-[26px] font-extrabold text-ink tabular-nums tracking-tight">
-                  {formatPrice(cartTotal)}
+                <dd className="text-right">
+                  <span className="block font-display text-[26px] font-extrabold text-ink tabular-nums tracking-tight">
+                    {formatPrice(cartTotal)}
+                  </span>
+                  {/* El bolívar es lo que la mayoría va a pagar de verdad */}
+                  {tasa.valor !== null && (
+                    <>
+                      <span className="block font-display text-[19px] font-extrabold text-brand-ink tabular-nums">
+                        Bs {formatBs(aBolivares(cartTotal, tasa.valor))}
+                      </span>
+                      <span className="block text-[11px] text-ink-muted mt-0.5">
+                        tasa {formatTasa(tasa.valor)}
+                      </span>
+                    </>
+                  )}
                 </dd>
               </div>
             </dl>

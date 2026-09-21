@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils'
 import { BrandLockup } from '@/components/BrandLockup'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import { FilaAjuste } from './FilaAjuste'
+import { TasaDelDia } from './TasaDelDia'
 
 /**
  * Panel del dueño: poner ofertas, corregir precios y ocultar productos.
@@ -100,6 +101,8 @@ export default function PanelAdmin() {
             sus teléfonos: eso llega cuando conectemos la tienda a internet.
           </p>
         </div>
+
+        <TasaDelDia />
 
         <div className="flex flex-wrap items-end justify-between gap-4 mb-6">
           <div>
