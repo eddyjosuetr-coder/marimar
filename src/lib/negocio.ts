@@ -1,5 +1,3 @@
-import type { CartItem } from '@/types'
-import { formatAmount, formatWeight, lineTotal, productLabel } from './utils'
 
 /**
  * Los datos reales del negocio, en un solo sitio.
@@ -33,52 +31,4 @@ export function waLink(producto?: string): string {
       ? `Hola Marimar, quiero consultar el precio de: ${producto}`
       : 'Hola Marimar, quiero hacer un pedido'
   )
-}
-
-/**
- * Redacta el pedido para WhatsApp.
- *
- * Es la pieza que cierra la venta: el cliente pulsa un botón y al negocio le
- * llega el pedido escrito, listo para preparar. Por eso cada línea dice
- * exactamente qué es, cuánto lleva y cuánto cuesta, sin que nadie tenga que
- * preguntar de vuelta:
- *
- *  · la charcutería va en gramos o kilos, no en "unidades"
- *  · los combos listan las salsas que eligió el cliente
- *  · lo que está en oferta lo dice, para que en el negocio cuadre la cuenta
- *  · al final va el total, que es el mismo que el cliente vio en la tienda
- */
-export function mensajeDePedido(cart: CartItem[], total: number): string {
-  const lineas = cart.map((item, i) => {
-    const cantidad = item.soldByWeight
-      ? formatWeight(item.quantity)
-      : `${item.quantity} und`
-
-    const unitario = item.soldByWeight
-      ? `${formatAmount(item.price)} por KG`
-      : `${formatAmount(item.price)} c/u`
-
-    const partes = [
-      `${i + 1}. ${productLabel(item.name)} (${item.brand})`,
-      `   ${cantidad} × ${unitario} = USD ${formatAmount(lineTotal(item, item.quantity))}`,
-    ]
-
-    if (item.salsas?.length) {
-      partes.push(`   Salsas: ${item.salsas.join(', ')}`)
-    }
-    if (item.listPrice !== undefined) {
-      partes.push(`   En oferta (antes ${formatAmount(item.listPrice)})`)
-    }
-    return partes.join('\n')
-  })
-
-  return [
-    `¡Hola ${NEGOCIO.nombre}! Quiero hacer este pedido:`,
-    '',
-    ...lineas,
-    '',
-    `TOTAL: USD ${formatAmount(total)}`,
-    '',
-    'Quedo atento para coordinar la entrega y el pago. Gracias.',
-  ].join('\n')
 }

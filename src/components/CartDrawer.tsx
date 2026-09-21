@@ -1,8 +1,14 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { X, Trash2, Plus, Minus, ArrowRight, ShoppingCart } from 'lucide-react'
 import type { CartItem } from '@/types'
 import { formatAmount, formatPrice, scrollToCatalog, formatWeight, lineTotal, cn, productLabel } from '@/lib/utils'
-import { mensajeDePedido, waHref } from '@/lib/negocio'
+import { waHref } from '@/lib/negocio'
+import { codificarPedido, enlaceDelPedido, generarCodigo, mensajeDePedido } from '@/lib/pedido'
+import { useDatosCliente } from '@/hooks/useDatosCliente'
+
+const CAMPO =
+  'w-full h-11 px-4 rounded-xl bg-paper border border-line text-[15px] text-ink ' +
+  'outline-none focus:border-brand focus:ring-2 focus:ring-brand/15 transition-all placeholder:text-ink-muted'
 
 interface CartDrawerProps {
   isOpen: boolean
@@ -15,6 +21,19 @@ interface CartDrawerProps {
 }
 
 export function CartDrawer({ isOpen, onClose, cart, cartCount, cartTotal, updateQuantity, removeFromCart }: CartDrawerProps) {
+  const { datos, actualizar } = useDatosCliente()
+
+  /* Un código por visita: el mismo pedido no puede cambiar de nombre entre
+     que se revisa el carrito y se pulsa enviar. */
+  const [codigo] = useState(generarCodigo)
+
+  const listo = datos.nombre.trim().length >= 2 && datos.zona.trim().length >= 2
+
+  const mensaje = useMemo(() => {
+    const codificado = codificarPedido(cart, codigo, datos)
+    return mensajeDePedido(cart, cartTotal, codigo, datos, enlaceDelPedido(codificado))
+  }, [cart, cartTotal, codigo, datos])
+
   useEffect(() => {
     if (!isOpen) return
 
@@ -191,22 +210,66 @@ export function CartDrawer({ isOpen, onClose, cart, cartCount, cartTotal, update
             </dl>
 
             {/*
+              Dos datos, no más. Sin ellos el pedido llega desde un número
+              suelto y el encargado tiene que preguntar quién es y a dónde va
+              antes de poder preparar nada. Se recuerdan en el teléfono del
+              cliente para que la segunda compra no cueste escribirlos.
+            */}
+            <div className="space-y-2.5 mb-4">
+              <div>
+                <label htmlFor="pedido-nombre" className="block text-[11px] font-bold uppercase tracking-[0.12em] text-ink-muted mb-1.5">
+                  ¿A nombre de quién?
+                </label>
+                <input
+                  id="pedido-nombre"
+                  value={datos.nombre}
+                  onChange={e => actualizar({ nombre: e.target.value })}
+                  placeholder="Tu nombre y apellido"
+                  autoComplete="name"
+                  className={CAMPO}
+                />
+              </div>
+              <div>
+                <label htmlFor="pedido-zona" className="block text-[11px] font-bold uppercase tracking-[0.12em] text-ink-muted mb-1.5">
+                  ¿Dónde lo entregamos?
+                </label>
+                <input
+                  id="pedido-zona"
+                  value={datos.zona}
+                  onChange={e => actualizar({ zona: e.target.value })}
+                  placeholder="Ciudad y sector"
+                  autoComplete="address-level2"
+                  className={CAMPO}
+                />
+              </div>
+            </div>
+
+            {/*
               El enlace se arma en cada render con el pedido de ese momento:
               si se calculara una sola vez, el cliente mandaría el carrito que
               tenía antes de cambiar las cantidades.
             */}
-            <a
-              href={waHref(mensajeDePedido(cart, cartTotal))}
-              target="_blank"
-              rel="noopener noreferrer"
-              data-tap-target
-              className="group flex items-center justify-center gap-2 w-full py-4 rounded-full bg-brand text-white font-semibold text-[15px] shadow-brand hover:bg-brand-deep transition-all duration-200"
-            >
-              Enviar pedido por WhatsApp
-              <ArrowRight className="w-[18px] h-[18px] group-hover:translate-x-1 transition-transform duration-200" strokeWidth={2.2} />
-            </a>
+            {listo ? (
+              <a
+                href={waHref(mensaje)}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-tap-target
+                className="group flex items-center justify-center gap-2 w-full py-4 rounded-full bg-brand text-white font-semibold text-[15px] shadow-brand hover:bg-brand-deep transition-all duration-200"
+              >
+                Enviar pedido por WhatsApp
+                <ArrowRight className="w-[18px] h-[18px] group-hover:translate-x-1 transition-transform duration-200" strokeWidth={2.2} />
+              </a>
+            ) : (
+              <p className="flex items-center justify-center gap-2 w-full py-4 rounded-full bg-paper-sunken text-ink-muted font-semibold text-[14px] text-center px-4">
+                Completa tu nombre y la zona de entrega
+              </p>
+            )}
+
             <p className="text-[12px] text-ink-muted text-center mt-3">
-              Se abre WhatsApp con tu pedido escrito. Confirmamos disponibilidad y coordinamos la entrega.
+              Se abre WhatsApp con tu pedido escrito, con el código{' '}
+              <span className="font-semibold text-ink-soft">{codigo}</span>.
+              Confirmamos disponibilidad y coordinamos la entrega.
             </p>
           </div>
         )}

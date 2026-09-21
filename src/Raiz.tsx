@@ -15,8 +15,10 @@ import App from './App'
  */
 
 const PanelPrivado = lazy(() => import('./admin/PanelPrivado'))
+const VistaPedido = lazy(() => import('./pedido/VistaPedido'))
 
 const RUTA_PANEL = '#/panel'
+const RUTA_PEDIDO = '#/pedido/'
 
 function suscribirRuta(alCambiar: () => void): () => void {
   window.addEventListener('hashchange', alCambiar)
@@ -30,19 +32,29 @@ function rutaActual(): string {
 export function Raiz() {
   const hash = useSyncExternalStore(suscribirRuta, rutaActual, () => '')
 
+  /* El pedido que el encargado abre desde WhatsApp: los datos vienen en la
+     propia dirección, así que no hace falta consultar nada. */
+  if (hash.startsWith(RUTA_PEDIDO)) {
+    return (
+      <Suspense fallback={<PantallaCargando texto="Abriendo el pedido…" />}>
+        <VistaPedido codificado={hash.slice(RUTA_PEDIDO.length)} />
+      </Suspense>
+    )
+  }
+
   if (!hash.startsWith(RUTA_PANEL)) return <App />
 
   return (
-    <Suspense fallback={<PantallaCargando />}>
+    <Suspense fallback={<PantallaCargando texto="Abriendo el panel…" />}>
       <PanelPrivado />
     </Suspense>
   )
 }
 
-function PantallaCargando() {
+function PantallaCargando({ texto }: { texto: string }) {
   return (
     <div className="min-h-dvh bg-paper text-ink-muted flex items-center justify-center text-[14px]">
-      Abriendo el panel…
+      {texto}
     </div>
   )
 }
