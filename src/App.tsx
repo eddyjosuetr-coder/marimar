@@ -165,20 +165,29 @@ export default function App() {
     (maxPrice !== defaultMaxPrice ? 1 : 0)
 
   /*
+    Rescate, no acompañamiento.
+
     Al buscar, la lista pasa de 290 productos a un puñado y la página se
-    acorta de golpe. El navegador conserva la posición del scroll, así que
-    quien buscaba desde la mitad del catálogo terminaba mirando el pie o la
-    galería de Instagram, sin entender qué pasó. Si quedó por debajo del
-    catálogo, se le devuelve al principio de los resultados.
+    acorta de golpe: quien buscaba desde la mitad del catálogo terminaba
+    mirando el pie o la galería de Instagram. Pero corregir la posición en
+    cada tecla era peor — con el desplazamiento suave, cada letra reiniciaba
+    la animación y la página trepaba sola mientras se escribía.
+
+    Así que sólo se interviene cuando los resultados quedaron COMPLETAMENTE
+    fuera de la pantalla, y el salto es instantáneo: sin animación que se
+    pise con la tecla siguiente. Si se ve aunque sea una ficha, no se toca
+    nada y manda quien escribe.
   */
   useEffect(() => {
     if (!searchQuery) return
-    const catalogo = document.getElementById('catalogo')
-    if (!catalogo) return
-    const inicio = catalogo.getBoundingClientRect().top + window.scrollY
-    if (window.scrollY > inicio) {
-      window.scrollTo({ top: Math.max(0, inicio - 24), behavior: 'smooth' })
-    }
+    const rejilla = document.getElementById('resultados') ?? document.getElementById('catalogo')
+    if (!rejilla) return
+
+    const { top, bottom } = rejilla.getBoundingClientRect()
+    const fueraDePantalla = bottom < 0 || top > window.innerHeight
+    if (!fueraDePantalla) return
+
+    window.scrollTo({ top: Math.max(0, top + window.scrollY - 120), behavior: 'instant' })
   }, [searchQuery, filteredProducts.length])
 
   // El sheet de filtros bloquea el scroll de fondo mientras está abierto.

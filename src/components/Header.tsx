@@ -42,17 +42,63 @@ export function Header({
   setSearchQuery,
 }: HeaderProps) {
   const campoMovil = useRef<HTMLInputElement>(null)
+  const barraServicio = useRef<HTMLDivElement>(null)
+  const cabecera = useRef<HTMLElement>(null)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [showProductsDropdown, setShowProductsDropdown] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [showMobileSearch, setShowMobileSearch] = useState(false)
+  const [altoCabecera, setAltoCabecera] = useState(0)
 
-  // El header cambia de peso al hacer scroll: hairline + blur en vez de sombra plana.
+  /*
+    La cabecera va FIJA, no pegajosa.
+
+    Con `sticky`, al escribir en el buscador el navegador intentaba traer el
+    cursor a su sitio "natural" — el principio del documento — y arrastraba
+    la página 80px por cada tecla: se escribía "mayonesa" y el sitio había
+    trepado 640px. Se probaron seis remedios (quitar el desenfoque, quitar
+    el desplazamiento suave, capa propia, devolver la posición…) y sólo la
+    posición fija lo evita, porque entonces el navegador ya considera que el
+    campo está a la vista.
+
+    A cambio hay que hacer a mano dos cosas que `sticky` daba gratis: dejar
+    su hueco en la página (el espaciador de abajo) y apartarse mientras la
+    barra de contacto sigue visible, que es lo que hace el `translateY`.
+  */
   useEffect(() => {
-    const onScroll = () => setIsScrolled(window.scrollY > 8)
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
+    let pendiente = 0
+
+    const actualizar = () => {
+      pendiente = 0
+      const altoBarra = barraServicio.current?.offsetHeight ?? 0
+      const separacion = Math.max(0, altoBarra - window.scrollY)
+      if (cabecera.current) cabecera.current.style.transform = `translateY(${separacion}px)`
+      setIsScrolled(window.scrollY > 8)
+    }
+
+    // Se escribe directo en el DOM y con un fotograma de por medio: un estado
+    // de React por cada evento de scroll daría tirones al desplazarse.
+    const alMover = () => { if (!pendiente) pendiente = requestAnimationFrame(actualizar) }
+
+    actualizar()
+    window.addEventListener('scroll', alMover, { passive: true })
+    window.addEventListener('resize', alMover)
+    return () => {
+      if (pendiente) cancelAnimationFrame(pendiente)
+      window.removeEventListener('scroll', alMover)
+      window.removeEventListener('resize', alMover)
+    }
+  }, [])
+
+  /* El hueco que deja la cabecera se mide, no se adivina: cambia de alto
+     entre teléfono y escritorio, y con el riel de categorías. */
+  useEffect(() => {
+    const el = cabecera.current
+    if (!el) return
+    const observador = new ResizeObserver(() => setAltoCabecera(el.offsetHeight))
+    observador.observe(el)
+    setAltoCabecera(el.offsetHeight)
+    return () => observador.disconnect()
   }, [])
 
   /*
@@ -81,7 +127,7 @@ export function Header({
   return (
     <>
       {/* ══ Barra de servicio ══ */}
-      <div className="hidden md:block bg-espresso text-white/70 text-[12px]">
+      <div ref={barraServicio} className="hidden md:block bg-espresso text-white/70 text-[12px]">
         <div className="max-w-[1400px] mx-auto px-6 lg:px-10 h-9 flex items-center justify-between">
           <div className="flex items-center gap-7">
             {/* La barra mide 36px: los enlaces la ocupan entera para que en
@@ -115,8 +161,9 @@ export function Header({
 
       {/* ══ Header principal ══ */}
       <header
+        ref={cabecera}
         className={cn(
-          'sticky top-0 z-40 bg-paper/85 backdrop-blur-xl transition-shadow duration-300',
+          'fixed inset-x-0 top-0 z-40 bg-paper/85 backdrop-blur-xl transition-shadow duration-300',
           isScrolled ? 'shadow-[0_1px_0_hsl(var(--line)),0_8px_24px_-16px_hsl(24_40%_12%_/_0.25)]' : 'shadow-[0_1px_0_hsl(var(--line))]'
         )}
       >
@@ -381,6 +428,9 @@ export function Header({
           </div>
         </div>
       </header>
+
+      {/* Hueco de la cabecera fija: sin él, la portada arrancaría por debajo */}
+      <div aria-hidden="true" style={{ height: altoCabecera }} />
 
       {/* ══ Drawer móvil ══ */}
       {isMenuOpen && (
