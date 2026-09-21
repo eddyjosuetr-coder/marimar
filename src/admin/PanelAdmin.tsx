@@ -109,8 +109,10 @@ export default function PanelAdmin() {
             <h1 className="font-display text-display-sm font-extrabold text-ink">
               Ofertas y precios
             </h1>
-            <p className="text-[14px] text-ink-muted mt-1.5">
-              Escribe el precio de oferta y el producto sale marcado en la tienda.
+            <p className="text-[14px] text-ink-muted mt-1.5 max-w-[46ch]">
+              Escribe siempre en <strong className="text-ink">dólares</strong>.
+              Tus clientes ven el precio en bolívares, calculado con la tasa
+              de arriba.
             </p>
           </div>
           <div className="flex items-center gap-2.5 text-[13px]">

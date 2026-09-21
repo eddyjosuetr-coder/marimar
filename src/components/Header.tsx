@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { Menu, Search, ShoppingCart, MapPin, Phone, ChevronDown, X, MessageCircle, ArrowRight } from 'lucide-react'
-import { formatPrice, scrollToCatalog, scrollToResults, cn } from '@/lib/utils'
+import { scrollToCatalog, scrollToResults, cn } from '@/lib/utils'
+import { useTasa } from '@/hooks/useTasa'
+import { precioPublico } from '@/lib/tasa'
 import { CATEGORIES } from '@/data/products'
 import { CART_ANCHOR_ATTR } from '@/lib/flyToCart'
 import { BrandLockup } from './BrandLockup'
@@ -30,6 +32,9 @@ const MENU_CATEGORIES = CATEGORIES
 
 const WA_LINK = waLink()
 
+/** Compra mínima para el envío sin costo. El negocio la fija en dólares. */
+const ENVIO_GRATIS_USD = 100
+
 export function Header({
   cartCount,
   cartTotal,
@@ -41,6 +46,7 @@ export function Header({
   searchQuery,
   setSearchQuery,
 }: HeaderProps) {
+  const { valor: tasa } = useTasa()
   const campoMovil = useRef<HTMLInputElement>(null)
   const barraServicio = useRef<HTMLDivElement>(null)
   const cabecera = useRef<HTMLElement>(null)
@@ -142,9 +148,11 @@ export function Header({
             </span>
           </div>
           <div className="flex items-center gap-5">
+            {/* El umbral se piensa en dólares, pero se anuncia en bolívares,
+                que es la única moneda que el cliente ve en la tienda */}
             <span className="hidden lg:flex items-center gap-2">
               <span className="w-1 h-1 rounded-full bg-gold" />
-              Envío gratis en compras mayores a $100
+              Envío gratis en compras mayores a {precioPublico(ENVIO_GRATIS_USD, tasa)}
             </span>
             <a
               href={WA_LINK}
@@ -334,7 +342,7 @@ export function Header({
                   )}
                 </span>
                 <span className="hidden sm:inline font-display text-[14px] font-bold tabular-nums tracking-tight">
-                  {formatPrice(cartTotal)}
+                  {precioPublico(cartTotal, tasa)}
                 </span>
               </button>
             </div>

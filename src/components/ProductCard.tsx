@@ -1,10 +1,11 @@
 import { useRef, useState } from 'react'
 import { Eye, Plus, Check, MessageCircle, ListChecks } from 'lucide-react'
 import type { Product } from '@/types'
-import { formatAmount, getPackaging, cn, productLabel } from '@/lib/utils'
+import { getPackaging, cn, productLabel } from '@/lib/utils'
 import { waLink } from '@/lib/negocio'
 import { ProductImage } from './ProductImage'
-import { PrecioBs } from './PrecioBs'
+import { useTasa } from '@/hooks/useTasa'
+import { precioPublico } from '@/lib/tasa'
 import { flyToCart } from '@/lib/flyToCart'
 
 interface ProductCardProps {
@@ -25,6 +26,7 @@ const BADGE_STYLES: Record<string, string> = {
 
 export function ProductCard({ product, onAddToCart, onQuickView }: ProductCardProps) {
   const packaging = getPackaging(product.name)
+  const { valor: tasa } = useTasa()
   const fotoRef = useRef<HTMLButtonElement>(null)
   const [agregado, setAgregado] = useState(false)
 
@@ -118,21 +120,22 @@ export function ProductCard({ product, onAddToCart, onQuickView }: ProductCardPr
             </p>
           ) : (
             <p className="min-w-0">
-              <span className="block text-[9px] font-bold uppercase tracking-[0.16em] text-ink-muted mb-0.5">
-                {product.soldByWeight ? 'USD por KG' : 'USD'}
-              </span>
-              <span className="font-display text-[19px] md:text-[22px] font-extrabold text-ink leading-none tracking-tight tabular-nums">
-                {formatAmount(product.price)}
+              {product.soldByWeight && (
+                <span className="block text-[9px] font-bold uppercase tracking-[0.16em] text-ink-muted mb-0.5">
+                  Precio por KG
+                </span>
+              )}
+              <span className="font-display text-[17px] md:text-[19px] font-extrabold text-ink leading-none tracking-tight tabular-nums">
+                {precioPublico(product.price, tasa)}
               </span>
               {/* En oferta: primero cuánto cuesta hoy, luego de cuánto bajó */}
               {product.listPrice !== undefined && (
-                <span className="ml-1.5 text-[13px] font-semibold text-ink-muted line-through tabular-nums">
-                  {formatAmount(product.listPrice)}
+                <span className="block text-[12px] font-semibold text-ink-muted line-through tabular-nums mt-0.5">
+                  {precioPublico(product.listPrice, tasa)}
                 </span>
               )}
-              <PrecioBs dolares={product.price} className="mt-1" />
               {product.soldByWeight && (
-                <span className="block text-[10px] text-ink-muted mt-0.5">Desde 100 gr</span>
+                <span className="block text-[10px] text-ink-muted mt-1">Desde 100 gr</span>
               )}
             </p>
           )}

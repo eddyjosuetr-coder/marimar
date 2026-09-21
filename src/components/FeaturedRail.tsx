@@ -3,8 +3,10 @@ import { ArrowUpRight } from 'lucide-react'
 import type { Product } from '@/types'
 import { useReveal } from '@/hooks/useReveal'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
-import { formatAmount, getPackaging, scrollToCatalog, cn, productLabel } from '@/lib/utils'
+import { getPackaging, scrollToCatalog, cn, productLabel } from '@/lib/utils'
 import { ProductImage } from './ProductImage'
+import { useTasa } from '@/hooks/useTasa'
+import { precioPublico } from '@/lib/tasa'
 
 interface FeaturedRailProps {
   products: Product[]
@@ -19,6 +21,8 @@ function RailCard({ product, onQuickView, inerte }: {
   onQuickView: (p: Product) => void
   inerte: boolean
 }) {
+  const { valor: tasa } = useTasa()
+
   return (
     <li className="flex-shrink-0 w-[190px] sm:w-[212px] mr-3.5 md:mr-4" aria-hidden={inerte || undefined}>
       <button
@@ -50,12 +54,11 @@ function RailCard({ product, onQuickView, inerte }: {
           <h3 className="text-[12.5px] font-medium text-ink leading-snug line-clamp-2 min-h-[2.6em]">
             {productLabel(product.name)}
           </h3>
-          <p className="mt-2 font-display text-[17px] font-extrabold text-ink leading-none tracking-tight tabular-nums">
-            <span className="text-[9px] font-bold uppercase tracking-[0.16em] text-ink-muted mr-1.5 align-middle">USD</span>
-            {formatAmount(product.price)}
+          <p className="mt-2 font-display text-[15px] font-extrabold text-ink leading-none tracking-tight tabular-nums">
+            {precioPublico(product.price, tasa)}
             {product.listPrice !== undefined && (
-              <span className="ml-1.5 text-[12px] font-semibold text-ink-muted line-through">
-                {formatAmount(product.listPrice)}
+              <span className="block text-[11.5px] font-semibold text-ink-muted line-through mt-0.5">
+                {precioPublico(product.listPrice, tasa)}
               </span>
             )}
           </p>

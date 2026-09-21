@@ -9,21 +9,32 @@
  *   1. la que el dueño escribió a mano en el panel, si la escribió
  *   2. la oficial del BCV, que la tienda consulta sola al abrir
  *   3. la última que se pudo traer, guardada en el navegador
+ *   4. la de respaldo que viaja en el programa, para no quedarse sin precios
  *
- * Si no hay ninguna —primera visita sin internet— la tienda muestra sólo
- * dólares. Es preferible a inventar un bolívar que nadie podría cobrar.
+ * La tienda muestra sus precios en bolívares, así que siempre hay una tasa:
+ * quedarse sin ella sería quedarse sin precios que enseñar.
  */
 
 const LLAVE = 'marimar.tasa.v1'
 const FUENTE_BCV = 'https://ve.dolarapi.com/v1/dolares/oficial'
 const ESPERA_MAXIMA_MS = 5000
 
-export type OrigenTasa = 'manual' | 'bcv' | 'guardada'
+export type OrigenTasa = 'manual' | 'bcv' | 'guardada' | 'respaldo'
+
+/**
+ * Último recurso: la tasa que viaja dentro del programa.
+ *
+ * La tienda muestra sus precios en bolívares, así que quedarse sin tasa
+ * sería quedarse sin precios. Sólo se usa cuando no hay nada más: ni tasa
+ * del dueño, ni respuesta del BCV, ni una guardada de visitas anteriores.
+ * Se actualiza cada vez que se publica la tienda.
+ */
+const TASA_RESPALDO = 849.564
 
 export interface EstadoTasa {
-  /** Bolívares por dólar. `null` mientras no se conozca ninguna. */
-  valor: number | null
-  origen: OrigenTasa | null
+  /** Bolívares por dólar. Siempre hay un valor; ver `origen` para su calidad. */
+  valor: number
+  origen: OrigenTasa
   /** Día al que corresponde la tasa, en formato AAAA-MM-DD. */
   fecha: string | null
 }
@@ -34,8 +45,6 @@ interface Guardado {
   bcv?: number
   bcvFecha?: string
 }
-
-const SIN_TASA: EstadoTasa = { valor: null, origen: null, fecha: null }
 
 function hoy(): string {
   return new Date().toISOString().slice(0, 10)
@@ -83,7 +92,7 @@ function calcular(): EstadoTasa {
     const delDia = guardado.bcvFecha === hoy()
     return { valor: guardado.bcv, origen: delDia ? 'bcv' : 'guardada', fecha: guardado.bcvFecha ?? null }
   }
-  return SIN_TASA
+  return { valor: TASA_RESPALDO, origen: 'respaldo', fecha: null }
 }
 
 function avisar(): void {
@@ -163,6 +172,18 @@ const FORMATO_BS = new Intl.NumberFormat('es-VE', {
 /** 10611.05 → "10.611,05" */
 export function formatBs(monto: number): string {
   return FORMATO_BS.format(monto)
+}
+
+/**
+ * El precio tal como lo ve el público: sólo bolívares.
+ *
+ * El negocio lleva su lista en dólares porque es lo que no se mueve, pero
+ * quien compra paga en bolívares y es lo único que necesita leer. Ver las
+ * dos monedas obliga a hacer la cuenta mentalmente y siembra la duda de en
+ * cuál se cobra.
+ */
+export function precioPublico(dolares: number, tasa: number): string {
+  return `Bs ${FORMATO_BS.format(aBolivares(dolares, tasa))}`
 }
 
 /** Las tasas se dictan con dos decimales aunque lleguen con tres. */

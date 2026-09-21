@@ -217,7 +217,7 @@ export function FilterSidebar({
         </FilterSection>
 
         {/* ── Precio ── */}
-        <FilterSection title="Precio (USD)">
+        <FilterSection title="Precio en bolívares">
           <div className="flex items-end gap-2.5">
             <div className="flex-1">
               <label htmlFor="price-min" className="block text-[11px] font-medium text-ink-muted mb-1.5">

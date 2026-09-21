@@ -5,6 +5,8 @@ import type { Ajuste } from '@/lib/ajustes'
 import { formatAmount, productLabel, cn } from '@/lib/utils'
 import { ProductImage } from '@/components/ProductImage'
 import { parsearPrecio } from './precio'
+import { useTasa } from '@/hooks/useTasa'
+import { precioPublico } from '@/lib/tasa'
 
 interface FilaAjusteProps {
   /** El producto como está en el catálogo, sin ajustes encima. */
@@ -18,8 +20,15 @@ const CAMPO =
   'outline-none focus:border-brand focus:ring-2 focus:ring-brand/15 transition-all placeholder:text-ink-muted'
 
 export function FilaAjuste({ producto, ajuste, onCambio }: FilaAjusteProps) {
+  const { valor: tasa } = useTasa()
+
   const precioLista = producto.price
   const precioBase = ajuste?.precio ?? precioLista
+  /* Lo que de verdad paga el cliente: la oferta si la hay, y en bolívares,
+     que es la única moneda que él ve. */
+  const precioVigente = ajuste?.oferta !== undefined && ajuste.oferta < precioBase
+    ? ajuste.oferta
+    : precioBase
 
   /* Se escribe como se habla aquí: con coma decimal. */
   const conComa = (valor: number) => valor.toFixed(2).replace('.', ',')
@@ -99,7 +108,12 @@ export function FilaAjuste({ producto, ajuste, onCambio }: FilaAjusteProps) {
               {productLabel(producto.name)}
             </p>
             <p className="text-[11.5px] text-ink-muted tabular-nums mt-0.5">
-              Lista: {formatAmount(precioLista)}
+              Lista: {formatAmount(precioLista)} USD
+              {producto.soldByWeight && ' por KG'}
+            </p>
+            {/* El dueño escribe en dólares, pero vende en bolívares: ve las dos */}
+            <p className="text-[12px] font-semibold text-brand-ink tabular-nums mt-0.5">
+              Tu cliente ve: {precioPublico(precioVigente, tasa)}
               {producto.soldByWeight && ' por KG'}
             </p>
           </div>
@@ -111,7 +125,7 @@ export function FilaAjuste({ producto, ajuste, onCambio }: FilaAjusteProps) {
               htmlFor={`precio-${producto.id}`}
               className="block text-[10px] font-bold uppercase tracking-[0.12em] text-ink-muted mb-1"
             >
-              Precio
+              Precio USD
             </label>
             <input
               id={`precio-${producto.id}`}
@@ -130,7 +144,7 @@ export function FilaAjuste({ producto, ajuste, onCambio }: FilaAjusteProps) {
               htmlFor={`oferta-${producto.id}`}
               className="block text-[10px] font-bold uppercase tracking-[0.12em] text-brand-ink mb-1"
             >
-              Oferta
+              Oferta USD
             </label>
             <input
               id={`oferta-${producto.id}`}

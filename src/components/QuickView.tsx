@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { X, CheckCircle2, Package, Plus, MessageCircle } from 'lucide-react'
 import type { Product } from '@/types'
-import { formatAmount, getPackaging, cn, productLabel } from '@/lib/utils'
+import { getPackaging, cn, productLabel } from '@/lib/utils'
 import { waLink } from '@/lib/negocio'
 import { ProductImage } from './ProductImage'
-import { PrecioBs } from './PrecioBs'
+import { useTasa } from '@/hooks/useTasa'
+import { precioPublico, aBolivares, formatBs } from '@/lib/tasa'
 import { flyToCart } from '@/lib/flyToCart'
 import { nombresElegidos, totalElegidas } from '@/lib/salsas'
 import { SalsaPicker } from './SalsaPicker'
@@ -23,6 +24,7 @@ const BADGE_STYLES: Record<string, string> = {
 
 export function QuickView({ product, onClose, onAddToCart }: QuickViewProps) {
   const fotoRef = useRef<HTMLDivElement>(null)
+  const { valor: tasa } = useTasa()
 
   /* Mismo gesto que en la ficha: el producto vuela al carrito y el diálogo cierra. */
   const agregar = (salsas?: string[]) => {
@@ -99,29 +101,25 @@ export function QuickView({ product, onClose, onAddToCart }: QuickViewProps) {
               </span>
             ) : (
               <>
-                <span className="text-[13px] font-bold uppercase tracking-[0.16em] text-ink-muted">USD</span>
-                <span className="font-display text-[44px] font-extrabold text-ink leading-none tracking-tight tabular-nums">
-                  {formatAmount(product.price)}
+                <span className="font-display text-[34px] md:text-[38px] font-extrabold text-ink leading-none tracking-tight tabular-nums">
+                  {precioPublico(product.price, tasa)}
                 </span>
                 {product.soldByWeight && (
                   <span className="text-[15px] font-semibold text-ink-muted">/ KG</span>
                 )}
                 {product.listPrice !== undefined && (
                   <span className="flex items-baseline gap-2">
-                    <span className="text-[19px] font-semibold text-ink-muted line-through tabular-nums">
-                      {formatAmount(product.listPrice)}
+                    <span className="text-[17px] font-semibold text-ink-muted line-through tabular-nums">
+                      {precioPublico(product.listPrice, tasa)}
                     </span>
                     <span className="text-[12px] font-bold uppercase tracking-wide text-brand-ink">
-                      Ahorras {formatAmount(product.listPrice - product.price)}
+                      Ahorras Bs {formatBs(aBolivares(product.listPrice - product.price, tasa))}
                     </span>
                   </span>
                 )}
               </>
             )}
             </div>
-            {!product.priceOnRequest && (
-              <PrecioBs dolares={product.price} className="mt-2 text-[14px] text-ink-soft" />
-            )}
           </div>
 
           {product.description && (

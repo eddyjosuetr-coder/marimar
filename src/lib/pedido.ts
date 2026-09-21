@@ -1,7 +1,7 @@
 import type { CartItem } from '@/types'
-import { formatAmount, formatWeight, lineTotal, productLabel } from './utils'
+import { formatWeight, lineTotal, productLabel } from './utils'
 import { NEGOCIO } from './negocio'
-import { aBolivares, formatBs, formatTasa } from './tasa'
+import { formatTasa, precioPublico } from './tasa'
 
 /**
  * El pedido: su código, su mensaje de WhatsApp y el enlace que lo muestra
@@ -66,7 +66,7 @@ export function codificarPedido(
   cart: CartItem[],
   codigo: string,
   cliente: DatosCliente,
-  tasa: number | null
+  tasa: number
 ): string {
   const lineas = cart.map(item => {
     const salsas = item.salsas?.length ? item.salsas.map(limpiar).join(',') : ''
@@ -77,7 +77,7 @@ export function codificarPedido(
     codigo,
     limpiar(cliente.nombre),
     limpiar(cliente.zona),
-    tasa === null ? '' : String(tasa),
+    String(tasa),
     lineas.join(';'),
   ].join('|')
   return aBase64Url(cuerpo)
@@ -179,7 +179,7 @@ export function mensajeDePedido(
   codigo: string,
   cliente: DatosCliente,
   enlace: string,
-  tasa: number | null
+  tasa: number
 ): string {
   const articulos = cart.reduce((suma, item) => suma + (item.soldByWeight ? 1 : item.quantity), 0)
   const resumido = cart.length > PRODUCTOS_ANTES_DE_RESUMIR
@@ -187,21 +187,21 @@ export function mensajeDePedido(
   const lineas = resumido ? cart.map((item, i) => {
     const cantidad = item.soldByWeight ? formatWeight(item.quantity) : `${item.quantity} und`
     const salsas = item.salsas?.length ? ` (${item.salsas.join(', ')})` : ''
-    return `${i + 1}. ${cantidad} — ${productLabel(item.name)}${salsas} = USD ${formatAmount(lineTotal(item, item.quantity))}`
+    return `${i + 1}. ${cantidad} — ${productLabel(item.name)}${salsas} = ${precioPublico(lineTotal(item, item.quantity), tasa)}`
   }) : cart.map((item, i) => {
     const cantidad = item.soldByWeight
       ? formatWeight(item.quantity)
       : `${item.quantity} und`
     const unitario = item.soldByWeight
-      ? `${formatAmount(item.price)}/KG`
-      : `${formatAmount(item.price)} c/u`
+      ? `${precioPublico(item.price, tasa)}/KG`
+      : `${precioPublico(item.price, tasa)} c/u`
 
     const partes = [
       `${i + 1}. *${productLabel(item.name)}*`,
-      `    ${cantidad} × ${unitario} = USD ${formatAmount(lineTotal(item, item.quantity))}`,
+      `    ${cantidad} × ${unitario} = ${precioPublico(lineTotal(item, item.quantity), tasa)}`,
     ]
     if (item.salsas?.length) partes.push(`    Salsas: ${item.salsas.join(', ')}`)
-    if (item.listPrice !== undefined) partes.push(`    En oferta (antes ${formatAmount(item.listPrice)})`)
+    if (item.listPrice !== undefined) partes.push(`    En oferta (antes ${precioPublico(item.listPrice, tasa)})`)
     return partes.join('\n')
   })
 
@@ -216,10 +216,8 @@ export function mensajeDePedido(
     '',
     ...lineas,
     '',
-    `*TOTAL: USD ${formatAmount(total)}*`,
-    ...(tasa === null ? [] : [
-      `*Bs ${formatBs(aBolivares(total, tasa))}*  (tasa ${formatTasa(tasa)})`,
-    ]),
+    `*TOTAL: ${precioPublico(total, tasa)}*`,
+    `(tasa del día ${formatTasa(tasa)})`,
     '',
     `Ver el pedido con fotos:`,
     enlace,

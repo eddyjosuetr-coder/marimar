@@ -3,7 +3,7 @@ import { Printer, ArrowLeft, Package, MapPin, User } from 'lucide-react'
 import { products } from '@/data/products'
 import { leerPedido, type LineaPedido } from '@/lib/pedido'
 import { formatAmount, formatWeight, lineTotal, productLabel } from '@/lib/utils'
-import { aBolivares, formatBs, formatTasa } from '@/lib/tasa'
+import { formatTasa, precioPublico } from '@/lib/tasa'
 import { BrandLockup } from '@/components/BrandLockup'
 import { ProductImage } from '@/components/ProductImage'
 
@@ -96,19 +96,14 @@ export default function VistaPedido({ codificado }: VistaPedidoProps) {
         <div className="mt-6 pt-5 border-t border-line flex items-baseline justify-between gap-4">
           <span className="font-display text-[18px] font-bold text-ink">Total</span>
           <span className="text-right">
-            <span className="block font-display text-[30px] font-extrabold text-ink tabular-nums tracking-tight">
-              USD {formatAmount(total)}
-            </span>
             {/* Con la tasa del día en que se pidió, no con la de hoy */}
+            <span className="block font-display text-[30px] font-extrabold text-ink tabular-nums tracking-tight">
+              {pedido.tasa === null ? `USD ${formatAmount(total)}` : precioPublico(total, pedido.tasa)}
+            </span>
             {pedido.tasa !== null && (
-              <>
-                <span className="block font-display text-[22px] font-extrabold text-brand-ink tabular-nums">
-                  Bs {formatBs(aBolivares(total, pedido.tasa))}
-                </span>
-                <span className="block text-[11.5px] text-ink-muted mt-0.5">
-                  tasa {formatTasa(pedido.tasa)}
-                </span>
-              </>
+              <span className="block text-[12.5px] text-ink-muted mt-1 tabular-nums">
+                USD {formatAmount(total)} · tasa {formatTasa(pedido.tasa)}
+              </span>
             )}
           </span>
         </div>
@@ -193,11 +188,11 @@ function Fila({ linea, posicion, tasa }: { linea: LineaPedido; posicion: number;
         </p>
         <p className="text-[11.5px] text-ink-muted mt-1 tabular-nums">{unitario}</p>
         <p className="text-[14px] font-semibold text-ink mt-1 tabular-nums">
-          USD {formatAmount(importe(linea))}
+          {tasa === null ? `USD ${formatAmount(importe(linea))}` : precioPublico(importe(linea), tasa)}
         </p>
         {tasa !== null && (
-          <p className="text-[12px] font-semibold text-ink-muted tabular-nums">
-            Bs {formatBs(aBolivares(importe(linea), tasa))}
+          <p className="text-[11.5px] text-ink-muted tabular-nums">
+            USD {formatAmount(importe(linea))}
           </p>
         )}
       </div>
