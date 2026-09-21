@@ -22,8 +22,9 @@ import { useCatalogo } from '@/hooks/useCatalogo'
 import { useCart } from '@/hooks/useCart'
 import { getPackaging, cn } from '@/lib/utils'
 import type { Product } from '@/types'
+import { waLink } from '@/lib/negocio'
 
-const WA_LINK = 'https://wa.me/584241234567?text=Hola%20Marimar%2C%20quiero%20hacer%20un%20pedido'
+const WA_LINK = waLink()
 
 const SORT_OPTIONS = [
   { value: 'relevance', label: 'Relevancia' },

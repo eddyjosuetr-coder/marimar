@@ -86,18 +86,8 @@ export function cantidadInicial(producto: { soldByWeight?: boolean }): number {
   return producto.soldByWeight ? PASO_PESO_GR : 1
 }
 
-const WA_NUMERO = '584241234567'
-
-/**
- * Enlace de WhatsApp con el pedido ya redactado.
- * Sin argumento abre un mensaje genérico; con un producto, pregunta por él.
- */
-export function waLink(producto?: string): string {
-  const texto = producto
-    ? `Hola Marimar, quiero consultar el precio de: ${producto}`
-    : 'Hola Marimar, quiero hacer un pedido'
-  return `https://wa.me/${WA_NUMERO}?text=${encodeURIComponent(texto)}`
-}
+/* El enlace de WhatsApp vive en `negocio.ts`, con el resto de los datos
+   de contacto: aquí sólo quedan las utilidades sin dueño. */
 
 export function scrollToCatalog() {
   const el = document.getElementById('catalogo')

@@ -1,7 +1,8 @@
 import { useRef, useState } from 'react'
 import { Eye, Plus, Check, MessageCircle, ListChecks } from 'lucide-react'
 import type { Product } from '@/types'
-import { formatAmount, getPackaging, waLink, cn, productLabel } from '@/lib/utils'
+import { formatAmount, getPackaging, cn, productLabel } from '@/lib/utils'
+import { waLink } from '@/lib/negocio'
 import { ProductImage } from './ProductImage'
 import { flyToCart } from '@/lib/flyToCart'
 

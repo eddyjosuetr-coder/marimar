@@ -5,6 +5,7 @@ import { CATEGORIES } from '@/data/products'
 import { CART_ANCHOR_ATTR } from '@/lib/flyToCart'
 import { BrandLockup } from './BrandLockup'
 import { ThemeToggle } from './ThemeToggle'
+import { NEGOCIO, waLink } from '@/lib/negocio'
 
 interface HeaderProps {
   cartCount: number
@@ -27,8 +28,7 @@ interface HeaderProps {
 const RAIL_CATEGORIES = CATEGORIES
 const MENU_CATEGORIES = CATEGORIES
 
-const WA_LINK = 'https://wa.me/584241234567?text=Hola%20Marimar%2C%20quiero%20hacer%20un%20pedido'
-const PHONE = '+584241234567'
+const WA_LINK = waLink()
 
 export function Header({
   cartCount,
@@ -73,9 +73,9 @@ export function Header({
       <div className="hidden md:block bg-espresso text-white/70 text-[12px]">
         <div className="max-w-[1400px] mx-auto px-6 lg:px-10 h-9 flex items-center justify-between">
           <div className="flex items-center gap-7">
-            <a href={`tel:${PHONE}`} className="flex items-center gap-2 hover:text-white transition-colors duration-200">
+            <a href={NEGOCIO.telefonoHref} className="flex items-center gap-2 hover:text-white transition-colors duration-200">
               <Phone className="w-3.5 h-3.5 text-gold" strokeWidth={2.2} />
-              +58 424-1234567
+              {NEGOCIO.telefonoVisible}
             </a>
             <span className="flex items-center gap-2">
               <MapPin className="w-3.5 h-3.5 text-gold" strokeWidth={2.2} />

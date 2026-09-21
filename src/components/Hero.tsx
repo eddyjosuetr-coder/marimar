@@ -1,6 +1,7 @@
 import { ArrowRight, ShoppingBag, Phone } from 'lucide-react'
 import { scrollToCatalog, cn } from '@/lib/utils'
 import type { HeroSlide } from '@/types'
+import { NEGOCIO } from '@/lib/negocio'
 
 const BRANDS = [
   'FRITZ', 'MAVESA', 'HEINZ', 'LA VIÑA', 'LA MARCA', 'McCORMICK',
@@ -51,7 +52,7 @@ function HeroCopy({ slide }: { slide: HeroSlide }) {
           <ArrowRight className="w-4 h-4 -ml-0.5 group-hover:translate-x-1 transition-transform duration-200" strokeWidth={2.4} />
         </button>
         <a
-          href="tel:+584241234567"
+          href={NEGOCIO.telefonoHref}
           data-tap-target
           className="inline-flex items-center gap-2.5 px-7 py-4 rounded-full border border-white/20 text-white font-semibold text-[15px] hover:bg-white/10 hover:border-white/35 transition-all duration-200"
         >

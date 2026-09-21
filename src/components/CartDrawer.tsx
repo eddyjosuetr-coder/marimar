@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { X, Trash2, Plus, Minus, ArrowRight, ShoppingCart } from 'lucide-react'
 import type { CartItem } from '@/types'
 import { formatAmount, formatPrice, scrollToCatalog, formatWeight, lineTotal, cn, productLabel } from '@/lib/utils'
+import { mensajeDePedido, waHref } from '@/lib/negocio'
 
 interface CartDrawerProps {
   isOpen: boolean
@@ -12,8 +13,6 @@ interface CartDrawerProps {
   updateQuantity: (lineId: string, delta: number) => void
   removeFromCart: (lineId: string) => void
 }
-
-const WA_LINK = 'https://wa.me/584241234567?text=Hola%20Marimar%2C%20quiero%20confirmar%20un%20pedido'
 
 export function CartDrawer({ isOpen, onClose, cart, cartCount, cartTotal, updateQuantity, removeFromCart }: CartDrawerProps) {
   useEffect(() => {
@@ -191,18 +190,23 @@ export function CartDrawer({ isOpen, onClose, cart, cartCount, cartTotal, update
               </div>
             </dl>
 
+            {/*
+              El enlace se arma en cada render con el pedido de ese momento:
+              si se calculara una sola vez, el cliente mandaría el carrito que
+              tenía antes de cambiar las cantidades.
+            */}
             <a
-              href={WA_LINK}
+              href={waHref(mensajeDePedido(cart, cartTotal))}
               target="_blank"
               rel="noopener noreferrer"
               data-tap-target
               className="group flex items-center justify-center gap-2 w-full py-4 rounded-full bg-brand text-white font-semibold text-[15px] shadow-brand hover:bg-brand-deep transition-all duration-200"
             >
-              Confirmar por WhatsApp
+              Enviar pedido por WhatsApp
               <ArrowRight className="w-[18px] h-[18px] group-hover:translate-x-1 transition-transform duration-200" strokeWidth={2.2} />
             </a>
             <p className="text-[12px] text-ink-muted text-center mt-3">
-              Un asesor confirma disponibilidad y coordina la entrega.
+              Se abre WhatsApp con tu pedido escrito. Confirmamos disponibilidad y coordinamos la entrega.
             </p>
           </div>
         )}

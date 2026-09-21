@@ -2,6 +2,7 @@ import { MapPin, Phone, Mail, ArrowRight } from 'lucide-react'
 import { scrollToCatalog } from '@/lib/utils'
 import { BrandLockup } from './BrandLockup'
 import { CATEGORIES } from '@/data/products'
+import { NEGOCIO, waLink } from '@/lib/negocio'
 
 function FacebookGlyph() {
   return (
@@ -34,7 +35,7 @@ const FOOTER_CATEGORIES = CATEGORIES.slice(1, 7)
 
 const PAYMENT_METHODS = ['Zelle', 'Pago Móvil', 'Efectivo', 'Transferencia']
 
-const WA_LINK = 'https://wa.me/584241234567?text=Hola%20Marimar%2C%20quiero%20hacer%20un%20pedido'
+const WA_LINK = waLink()
 
 function ColumnHeading({ children }: { children: React.ReactNode }) {
   return (
@@ -115,20 +116,22 @@ export function Footer() {
           <div className="lg:col-span-3">
             <ColumnHeading>Contacto</ColumnHeading>
             <ul className="space-y-4">
+              {/* Sin dirección publicada mientras el cliente no la confirme:
+                  una dirección inventada manda gente a tocar a otra puerta. */}
               <li className="flex items-start gap-3 text-[14px] text-white/55">
                 <MapPin className="w-4 h-4 text-gold flex-shrink-0 mt-1" strokeWidth={2.2} aria-hidden="true" />
-                <span>Av. Principal, Caracas, Venezuela.<br />Zona Industrial.</span>
+                <span>Delivery en toda Venezuela</span>
               </li>
               <li className="flex items-center gap-3 text-[14px]">
                 <Phone className="w-4 h-4 text-gold flex-shrink-0" strokeWidth={2.2} aria-hidden="true" />
-                <a href="tel:+584241234567" className="tap-inline text-white/55 hover:text-white transition-colors">
-                  +58 424-1234567
+                <a href={NEGOCIO.telefonoHref} className="tap-inline text-white/55 hover:text-white transition-colors">
+                  {NEGOCIO.telefonoVisible}
                 </a>
               </li>
               <li className="flex items-center gap-3 text-[14px]">
                 <Mail className="w-4 h-4 text-gold flex-shrink-0" strokeWidth={2.2} aria-hidden="true" />
-                <a href="mailto:ventas@marimar.com" className="tap-inline text-white/55 hover:text-white transition-colors">
-                  ventas@marimar.com
+                <a href={`mailto:${NEGOCIO.correo}`} className="tap-inline text-white/55 hover:text-white transition-colors">
+                  {NEGOCIO.correo}
                 </a>
               </li>
             </ul>
