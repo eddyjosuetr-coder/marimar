@@ -93,3 +93,23 @@ export function scrollToCatalog() {
   const el = document.getElementById('catalogo')
   if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
+
+/**
+ * Lleva a los productos, no al encabezado de la sección.
+ *
+ * Tras buscar, quien pulsa "Buscar" quiere ver artículos. Parando en el
+ * título quedaban casi 400px de migas, titular y filtros antes de la primera
+ * foto, y en un teléfono eso es la pantalla entera. Se deja un respiro
+ * arriba para que se vea de dónde salen los resultados.
+ */
+const RESPIRO_SOBRE_RESULTADOS = 120
+
+export function scrollToResults() {
+  const rejilla = document.getElementById('resultados')
+  if (!rejilla) {
+    scrollToCatalog()
+    return
+  }
+  const destino = rejilla.getBoundingClientRect().top + window.scrollY - RESPIRO_SOBRE_RESULTADOS
+  window.scrollTo({ top: Math.max(0, destino), behavior: 'smooth' })
+}

@@ -21,6 +21,7 @@ import { heroSlides, PER_PAGE, CATEGORIES } from '@/data/products'
 import { useCatalogo } from '@/hooks/useCatalogo'
 import { useCart } from '@/hooks/useCart'
 import { getPackaging, cn } from '@/lib/utils'
+import { buscar } from '@/lib/busqueda'
 import type { Product } from '@/types'
 import { waLink } from '@/lib/negocio'
 
@@ -108,7 +109,16 @@ export default function App() {
   const hayOfertas = useMemo(() => products.some(p => p.listPrice !== undefined), [products])
 
   const filteredProducts = useMemo(() => {
-    return products
+    /*
+      La búsqueda va primero y devuelve su propio orden, del más pertinente
+      al menos. Después se aplican los filtros, que sólo quitan; y el
+      ordenamiento elegido, que respeta el de la búsqueda cuando está en
+      "Relevancia": si no, escribir "queso" y ver primero una salsa BBQ.
+    */
+    const base = searchQuery ? buscar(products, searchQuery) : products
+    const buscando = Boolean(searchQuery)
+
+    return base
       .filter(p => {
         if (soloOfertas && p.listPrice === undefined) return false
         if (selectedCategory !== 'Todos' && p.category !== selectedCategory) return false
@@ -123,12 +133,6 @@ export default function App() {
           if (minPrice && p.price < parseFloat(minPrice)) return false
           if (maxPrice && p.price > parseFloat(maxPrice)) return false
         }
-        if (searchQuery) {
-          const q = searchQuery.toLowerCase()
-          return p.name.toLowerCase().includes(q)
-            || p.brand.toLowerCase().includes(q)
-            || (p.description?.toLowerCase().includes(q) ?? false)
-        }
         return true
       })
       .sort((a, b) => {
@@ -141,6 +145,8 @@ export default function App() {
         if (sortOrder === 'name_asc') return a.name.localeCompare(b.name)
         if (sortOrder === 'bestseller')
           return (b.badge === 'Más Vendido' ? 1 : 0) - (a.badge === 'Más Vendido' ? 1 : 0)
+        // Buscando, manda el orden del buscador
+        if (buscando) return 0
         // Por relevancia, lo rebajado va primero: es lo que el dueño quiere
         // empujar y lo que el cliente agradece ver de entrada.
         return (b.listPrice !== undefined ? 1 : 0) - (a.listPrice !== undefined ? 1 : 0)
@@ -157,6 +163,23 @@ export default function App() {
     selectedPackagings.length +
     (minPrice ? 1 : 0) +
     (maxPrice !== defaultMaxPrice ? 1 : 0)
+
+  /*
+    Al buscar, la lista pasa de 290 productos a un puñado y la página se
+    acorta de golpe. El navegador conserva la posición del scroll, así que
+    quien buscaba desde la mitad del catálogo terminaba mirando el pie o la
+    galería de Instagram, sin entender qué pasó. Si quedó por debajo del
+    catálogo, se le devuelve al principio de los resultados.
+  */
+  useEffect(() => {
+    if (!searchQuery) return
+    const catalogo = document.getElementById('catalogo')
+    if (!catalogo) return
+    const inicio = catalogo.getBoundingClientRect().top + window.scrollY
+    if (window.scrollY > inicio) {
+      window.scrollTo({ top: Math.max(0, inicio - 24), behavior: 'smooth' })
+    }
+  }, [searchQuery, filteredProducts.length])
 
   // El sheet de filtros bloquea el scroll de fondo mientras está abierto.
   useEffect(() => {
@@ -343,7 +366,7 @@ export default function App() {
 
               {/* Rejilla */}
               {paginatedProducts.length > 0 ? (
-                <div className="grid grid-cols-2 md:grid-cols-3 2xl:grid-cols-4 gap-3.5 md:gap-5">
+                <div id="resultados" className="grid grid-cols-2 md:grid-cols-3 2xl:grid-cols-4 gap-3.5 md:gap-5">
                   {paginatedProducts.map(product => (
                     <ProductCard
                       key={product.id}

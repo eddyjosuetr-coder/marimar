@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Menu, Search, ShoppingCart, MapPin, Phone, ChevronDown, X, MessageCircle, ArrowRight } from 'lucide-react'
-import { formatPrice, scrollToCatalog, cn } from '@/lib/utils'
+import { formatPrice, scrollToCatalog, scrollToResults, cn } from '@/lib/utils'
 import { CATEGORIES } from '@/data/products'
 import { CART_ANCHOR_ATTR } from '@/lib/flyToCart'
 import { BrandLockup } from './BrandLockup'
@@ -41,6 +41,7 @@ export function Header({
   searchQuery,
   setSearchQuery,
 }: HeaderProps) {
+  const campoMovil = useRef<HTMLInputElement>(null)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [showProductsDropdown, setShowProductsDropdown] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
@@ -53,6 +54,16 @@ export function Header({
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
+
+  /*
+    El campo se enfoca a mano, con `preventScroll`. Con el `autoFocus` de
+    siempre el navegador arrastraba la página hasta el campo: al pulsar la
+    lupa a mitad del catálogo, el sitio saltaba casi 900px y el visitante
+    perdía dónde estaba.
+  */
+  useEffect(() => {
+    if (showMobileSearch) campoMovil.current?.focus({ preventScroll: true })
+  }, [showMobileSearch])
 
   // Bloquea el scroll de fondo mientras el drawer móvil está abierto.
   useEffect(() => {
@@ -109,7 +120,7 @@ export function Header({
           isScrolled ? 'shadow-[0_1px_0_hsl(var(--line)),0_8px_24px_-16px_hsl(24_40%_12%_/_0.25)]' : 'shadow-[0_1px_0_hsl(var(--line))]'
         )}
       >
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10">
+        <div className="relative max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10">
           <div className="flex items-center gap-3 md:gap-6 h-[68px] md:h-[84px]">
 
             {/* Menú móvil */}
@@ -213,17 +224,21 @@ export function Header({
               </a>
             </nav>
 
-            {/* Buscador desktop */}
-            <div className="hidden md:flex items-center flex-1 max-w-sm ml-auto">
+            {/* Buscador desktop — también formulario: Enter baja a los resultados */}
+            <form
+              onSubmit={e => { e.preventDefault(); if (searchQuery.trim()) scrollToResults() }}
+              className="hidden md:flex items-center flex-1 max-w-sm ml-auto"
+            >
               <div className="group flex items-center w-full bg-paper-raised border border-line rounded-full h-11 px-4 focus-within:border-brand focus-within:ring-4 focus-within:ring-brand/15 transition-all duration-200">
                 <Search className="w-4 h-4 text-ink-muted flex-shrink-0" strokeWidth={2.2} />
                 <label htmlFor="site-search" className="sr-only">Buscar productos</label>
                 <input
                   id="site-search"
                   type="search"
+                  enterKeyHint="search"
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
-                  placeholder="Buscar productos o marcas…"
+                  placeholder="Busca pan, queso, salsa…"
                   className="sin-limpiar-nativo bg-transparent outline-none text-[14px] ml-2.5 w-full text-ink placeholder:text-ink-muted"
                 />
                 {searchQuery && (
@@ -237,7 +252,7 @@ export function Header({
                   </button>
                 )}
               </div>
-            </div>
+            </form>
 
             {/* Acciones */}
             <div className="flex items-center gap-1 ml-auto md:ml-0">
@@ -278,23 +293,62 @@ export function Header({
             </div>
           </div>
 
-          {/* Buscador móvil desplegable */}
+          {/*
+            Buscador móvil.
+
+            Va ENCIMA de la fila del encabezado, no debajo: cuando se abría
+            como una fila nueva empujaba el riel de categorías y la página
+            entera daba un salto justo al empezar a escribir.
+
+            Es un formulario de verdad para que el teclado del teléfono
+            muestre "Buscar" y, al pulsarlo, se cierre el teclado y la vista
+            baje a los resultados en vez de dejar al visitante mirando la
+            portada.
+          */}
           {showMobileSearch && (
-            <div className="md:hidden pb-3 animate-fade-in-up">
-              <div className="flex items-center w-full bg-paper-raised border border-line rounded-full h-11 px-4 focus-within:border-brand transition-colors">
+            <form
+              onSubmit={e => {
+                e.preventDefault()
+                setShowMobileSearch(false)
+                // Con el campo vacío, "Buscar" sólo cierra: es la salida para
+                // quien abrió la lupa sin querer.
+                if (searchQuery.trim()) scrollToResults()
+              }}
+              onKeyDown={e => { if (e.key === 'Escape') setShowMobileSearch(false) }}
+              className="md:hidden absolute inset-x-0 top-0 h-[68px] px-4 flex items-center gap-2 bg-paper animate-fade-in-up"
+            >
+              <div className="flex items-center flex-1 min-w-0 bg-paper-raised border border-line rounded-full h-11 px-4 focus-within:border-brand transition-colors">
                 <Search className="w-4 h-4 text-ink-muted flex-shrink-0" strokeWidth={2.2} />
                 <label htmlFor="site-search-mobile" className="sr-only">Buscar productos</label>
                 <input
                   id="site-search-mobile"
                   type="search"
-                  autoFocus
+                  enterKeyHint="search"
+                  ref={campoMovil}
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
-                  placeholder="Buscar productos o marcas…"
-                  className="bg-transparent outline-none text-[16px] ml-2.5 w-full text-ink placeholder:text-ink-muted"
+                  placeholder="Busca pan, queso, salsa…"
+                  /* 16px: con menos, el iPhone hace zoom al enfocar y descuadra todo */
+                  className="sin-limpiar-nativo bg-transparent outline-none text-[16px] ml-2.5 w-full text-ink placeholder:text-ink-muted"
                 />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery('')}
+                    className="tap-inline p-1 rounded-full text-ink-muted hover:text-ink"
+                    aria-label="Limpiar búsqueda"
+                  >
+                    <X className="w-4 h-4" strokeWidth={2.4} />
+                  </button>
+                )}
               </div>
-            </div>
+              <button
+                type="submit"
+                className="flex-shrink-0 h-11 px-4 rounded-full bg-ink text-paper text-[14px] font-semibold"
+              >
+                Buscar
+              </button>
+            </form>
           )}
         </div>
 
