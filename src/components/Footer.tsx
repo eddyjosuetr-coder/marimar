@@ -97,13 +97,15 @@ export function Footer() {
           {/* Categorías */}
           <nav className="lg:col-span-2" aria-label="Categorías populares">
             <ColumnHeading>Categorías</ColumnHeading>
-            <ul className="space-y-3">
+            {/* py-1 en cada enlace: en el teléfono el dedo necesita más que la
+                altura de la línea. El espaciado baja para compensar. */}
+            <ul className="space-y-2">
               {FOOTER_CATEGORIES.map(cat => (
                 <li key={cat}>
                   <button
                     type="button"
                     onClick={scrollToCatalog}
-                    className="tap-inline text-left text-[14px] text-white/55 hover:text-gold transition-colors duration-200"
+                    className="tap-inline py-1 text-left text-[14px] text-white/55 hover:text-gold transition-colors duration-200"
                   >
                     {cat}
                   </button>

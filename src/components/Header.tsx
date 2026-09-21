@@ -73,7 +73,9 @@ export function Header({
       <div className="hidden md:block bg-espresso text-white/70 text-[12px]">
         <div className="max-w-[1400px] mx-auto px-6 lg:px-10 h-9 flex items-center justify-between">
           <div className="flex items-center gap-7">
-            <a href={NEGOCIO.telefonoHref} className="flex items-center gap-2 hover:text-white transition-colors duration-200">
+            {/* La barra mide 36px: los enlaces la ocupan entera para que en
+                la tablet el dedo tenga dónde caer, no sólo la línea de texto */}
+            <a href={NEGOCIO.telefonoHref} className="flex items-center gap-2 h-9 hover:text-white transition-colors duration-200">
               <Phone className="w-3.5 h-3.5 text-gold" strokeWidth={2.2} />
               {NEGOCIO.telefonoVisible}
             </a>
@@ -91,7 +93,7 @@ export function Header({
               href={WA_LINK}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1.5 text-white/90 hover:text-white font-semibold transition-colors duration-200"
+              className="flex items-center gap-1.5 h-9 text-white/90 hover:text-white font-semibold transition-colors duration-200"
             >
               <MessageCircle className="w-3.5 h-3.5 text-leaf" strokeWidth={2.2} />
               Pedir por WhatsApp
@@ -309,7 +311,9 @@ export function Header({
                     onClick={() => pickCategory(c)}
                     aria-current={isActive ? 'true' : undefined}
                     className={cn(
-                      'flex-shrink-0 px-3.5 py-1.5 rounded-full text-[13px] font-medium whitespace-nowrap border transition-all duration-200',
+                      /* h-9 para que el dedo acierte: con py-1.5 el botón medía
+                         22px de alto y en el teléfono se fallaba el toque */
+                      'flex-shrink-0 inline-flex items-center h-9 px-3.5 rounded-full text-[13px] font-medium whitespace-nowrap border transition-all duration-200',
                       isActive
                         ? 'bg-ink text-paper border-ink'
                         : 'bg-transparent text-ink-soft border-line hover:border-ink/35 hover:text-ink'

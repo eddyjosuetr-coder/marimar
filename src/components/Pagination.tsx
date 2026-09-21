@@ -51,7 +51,16 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
         <span className="hidden sm:inline">Anterior</span>
       </button>
 
-      <ul className="flex items-center gap-1">
+      {/*
+        En el teléfono la lista de números no cabe: con 13 páginas medía 360px
+        y empujaba la página entera, que quedaba desplazable en horizontal.
+        Ahí se cambia por "Página 3 de 13", que dice lo mismo en un renglón.
+      */}
+      <p className="sm:hidden text-[13.5px] font-semibold text-ink-soft tabular-nums" aria-hidden="true">
+        Página <span className="text-ink">{currentPage}</span> de {totalPages}
+      </p>
+
+      <ul className="hidden sm:flex items-center gap-1">
         {pages.map((p, i) =>
           p === 'gap' ? (
             <li key={`gap-${i}`} className="w-6 text-center text-ink-muted select-none" aria-hidden="true">

@@ -145,7 +145,7 @@ export function ProductCard({ product, onAddToCart, onQuickView }: ProductCardPr
               aria-label={`Consultar el precio de ${product.name} por WhatsApp`}
             >
               <MessageCircle className="w-4 h-4" strokeWidth={2.4} />
-              <span className="hidden xl:inline">Consultar</span>
+              <span className="hidden lg:inline">Consultar</span>
             </a>
           ) : product.comboSalsas ? (
             <button
@@ -155,7 +155,7 @@ export function ProductCard({ product, onAddToCart, onQuickView }: ProductCardPr
               aria-label={`Elegir las salsas de ${product.name}`}
             >
               <ListChecks className="w-4 h-4" strokeWidth={2.4} />
-              <span className="hidden xl:inline">Elegir salsas</span>
+              <span className="hidden lg:inline">Elegir salsas</span>
             </button>
           ) : (
             <button
@@ -170,7 +170,7 @@ export function ProductCard({ product, onAddToCart, onQuickView }: ProductCardPr
               {agregado
                 ? <Check className="w-4 h-4" strokeWidth={3} />
                 : <Plus className="w-4 h-4" strokeWidth={2.6} />}
-              <span className="hidden xl:inline">{agregado ? 'Listo' : 'Agregar'}</span>
+              <span className="hidden lg:inline">{agregado ? 'Listo' : 'Agregar'}</span>
             </button>
           )}
         </div>
