@@ -13,7 +13,18 @@ export const NEGOCIO = {
   telefonoVisible: '+58 414-4748871',
   telefonoHref: 'tel:+584144748871',
   correo: 'Dmarimar04@gmail.com',
+  /** Hasta dónde llega el reparto. */
+  zonaDeEntrega: 'Maracay',
 } as const
+
+/**
+ * Cómo se paga, en el orden en que la gente pregunta.
+ *
+ * Vivía suelto en el pie y en la banda de confianza, y las dos listas ya no
+ * coincidían: una todavía ofrecía Zelle. Aquí sólo están las tres que el
+ * negocio acepta de verdad.
+ */
+export const FORMAS_DE_PAGO = ['Pago Móvil', 'Efectivo', 'Transferencia'] as const
 
 /** Enlace de WhatsApp con un mensaje ya redactado. */
 export function waHref(mensaje: string): string {

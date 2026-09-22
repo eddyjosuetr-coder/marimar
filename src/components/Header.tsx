@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
-import { Menu, Search, ShoppingCart, MapPin, Phone, ChevronDown, X, MessageCircle, ArrowRight } from 'lucide-react'
+import { Menu, Search, ShoppingCart, MapPin, Phone, ChevronDown, X, ArrowRight } from 'lucide-react'
 import { scrollToCatalog, scrollToResults, cn } from '@/lib/utils'
 import { useTasa } from '@/hooks/useTasa'
 import { precioPublico } from '@/lib/tasa'
+import { IconoWhatsApp } from './IconoWhatsApp'
 import { CATEGORIES } from '@/data/products'
 import { CART_ANCHOR_ATTR } from '@/lib/flyToCart'
 import { BrandLockup } from './BrandLockup'
@@ -34,7 +35,6 @@ const MENU_CATEGORIES = CATEGORIES
 const WA_LINK = waLink()
 
 /** Compra mínima para el envío sin costo. El negocio la fija en dólares. */
-const ENVIO_GRATIS_USD = 100
 
 export function Header({
   cartCount,
@@ -135,7 +135,7 @@ export function Header({
     <>
       {/* ══ Barra de servicio ══ */}
       <div ref={barraServicio} className="hidden md:block bg-espresso text-white/70 text-[12px]">
-        <div className="max-w-[1400px] mx-auto px-6 lg:px-10 h-9 flex items-center justify-between">
+        <div className="max-w-[1400px] mx-auto px-6 lg:px-10 h-9 flex items-center">
           <div className="flex items-center gap-7">
             {/* La barra mide 36px: los enlaces la ocupan entera para que en
                 la tablet el dedo tenga dónde caer, no sólo la línea de texto */}
@@ -145,25 +145,8 @@ export function Header({
             </a>
             <span className="flex items-center gap-2">
               <MapPin className="w-3.5 h-3.5 text-gold" strokeWidth={2.2} />
-              Delivery en toda Venezuela
+              Delivery en toda Maracay
             </span>
-          </div>
-          <div className="flex items-center gap-5">
-            {/* El umbral se piensa en dólares, pero se anuncia en bolívares,
-                que es la única moneda que el cliente ve en la tienda */}
-            <span className="hidden lg:flex items-center gap-2">
-              <span className="w-1 h-1 rounded-full bg-gold" />
-              Envío gratis en compras mayores a {precioPublico(ENVIO_GRATIS_USD, tasa)}
-            </span>
-            <a
-              href={WA_LINK}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1.5 h-9 text-white/90 hover:text-white font-semibold transition-colors duration-200"
-            >
-              <MessageCircle className="w-3.5 h-3.5 text-leaf" strokeWidth={2.2} />
-              Pedir por WhatsApp
-            </a>
           </div>
         </div>
       </div>
@@ -503,8 +486,8 @@ export function Header({
                 data-tap-target
                 className="flex items-center justify-center gap-2.5 w-full h-12 bg-leaf hover:brightness-95 text-white rounded-full font-semibold text-[15px] transition-all"
               >
-                <MessageCircle className="w-[18px] h-[18px]" strokeWidth={2.2} />
-                Pedir por WhatsApp
+                <IconoWhatsApp className="w-[18px] h-[18px]" />
+                Escríbenos por WhatsApp
               </a>
             </div>
           </div>

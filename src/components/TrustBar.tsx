@@ -1,5 +1,6 @@
 import { Truck, ShieldCheck, Boxes, Award } from 'lucide-react'
 import { products, CATEGORIES } from '@/data/products'
+import { FORMAS_DE_PAGO } from '@/lib/negocio'
 
 /* Las cifras salen del catálogo: si se quedan a mano contradicen a la portada. */
 const TOTAL_PRODUCTOS = products.length
@@ -10,7 +11,7 @@ const STATS = [
   { icon: Boxes, stat: String(TOTAL_PRODUCTOS), title: 'Productos', desc: 'Todos con foto propia' },
   { icon: Award, stat: String(TOTAL_MARCAS), title: 'Marcas', desc: 'Fritz · Mavesa · La Viña' },
   { icon: Truck, stat: String(TOTAL_CATEGORIAS), title: 'Categorías', desc: 'De la salsa al congelado' },
-  { icon: ShieldCheck, stat: '100%', title: 'Pago seguro', desc: 'Zelle · Pago Móvil · Efectivo' },
+  { icon: ShieldCheck, stat: '100%', title: 'Pago seguro', desc: FORMAS_DE_PAGO.join(' · ') },
 ] as const
 
 /**
