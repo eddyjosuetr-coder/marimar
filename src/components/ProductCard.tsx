@@ -91,12 +91,14 @@ export function ProductCard({ product, onAddToCart, onQuickView }: ProductCardPr
           escrito en el mensaje.
         */}
         {/*
-          En pantallas anchas el precio y el botón van lado a lado. En el
-          teléfono la ficha mide ~140px y ahí no caben: el precio se partía en
-          dos renglones ("Bs" arriba, la cifra abajo). El botón baja a su
-          propia fila, el precio se lee entero y el dedo acierta mejor.
+          El precio arriba, el botón debajo — en TODOS los tamaños.
+          Lado a lado no caben en ninguno: la ficha mide entre 140px en el
+          teléfono y ~230px en el escritorio a cuatro columnas, y un precio
+          como "Bs 52.849,84" ya ocupa eso solo. Cuando compartían fila, o se
+          partía la cifra en dos renglones o el botón la tapaba. Además así el
+          botón es ancho y no un círculo: se ve qué hace y se acierta mejor.
         */}
-        <div className="mt-auto pt-4 flex flex-col items-stretch gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-2">
+        <div className="mt-auto pt-4 flex flex-col items-stretch gap-3">
           {product.priceOnRequest ? (
             <p className="min-w-0">
               <span className="block text-[9px] font-bold uppercase tracking-[0.16em] text-ink-muted mb-0.5">
@@ -141,28 +143,28 @@ export function ProductCard({ product, onAddToCart, onQuickView }: ProductCardPr
               target="_blank"
               rel="noopener noreferrer"
               data-tap-target
-              className="flex-shrink-0 inline-flex items-center justify-center gap-1.5 w-full sm:w-auto h-10 px-3 md:px-3.5 rounded-full bg-leaf text-white font-semibold text-[12.5px] hover:brightness-95 active:scale-95 transition-all duration-200"
+              className="inline-flex items-center justify-center gap-1.5 w-full h-10 px-3.5 rounded-full bg-leaf text-white font-semibold text-[12.5px] hover:brightness-95 active:scale-95 transition-all duration-200"
               aria-label={`Consultar el precio de ${product.name} por WhatsApp`}
             >
               <MessageCircle className="w-4 h-4" strokeWidth={2.4} />
-              <span className="sm:hidden lg:inline">Consultar</span>
+              <span>Consultar</span>
             </a>
           ) : product.comboSalsas ? (
             <button
               type="button"
               onClick={() => onQuickView(product)}
-              className="flex-shrink-0 inline-flex items-center justify-center gap-1.5 w-full sm:w-auto h-10 px-3 md:px-3.5 rounded-full bg-brand text-white font-semibold text-[12.5px] hover:bg-brand-deep active:scale-95 transition-all duration-200"
+              className="inline-flex items-center justify-center gap-1.5 w-full h-10 px-3.5 rounded-full bg-brand text-white font-semibold text-[12.5px] hover:bg-brand-deep active:scale-95 transition-all duration-200"
               aria-label={`Elegir las salsas de ${product.name}`}
             >
               <ListChecks className="w-4 h-4" strokeWidth={2.4} />
-              <span className="sm:hidden lg:inline">Elegir salsas</span>
+              <span>Elegir salsas</span>
             </button>
           ) : (
             <button
               type="button"
               onClick={agregar}
               className={cn(
-                'flex-shrink-0 inline-flex items-center justify-center gap-1.5 w-full sm:w-auto h-10 px-3 md:px-3.5 rounded-full text-white font-semibold text-[12.5px] active:scale-95 transition-all duration-200',
+                'inline-flex items-center justify-center gap-1.5 w-full h-10 px-3.5 rounded-full text-white font-semibold text-[12.5px] active:scale-95 transition-all duration-200',
                 agregado ? 'bg-leaf' : 'bg-brand hover:bg-brand-deep'
               )}
               aria-label={`Agregar ${product.name} al pedido`}
@@ -170,7 +172,7 @@ export function ProductCard({ product, onAddToCart, onQuickView }: ProductCardPr
               {agregado
                 ? <Check className="w-4 h-4" strokeWidth={3} />
                 : <Plus className="w-4 h-4" strokeWidth={2.6} />}
-              <span className="sm:hidden lg:inline">{agregado ? 'Listo' : 'Agregar'}</span>
+              <span>{agregado ? 'Listo' : 'Agregar'}</span>
             </button>
           )}
         </div>
