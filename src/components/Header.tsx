@@ -7,6 +7,7 @@ import { CATEGORIES } from '@/data/products'
 import { CART_ANCHOR_ATTR } from '@/lib/flyToCart'
 import { BrandLockup } from './BrandLockup'
 import { ThemeToggle } from './ThemeToggle'
+import { RielCategorias } from './RielCategorias'
 import { NEGOCIO, waLink } from '@/lib/negocio'
 
 interface HeaderProps {
@@ -188,10 +189,15 @@ export function Header({
               <Menu className="w-6 h-6" strokeWidth={2} />
             </button>
 
-            {/* Marca */}
+            {/*
+              En el teléfono la marca va centrada, que es donde el ojo la
+              busca: el menú queda a la izquierda y las acciones a la derecha.
+              Desde `md` vuelve a su sitio, porque ahí entra el buscador y
+              centrarla la haría chocar con él.
+            */}
             <a
               href="/"
-              className="flex-shrink-0 group"
+              className="absolute inset-y-0 left-1/2 -translate-x-1/2 flex items-center flex-shrink-0 group md:static md:translate-x-0"
               aria-label="Distribuidora Marimar C.A. — inicio"
             >
               <BrandLockup
@@ -410,29 +416,11 @@ export function Header({
         {/* ══ Riel de categorías ══ */}
         <div className="border-t border-line bg-paper/70">
           <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10">
-            <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide py-2.5 -mx-1 px-1">
-              {RAIL_CATEGORIES.map(c => {
-                const isActive = selectedCategory === c
-                return (
-                  <button
-                    type="button"
-                    key={c}
-                    onClick={() => pickCategory(c)}
-                    aria-current={isActive ? 'true' : undefined}
-                    className={cn(
-                      /* h-9 para que el dedo acierte: con py-1.5 el botón medía
-                         22px de alto y en el teléfono se fallaba el toque */
-                      'flex-shrink-0 inline-flex items-center h-9 px-3.5 rounded-full text-[13px] font-medium whitespace-nowrap border transition-all duration-200',
-                      isActive
-                        ? 'bg-ink text-paper border-ink'
-                        : 'bg-transparent text-ink-soft border-line hover:border-ink/35 hover:text-ink'
-                    )}
-                  >
-                    {c === 'Todos' ? 'Todo el catálogo' : c}
-                  </button>
-                )
-              })}
-            </div>
+            <RielCategorias
+              categorias={RAIL_CATEGORIES}
+              activa={selectedCategory}
+              onElegir={pickCategory}
+            />
           </div>
         </div>
       </header>

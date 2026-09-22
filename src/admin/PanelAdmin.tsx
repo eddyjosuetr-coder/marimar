@@ -73,9 +73,11 @@ export default function PanelAdmin() {
     <div className="min-h-dvh bg-paper text-ink">
 
       <header className="sticky top-0 z-30 bg-paper-raised/95 backdrop-blur-sm border-b border-line">
-        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 py-3 flex items-center gap-3">
+        <div className="relative max-w-[1200px] mx-auto px-4 sm:px-6 py-3 flex items-center gap-3">
           <BrandLockup size="sm" compacto />
-          <span className="hidden sm:inline text-[12px] font-bold uppercase tracking-[0.14em] text-brand-ink">
+          {/* Centrado sobre la barra: es el título de la pantalla, no una
+              etiqueta pegada al logo */}
+          <span className="hidden md:block absolute left-1/2 -translate-x-1/2 text-[12px] font-bold uppercase tracking-[0.18em] text-brand-ink">
             Panel del dueño
           </span>
           <div className="ml-auto flex items-center gap-2">
