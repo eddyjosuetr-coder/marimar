@@ -46,7 +46,7 @@ export function ProductCard({ product, onAddToCart, onQuickView }: ProductCardPr
         ref={fotoRef}
         type="button"
         onClick={() => onQuickView(product)}
-        className="relative aspect-square bg-vitrina overflow-hidden cursor-pointer text-left"
+        className="relative aspect-square vitrina-panel overflow-hidden cursor-pointer text-left"
         aria-label={`Vista rápida de ${product.name}`}
       >
         <ProductImage

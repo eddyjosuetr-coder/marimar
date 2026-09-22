@@ -32,7 +32,7 @@ function RailCard({ product, onQuickView, inerte }: {
         className="group w-full text-left bg-paper-raised rounded-xl border border-line overflow-hidden transition-all duration-300 ease-out-expo hover:border-gold/55 hover:shadow-card-hover hover:-translate-y-1"
         aria-label={`Ver ${product.name}`}
       >
-        <div className="relative aspect-square bg-vitrina overflow-hidden">
+        <div className="relative aspect-square vitrina-panel overflow-hidden">
           <ProductImage
             product={product}
             className="p-3 transition-transform duration-500 ease-out-expo group-hover:scale-[1.08]"

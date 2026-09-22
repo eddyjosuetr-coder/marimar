@@ -71,7 +71,7 @@ export function QuickView({ product, onClose, onAddToCart }: QuickViewProps) {
         </button>
 
         {/* Imagen */}
-        <div ref={fotoRef} className="relative w-full md:w-1/2 bg-vitrina flex items-center justify-center p-8 md:p-12 min-h-[280px]">
+        <div ref={fotoRef} className="relative w-full md:w-1/2 vitrina-panel flex items-center justify-center p-8 md:p-12 min-h-[280px]">
           {product.badge && (
             <span className={cn(
               'absolute top-5 left-5 text-[11px] font-bold px-2.5 py-1.5 rounded-md tracking-wide z-10',

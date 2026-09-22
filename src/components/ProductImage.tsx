@@ -36,9 +36,10 @@ export function ProductImage({ product, className }: ProductImageProps) {
   const initials = product.brand.slice(0, 2).toUpperCase()
 
   return (
-    // Vive en la vitrina, que es clara en ambos temas: el texto va en espresso
-    // (oscuro en los dos) y no en `ink`, que en oscuro se vuelve claro.
-    <div className={cn('w-full h-full flex flex-col items-center justify-center bg-vitrina !p-0', className)}>
+    // Hereda el fondo de su vitrina —plana en las miniaturas, degradada en los
+    // paneles grandes— en vez de pintar el suyo. El texto va en espresso
+    // (oscuro en ambos temas) y no en `ink`, que en oscuro se vuelve claro.
+    <div className={cn('w-full h-full flex flex-col items-center justify-center !p-0', className)}>
       <span className="font-display text-3xl font-extrabold text-espresso/15 tracking-[0.1em]">{initials}</span>
       <span className="text-[9px] text-espresso/65 mt-1.5 uppercase tracking-[0.14em] text-center px-2">Foto próximamente</span>
     </div>

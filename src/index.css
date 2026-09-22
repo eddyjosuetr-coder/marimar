@@ -126,8 +126,13 @@
     /* Las fotos del cliente se recortaron sobre blanco: sus bordes y sombras
        llevan blanco mezclado y sobre carbón dibujan un halo pálido. Por eso
        la foto se exhibe en una vitrina clara incluso en oscuro — un crema
-       apagado, no blanco, para que la cuadrícula no encandile. */
-    --vitrina: 33 22% 84%;        /* #DDD6CD */
+       apagado, no blanco, para que la cuadrícula no encandile.
+
+       En las fotos grandes la vitrina no es un plano sino una luz que se
+       apaga hacia abajo (ver `.vitrina-panel`): el bloque claro cortado a
+       ras del borde daba un escalón duro contra la ficha oscura. */
+    --vitrina: 33 22% 84%;        /* #DDD6CD — arriba, donde pega la luz */
+    --vitrina-media: 30 16% 62%;  /* el paso intermedio, antes de apagarse */
 
     --ink: 34 32% 95%;            /* #F8F2EA — texto principal */
     --ink-soft: 30 14% 76%;       /* #C9BFB3 — texto secundario */
@@ -219,5 +224,32 @@
   * {
     scrollbar-width: thin;
     scrollbar-color: hsl(var(--line-strong)) transparent;
+  }
+}
+
+@layer components {
+  /*
+    La vitrina de las fotos grandes.
+
+    En claro es un plano liso, que es lo que pide una fotografía sobre papel.
+    En oscuro se degrada hasta fundirse con la ficha: el bloque crema cortado
+    a ras del borde dejaba un escalón duro contra la tarjeta oscura, y el
+    producto parecía pegado sobre un recorte. Con la luz apagándose hacia
+    abajo, la foto y la ficha son una sola pieza.
+
+    Sólo para los paneles grandes. En una miniatura de 48px un degradado no
+    se lee como luz, se lee como suciedad: ahí sigue el plano `bg-vitrina`.
+  */
+  .vitrina-panel {
+    background: hsl(var(--vitrina));
+  }
+
+  .dark .vitrina-panel {
+    background: linear-gradient(
+      180deg,
+      hsl(var(--vitrina)) 0%,
+      hsl(var(--vitrina-media)) 70%,
+      hsl(var(--paper-raised)) 100%
+    );
   }
 }
