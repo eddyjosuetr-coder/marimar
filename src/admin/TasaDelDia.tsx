@@ -118,6 +118,11 @@ export function TasaDelDia() {
           <label htmlFor="tasa-manual" className="block text-[11px] font-bold uppercase tracking-[0.12em] text-ink-muted mb-1.5">
             Poner otra tasa
           </label>
+          {/* Dos botones parecidos se confunden: se dice cuál hace qué */}
+          <p className="text-[11.5px] text-ink-muted mb-1.5">
+            Escríbela y pulsa Publicar. "Copiar la del BCV" sólo la trae a esta
+            casilla, no la publica.
+          </p>
           <input
             id="tasa-manual"
             inputMode="decimal"
@@ -147,7 +152,7 @@ export function TasaDelDia() {
           className="h-11 px-4 rounded-lg border border-line text-[14px] font-semibold text-ink-soft hover:text-ink hover:border-ink/35 disabled:opacity-50 transition-colors inline-flex items-center gap-2"
         >
           <RefreshCw className={cn('w-4 h-4', consultando && 'animate-spin')} strokeWidth={2.4} />
-          Traer la del BCV
+          Copiar la del BCV
         </button>
 
         {tasa.origen === 'manual' && (
@@ -156,7 +161,7 @@ export function TasaDelDia() {
             onClick={() => void despublicarTasa()}
             className="h-11 px-3 text-[13px] font-semibold text-ink-muted hover:text-destructive transition-colors"
           >
-            Volver a la del BCV
+            Quitar mi tasa
           </button>
         )}
       </div>
