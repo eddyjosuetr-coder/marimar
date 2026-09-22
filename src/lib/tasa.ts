@@ -6,7 +6,7 @@
  * se multiplica al mostrar.
  *
  * DE DÓNDE SALE, en orden:
- *   1. la que el dueño escribió a mano en el panel, MIENTRAS SIGA VIGENTE
+ *   1. la que el dueño publicó desde el panel, MIENTRAS SIGA VIGENTE
  *   2. la oficial del BCV, que la tienda consulta sola al abrir
  *   3. la última que se pudo traer, guardada en el navegador
  *   4. la de respaldo que viaja en el programa, para no quedarse sin precios
@@ -25,6 +25,8 @@
  * quitarla, y la tienda estaría vendiendo a un cambio viejo sin que nadie lo
  * note.
  */
+
+import { guardarEnLaNube, leerDeLaNube } from './nube'
 
 const LLAVE = 'marimar.tasa.v1'
 const FUENTE_BCV = 'https://ve.dolarapi.com/v1/dolares/oficial'
@@ -192,6 +194,57 @@ export function quitarTasaManual(): void {
   guardado = resto
   escribir(guardado)
   avisar()
+}
+
+/**
+ * Trae del servidor la tasa que publicó el dueño.
+ *
+ * Es lo que hace que su tasa del sábado la vean sus clientes y no sólo él:
+ * hasta que existió esta línea, lo que escribía en el panel se quedaba en
+ * su propio equipo.
+ */
+export async function consultarTasaPublicada(): Promise<void> {
+  const remota = leerRemota(await leerDeLaNube('tasa'))
+  // Sin tasa publicada, o retirada por el dueño, se limpia la que hubiera
+  // quedado guardada aquí: manda el servidor.
+  guardado = remota
+    ? { ...guardado, ...remota }
+    : { ...guardado, manual: undefined, manualFecha: undefined, manualSobreBcv: undefined }
+  escribir(guardado)
+  avisar()
+}
+
+/** Valida lo que llega del servidor: es dato de fuera, no se confía en él. */
+function leerRemota(crudo: unknown): Partial<Guardado> | null {
+  if (typeof crudo !== 'object' || crudo === null) return null
+  const { valor, fecha, sobreBcv } = crudo as Record<string, unknown>
+  if (!esTasa(valor)) return null
+  return {
+    manual: valor,
+    manualFecha: typeof fecha === 'string' ? fecha : hoy(),
+    manualSobreBcv: typeof sobreBcv === 'string' ? sobreBcv : hoy(),
+  }
+}
+
+/**
+ * Publica la tasa para todos los clientes. Necesita la sesión del dueño;
+ * devuelve `false` si el servidor la rechaza, y entonces el panel avisa en
+ * vez de dar por hecho que se guardó.
+ */
+export async function publicarTasa(valor: number): Promise<boolean> {
+  if (!esTasa(valor)) return false
+  fijarTasaManual(valor)
+  return guardarEnLaNube('tasa', {
+    valor,
+    fecha: guardado.manualFecha,
+    sobreBcv: guardado.manualSobreBcv,
+  })
+}
+
+/** Retira la tasa propia, también para los clientes. */
+export async function despublicarTasa(): Promise<boolean> {
+  quitarTasaManual()
+  return guardarEnLaNube('tasa', {})
 }
 
 /** La tasa propia del dueño, esté vigente o ya vencida. */

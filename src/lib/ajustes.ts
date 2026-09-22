@@ -7,13 +7,17 @@
  * aparte, como una capa de ajustes que se aplica encima al mostrar la
  * tienda. Así el catálogo se puede regenerar sin pisar su trabajo.
  *
- * DÓNDE SE GUARDAN — Hoy, en el navegador del dueño (`localStorage`), que es
- * la versión de prueba para enseñarle la tienda al cliente. Eso significa que
- * los cambios NO los ven todavía los clientes desde sus teléfonos. Cuando se
- * conecte la base de datos en internet sólo cambian `leer` y `escribir`: el
- * resto de la tienda no se entera de dónde salen los datos.
+ * DÓNDE SE GUARDAN — En la base de datos en línea, para que lo que el dueño
+ * cambia lo vean todos sus clientes. El navegador guarda además una copia,
+ * que es lo que se muestra mientras llega la respuesta del servidor y lo que
+ * salva la tienda si el servidor no responde.
+ *
+ * QUIÉN PUEDE ESCRIBIR — Sólo el dueño con su sesión iniciada. La regla vive
+ * en el servidor, no aquí: aunque alguien manipule esta página, el servidor
+ * le rechaza los cambios.
  */
 import type { Product } from '@/types'
+import { guardarEnLaNube, leerDeLaNube } from './nube'
 
 const LLAVE = 'marimar.ajustes.v1'
 
@@ -89,6 +93,19 @@ function escribir(ajustes: Ajustes): void {
 let estado: Ajustes = leer()
 const oyentes = new Set<() => void>()
 
+/**
+ * Trae del servidor lo que el dueño cambió. Lo llama la tienda al abrir.
+ * Si el servidor no responde se queda con la copia local: mejor precios de
+ * ayer que una tienda en blanco.
+ */
+export async function consultarAjustesPublicados(): Promise<void> {
+  const remotos = validar(await leerDeLaNube('ajustes'))
+  if (remotos === null) return
+  estado = remotos
+  escribir(estado)
+  avisar()
+}
+
 function avisar(): void {
   oyentes.forEach(oyente => oyente())
 }
@@ -139,6 +156,7 @@ export function ajustarProducto(id: number, cambio: Ajuste | null): void {
   estado = siguiente
   escribir(estado)
   avisar()
+  void publicar()
 }
 
 /** Deja el catálogo entero como venía de fábrica. */
@@ -146,6 +164,26 @@ export function limpiarAjustes(): void {
   estado = VACIO
   escribir(estado)
   avisar()
+  void publicar()
+}
+
+/**
+ * Sube los cambios para que los vean los clientes.
+ *
+ * Se lanza sin esperar: el dueño ve el cambio al instante y la subida ocurre
+ * detrás. Si falla —sin internet, sesión vencida— el panel lo avisa mirando
+ * `ultimaPublicacion`, en vez de dejarle creer que ya está publicado.
+ */
+let ultimaPublicacion: 'ok' | 'error' | 'pendiente' = 'ok'
+
+async function publicar(): Promise<void> {
+  ultimaPublicacion = 'pendiente'
+  ultimaPublicacion = (await guardarEnLaNube('ajustes', estado)) ? 'ok' : 'error'
+  avisar()
+}
+
+export function estadoDePublicacion(): 'ok' | 'error' | 'pendiente' {
+  return ultimaPublicacion
 }
 
 /**

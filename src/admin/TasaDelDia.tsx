@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { RefreshCw, Calculator, Check } from 'lucide-react'
 import { useTasa } from '@/hooks/useTasa'
 import {
-  aBolivares, consultarBCV, fijarTasaManual, formatBs, formatTasa,
-  quitarTasaManual, tasaBCVConocida, tasaManualGuardada,
+  aBolivares, consultarBCV, despublicarTasa, formatBs, formatTasa,
+  publicarTasa, tasaBCVConocida, tasaManualGuardada,
 } from '@/lib/tasa'
 import { formatAmount, cn } from '@/lib/utils'
 import { parsearPrecio } from './precio'
@@ -33,18 +33,28 @@ export function TasaDelDia() {
   const [error, setError] = useState('')
   const [consultando, setConsultando] = useState(false)
   const [guardada, setGuardada] = useState(false)
+  const [publicando, setPublicando] = useState(false)
 
-  const aplicarManual = () => {
+  /* Publicar es lo que hace que la tasa llegue a los clientes. Si el
+     servidor la rechaza se dice: dejar creer que se publicó sería peor que
+     el propio fallo, porque el dueño vendería el sábado a otra tasa. */
+  const aplicarManual = async () => {
     const valor = parsearPrecio(manual)
     if (valor === null) {
       setError('Escribe la tasa, por ejemplo 849,56')
       return
     }
-    fijarTasaManual(valor)
+    setPublicando(true)
+    const publicada = await publicarTasa(valor)
+    setPublicando(false)
     setManual('')
+    if (!publicada) {
+      setError('No se pudo publicar. Revisa tu internet y vuelve a intentarlo: por ahora tus clientes siguen viendo la del BCV.')
+      return
+    }
     setError('')
     setGuardada(true)
-    window.setTimeout(() => setGuardada(false), 2000)
+    window.setTimeout(() => setGuardada(false), 2500)
   }
 
   const traerDelBCV = async () => {
@@ -121,10 +131,13 @@ export function TasaDelDia() {
 
         <button
           type="button"
-          onClick={aplicarManual}
-          className="h-11 px-4 rounded-lg bg-brand text-white text-[14px] font-semibold hover:bg-brand-deep transition-colors"
+          onClick={() => void aplicarManual()}
+          disabled={publicando}
+          className="h-11 px-4 rounded-lg bg-brand text-white text-[14px] font-semibold hover:bg-brand-deep disabled:opacity-60 transition-colors"
         >
-          {guardada ? <span className="inline-flex items-center gap-1.5"><Check className="w-4 h-4" strokeWidth={3} />Guardada</span> : 'Aplicar'}
+          {publicando ? 'Publicando…'
+            : guardada ? <span className="inline-flex items-center gap-1.5"><Check className="w-4 h-4" strokeWidth={3} />Publicada</span>
+            : 'Publicar'}
         </button>
 
         <button
@@ -140,7 +153,7 @@ export function TasaDelDia() {
         {tasa.origen === 'manual' && (
           <button
             type="button"
-            onClick={() => quitarTasaManual()}
+            onClick={() => void despublicarTasa()}
             className="h-11 px-3 text-[13px] font-semibold text-ink-muted hover:text-destructive transition-colors"
           >
             Volver a la del BCV
@@ -161,10 +174,9 @@ export function TasaDelDia() {
       )}
 
       {tasa.origen === 'manual' && (
-        <p className="mt-3 p-3 rounded-lg bg-gold/10 border border-gold/40 text-[12.5px] leading-relaxed text-ink-soft">
-          <strong className="text-ink">Ojo:</strong> esta tasa vive sólo en
-          este equipo. Tus clientes siguen comprando a la del BCV hasta que
-          conectemos el panel a internet.
+        <p className="mt-3 p-3 rounded-lg bg-leaf/10 border border-leaf/40 text-[12.5px] leading-relaxed text-ink-soft">
+          <strong className="text-ink">Publicada.</strong> Tus clientes ya
+          están viendo los precios con esta tasa.
         </p>
       )}
 

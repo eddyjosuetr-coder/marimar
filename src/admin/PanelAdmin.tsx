@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react'
-import { ArrowLeft, Search, Store, Tag, EyeOff, AlertTriangle } from 'lucide-react'
+import { ArrowLeft, Search, Store, Tag, EyeOff, AlertTriangle, LogOut, Cloud } from 'lucide-react'
 import { products } from '@/data/products'
 import { useAjustes } from '@/hooks/useCatalogo'
-import { ajustarProducto, limpiarAjustes, type Ajuste } from '@/lib/ajustes'
+import { ajustarProducto, estadoDePublicacion, limpiarAjustes, type Ajuste } from '@/lib/ajustes'
+import { cerrarSesion } from '@/lib/nube'
 import { cn } from '@/lib/utils'
 import { BrandLockup } from '@/components/BrandLockup'
 import { ThemeToggle } from '@/components/ThemeToggle'
@@ -37,6 +38,7 @@ export default function PanelAdmin() {
   const [pestana, setPestana] = useState<Pestana>('todos')
   const [visibles, setVisibles] = useState(POR_TANDA)
   const [confirmandoLimpieza, setConfirmandoLimpieza] = useState(false)
+  const publicacion = estadoDePublicacion()
 
   const enOferta = useMemo(
     () => products.filter(p => {
@@ -78,6 +80,15 @@ export default function PanelAdmin() {
           </span>
           <div className="ml-auto flex items-center gap-2">
             <ThemeToggle />
+            <button
+              type="button"
+              onClick={() => { cerrarSesion(); window.location.reload() }}
+              className="inline-flex items-center gap-2 h-10 px-3 rounded-full border border-line text-[13.5px] font-semibold text-ink-soft hover:text-ink hover:border-ink/35 transition-colors"
+              title="Cerrar sesión"
+            >
+              <LogOut className="w-4 h-4" strokeWidth={2.4} />
+              <span className="hidden sm:inline">Salir</span>
+            </button>
             <a
               href="#/"
               className="inline-flex items-center gap-2 h-10 px-4 rounded-full bg-ink text-paper text-[13.5px] font-semibold hover:bg-ink-soft transition-colors"
@@ -91,16 +102,29 @@ export default function PanelAdmin() {
 
       <main className="max-w-[1200px] mx-auto px-4 sm:px-6 py-8">
 
-        {/* La versión de prueba no puede fingir que ya está en línea */}
-        <div className="flex items-start gap-3 p-4 mb-7 rounded-xl border border-gold/45 bg-gold/10">
-          <AlertTriangle className="w-5 h-5 text-gold-ink flex-shrink-0 mt-0.5" strokeWidth={2.2} />
-          <p className="text-[13.5px] leading-relaxed text-ink-soft">
-            <strong className="text-ink">Versión de prueba.</strong>{' '}
-            Los cambios se guardan sólo en este navegador y en este equipo, para
-            que puedas mostrar cómo funciona. Los clientes todavía no los ven en
-            sus teléfonos: eso llega cuando conectemos la tienda a internet.
-          </p>
-        </div>
+        {/*
+          Se dice si lo último se publicó o no. Un cambio que el dueño cree
+          guardado pero que sus clientes no ven es peor que un error visible.
+        */}
+        {publicacion === 'error' ? (
+          <div className="flex items-start gap-3 p-4 mb-7 rounded-xl border border-destructive/45 bg-destructive/10">
+            <AlertTriangle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" strokeWidth={2.2} />
+            <p className="text-[13.5px] leading-relaxed text-ink-soft">
+              <strong className="text-ink">No se pudo publicar tu último cambio.</strong>{' '}
+              Revisa tu internet y vuelve a hacerlo. Tus clientes siguen viendo
+              lo anterior.
+            </p>
+          </div>
+        ) : (
+          <div className="flex items-start gap-3 p-4 mb-7 rounded-xl border border-leaf/40 bg-leaf/10">
+            <Cloud className="w-5 h-5 text-leaf flex-shrink-0 mt-0.5" strokeWidth={2.2} />
+            <p className="text-[13.5px] leading-relaxed text-ink-soft">
+              <strong className="text-ink">Conectado.</strong>{' '}
+              Lo que cambies aquí lo ven tus clientes al instante, desde
+              cualquier teléfono.
+            </p>
+          </div>
+        )}
 
         <TasaDelDia />
 

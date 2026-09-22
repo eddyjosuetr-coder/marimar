@@ -1,5 +1,5 @@
 import { useEffect, useSyncExternalStore } from 'react'
-import { consultarBCV, obtenerTasa, suscribirTasa, type EstadoTasa } from '@/lib/tasa'
+import { consultarBCV, consultarTasaPublicada, obtenerTasa, suscribirTasa, type EstadoTasa } from '@/lib/tasa'
 
 /** Marca si ya se consultó al BCV en esta carga: basta una vez por visita. */
 let consultado = false
@@ -18,7 +18,9 @@ export function useTasa(): EstadoTasa {
   useEffect(() => {
     if (consultado) return
     consultado = true
-    void consultarBCV()
+    // Primero la del dueño y luego la del BCV: la segunda decide si la
+    // primera ya venció, así que el orden importa.
+    void consultarTasaPublicada().then(() => consultarBCV())
   }, [])
 
   return tasa

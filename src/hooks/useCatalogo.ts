@@ -1,6 +1,8 @@
-import { useMemo, useSyncExternalStore } from 'react'
+import { useEffect, useMemo, useSyncExternalStore } from 'react'
 import { products } from '@/data/products'
-import { aplicarAjustes, obtenerAjustes, suscribirAjustes, type Ajustes } from '@/lib/ajustes'
+import {
+  aplicarAjustes, consultarAjustesPublicados, obtenerAjustes, suscribirAjustes, type Ajustes,
+} from '@/lib/ajustes'
 import type { Product } from '@/types'
 
 /**
@@ -8,8 +10,24 @@ import type { Product } from '@/types'
  * `useSyncExternalStore` para que el panel y la tienda abiertos a la vez
  * muestren siempre lo mismo.
  */
+/** Una sola consulta al servidor por visita: las ofertas no cambian solas. */
+let consultado = false
+
 export function useAjustes(): Ajustes {
-  return useSyncExternalStore(suscribirAjustes, obtenerAjustes, obtenerAjustes)
+  const ajustes = useSyncExternalStore(suscribirAjustes, obtenerAjustes, obtenerAjustes)
+
+  /*
+    La tienda se pinta con la copia guardada y, cuando llega la respuesta del
+    servidor, los precios se actualizan solos. Nadie mira una pantalla vacía
+    esperando unas ofertas que cambian una vez al día.
+  */
+  useEffect(() => {
+    if (consultado) return
+    consultado = true
+    void consultarAjustesPublicados()
+  }, [])
+
+  return ajustes
 }
 
 /**
