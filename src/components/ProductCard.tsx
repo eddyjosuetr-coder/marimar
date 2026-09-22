@@ -5,23 +5,14 @@ import { getPackaging, cn, productLabel } from '@/lib/utils'
 import { waLink } from '@/lib/negocio'
 import { ProductImage } from './ProductImage'
 import { useTasa } from '@/hooks/useTasa'
-import { precioPublico } from '@/lib/tasa'
+import { precioPublico, precioReferencia } from '@/lib/tasa'
 import { flyToCart } from '@/lib/flyToCart'
+import { EtiquetaProducto } from './EtiquetaProducto'
 
 interface ProductCardProps {
   product: Product
   onAddToCart: (p: Product) => void
   onQuickView: (p: Product) => void
-}
-
-/**
- * El color de la etiqueta comunica el significado; el texto lo confirma.
- * Nunca se depende sólo del color.
- */
-const BADGE_STYLES: Record<string, string> = {
-  'Oferta': 'bg-brand text-white',
-  'Nuevo': 'bg-ink text-paper',
-  'Más Vendido': 'bg-brand-tint text-brand-ink ring-1 ring-brand/30',
 }
 
 export function ProductCard({ product, onAddToCart, onQuickView }: ProductCardProps) {
@@ -76,16 +67,7 @@ export function ProductCard({ product, onAddToCart, onQuickView }: ProductCardPr
       </button>
 
       {/* Etiqueta */}
-      {product.badge && (
-        <span
-          className={cn(
-            'absolute top-2.5 left-2.5 text-[10px] font-bold px-2 py-1 rounded-md tracking-wide z-10 pointer-events-none',
-            BADGE_STYLES[product.badge] ?? 'bg-ink text-paper'
-          )}
-        >
-          {product.badge}
-        </span>
-      )}
+      <EtiquetaProducto product={product} className="absolute top-2.5 left-2.5" />
 
       {/* ── Ficha ── */}
       <div className="flex flex-col flex-1 p-3.5 md:p-4 border-t border-line">
@@ -108,7 +90,13 @@ export function ProductCard({ product, onAddToCart, onQuickView }: ProductCardPr
           carrito: la ficha manda a consultar por WhatsApp con el producto ya
           escrito en el mensaje.
         */}
-        <div className="mt-auto pt-4 flex items-end justify-between gap-2">
+        {/*
+          En pantallas anchas el precio y el botón van lado a lado. En el
+          teléfono la ficha mide ~140px y ahí no caben: el precio se partía en
+          dos renglones ("Bs" arriba, la cifra abajo). El botón baja a su
+          propia fila, el precio se lee entero y el dedo acierta mejor.
+        */}
+        <div className="mt-auto pt-4 flex flex-col items-stretch gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-2">
           {product.priceOnRequest ? (
             <p className="min-w-0">
               <span className="block text-[9px] font-bold uppercase tracking-[0.16em] text-ink-muted mb-0.5">
@@ -125,13 +113,20 @@ export function ProductCard({ product, onAddToCart, onQuickView }: ProductCardPr
                   Precio por KG
                 </span>
               )}
-              <span className="font-display text-[17px] md:text-[19px] font-extrabold text-ink leading-none tracking-tight tabular-nums">
+              <span className="block font-display text-[17px] md:text-[19px] font-extrabold text-ink leading-none tracking-tight tabular-nums whitespace-nowrap">
                 {precioPublico(product.price, tasa)}
               </span>
-              {/* En oferta: primero cuánto cuesta hoy, luego de cuánto bajó */}
+              {/* La divisa acompaña; el bolívar es lo que se cobra. Va pegada
+                  a su bolívar y antes del precio viejo: suelta al final se
+                  leería como el "antes" en dólares. */}
+              <span className="block text-[10.5px] font-medium text-ink-muted tabular-nums mt-1">
+                {precioReferencia(product.price)}
+              </span>
+              {/* En oferta: primero cuánto cuesta hoy, luego de cuánto bajó.
+                  El tachado solo no se entiende de un vistazo; "Antes" sí. */}
               {product.listPrice !== undefined && (
-                <span className="block text-[12px] font-semibold text-ink-muted line-through tabular-nums mt-0.5">
-                  {precioPublico(product.listPrice, tasa)}
+                <span className="block text-[11.5px] font-semibold text-ink-muted tabular-nums mt-1 whitespace-nowrap">
+                  Antes <span className="line-through">{precioPublico(product.listPrice, tasa)}</span>
                 </span>
               )}
               {product.soldByWeight && (
@@ -146,28 +141,28 @@ export function ProductCard({ product, onAddToCart, onQuickView }: ProductCardPr
               target="_blank"
               rel="noopener noreferrer"
               data-tap-target
-              className="flex-shrink-0 inline-flex items-center gap-1.5 h-10 px-3 md:px-3.5 rounded-full bg-leaf text-white font-semibold text-[12.5px] hover:brightness-95 active:scale-95 transition-all duration-200"
+              className="flex-shrink-0 inline-flex items-center justify-center gap-1.5 w-full sm:w-auto h-10 px-3 md:px-3.5 rounded-full bg-leaf text-white font-semibold text-[12.5px] hover:brightness-95 active:scale-95 transition-all duration-200"
               aria-label={`Consultar el precio de ${product.name} por WhatsApp`}
             >
               <MessageCircle className="w-4 h-4" strokeWidth={2.4} />
-              <span className="hidden lg:inline">Consultar</span>
+              <span className="sm:hidden lg:inline">Consultar</span>
             </a>
           ) : product.comboSalsas ? (
             <button
               type="button"
               onClick={() => onQuickView(product)}
-              className="flex-shrink-0 inline-flex items-center gap-1.5 h-10 px-3 md:px-3.5 rounded-full bg-brand text-white font-semibold text-[12.5px] hover:bg-brand-deep active:scale-95 transition-all duration-200"
+              className="flex-shrink-0 inline-flex items-center justify-center gap-1.5 w-full sm:w-auto h-10 px-3 md:px-3.5 rounded-full bg-brand text-white font-semibold text-[12.5px] hover:bg-brand-deep active:scale-95 transition-all duration-200"
               aria-label={`Elegir las salsas de ${product.name}`}
             >
               <ListChecks className="w-4 h-4" strokeWidth={2.4} />
-              <span className="hidden lg:inline">Elegir salsas</span>
+              <span className="sm:hidden lg:inline">Elegir salsas</span>
             </button>
           ) : (
             <button
               type="button"
               onClick={agregar}
               className={cn(
-                'flex-shrink-0 inline-flex items-center gap-1.5 h-10 px-3 md:px-3.5 rounded-full text-white font-semibold text-[12.5px] active:scale-95 transition-all duration-200',
+                'flex-shrink-0 inline-flex items-center justify-center gap-1.5 w-full sm:w-auto h-10 px-3 md:px-3.5 rounded-full text-white font-semibold text-[12.5px] active:scale-95 transition-all duration-200',
                 agregado ? 'bg-leaf' : 'bg-brand hover:bg-brand-deep'
               )}
               aria-label={`Agregar ${product.name} al pedido`}
@@ -175,7 +170,7 @@ export function ProductCard({ product, onAddToCart, onQuickView }: ProductCardPr
               {agregado
                 ? <Check className="w-4 h-4" strokeWidth={3} />
                 : <Plus className="w-4 h-4" strokeWidth={2.6} />}
-              <span className="hidden lg:inline">{agregado ? 'Listo' : 'Agregar'}</span>
+              <span className="sm:hidden lg:inline">{agregado ? 'Listo' : 'Agregar'}</span>
             </button>
           )}
         </div>

@@ -1,25 +1,20 @@
 import { useEffect, useRef, useState } from 'react'
 import { X, CheckCircle2, Package, Plus, MessageCircle } from 'lucide-react'
 import type { Product } from '@/types'
-import { getPackaging, cn, productLabel } from '@/lib/utils'
+import { getPackaging, productLabel } from '@/lib/utils'
 import { waLink } from '@/lib/negocio'
 import { ProductImage } from './ProductImage'
 import { useTasa } from '@/hooks/useTasa'
-import { precioPublico, aBolivares, formatBs } from '@/lib/tasa'
+import { precioPublico, precioReferencia, aBolivares, formatBs } from '@/lib/tasa'
 import { flyToCart } from '@/lib/flyToCart'
 import { nombresElegidos, totalElegidas } from '@/lib/salsas'
 import { SalsaPicker } from './SalsaPicker'
+import { EtiquetaProducto } from './EtiquetaProducto'
 
 interface QuickViewProps {
   product: Product | null
   onClose: () => void
   onAddToCart: (p: Product, salsas?: string[]) => void
-}
-
-const BADGE_STYLES: Record<string, string> = {
-  'Oferta': 'bg-brand text-white',
-  'Nuevo': 'bg-ink text-paper',
-  'Más Vendido': 'bg-brand-tint text-brand-ink ring-1 ring-brand/30',
 }
 
 export function QuickView({ product, onClose, onAddToCart }: QuickViewProps) {
@@ -72,14 +67,7 @@ export function QuickView({ product, onClose, onAddToCart }: QuickViewProps) {
 
         {/* Imagen */}
         <div ref={fotoRef} className="relative w-full md:w-1/2 vitrina-panel flex items-center justify-center p-8 md:p-12 min-h-[280px]">
-          {product.badge && (
-            <span className={cn(
-              'absolute top-5 left-5 text-[11px] font-bold px-2.5 py-1.5 rounded-md tracking-wide z-10',
-              BADGE_STYLES[product.badge] ?? 'bg-ink text-paper'
-            )}>
-              {product.badge}
-            </span>
-          )}
+          <EtiquetaProducto product={product} grande className="absolute top-5 left-5" />
           <ProductImage product={product} className="max-w-sm" />
         </div>
 
@@ -93,33 +81,46 @@ export function QuickView({ product, onClose, onAddToCart }: QuickViewProps) {
             {productLabel(product.name)}
           </h2>
 
+          {/*
+            El precio en pisos, no en una fila: con una rebaja grande la cifra
+            de antes y el ahorro no caben al lado del precio y se partían los
+            números por la mitad. Cada cifra lleva `whitespace-nowrap` porque
+            un precio cortado en dos renglones no se lee, se adivina.
+          */}
           <div className="pb-6 mb-6 border-b border-line">
-            <div className="flex items-baseline gap-2">
             {product.priceOnRequest ? (
               <span className="font-display text-[28px] font-extrabold text-ink-soft leading-none tracking-tight">
                 Precio a consultar
               </span>
             ) : (
               <>
-                <span className="font-display text-[34px] md:text-[38px] font-extrabold text-ink leading-none tracking-tight tabular-nums">
-                  {precioPublico(product.price, tasa)}
-                </span>
-                {product.soldByWeight && (
-                  <span className="text-[15px] font-semibold text-ink-muted">/ KG</span>
-                )}
+                <div className="flex items-baseline gap-2 flex-wrap">
+                  <span className="font-display text-[34px] md:text-[38px] font-extrabold text-ink leading-none tracking-tight tabular-nums whitespace-nowrap">
+                    {precioPublico(product.price, tasa)}
+                  </span>
+                  {product.soldByWeight && (
+                    <span className="text-[15px] font-semibold text-ink-muted">/ KG</span>
+                  )}
+                </div>
+
+                {/* La divisa acompaña al bolívar; nunca compite con él */}
+                <p className="mt-2.5 text-[13px] font-medium text-ink-muted tabular-nums">
+                  {precioReferencia(product.price)}{product.soldByWeight && ' / KG'}
+                </p>
+
                 {product.listPrice !== undefined && (
-                  <span className="flex items-baseline gap-2">
-                    <span className="text-[17px] font-semibold text-ink-muted line-through tabular-nums">
-                      {precioPublico(product.listPrice, tasa)}
+                  <div className="mt-3.5 flex items-center gap-2.5 flex-wrap">
+                    <span className="text-[16px] font-semibold text-ink-muted tabular-nums whitespace-nowrap">
+                      Antes{' '}
+                      <span className="line-through">{precioPublico(product.listPrice, tasa)}</span>
                     </span>
-                    <span className="text-[12px] font-bold uppercase tracking-wide text-brand-ink">
+                    <span className="text-[12.5px] font-extrabold uppercase tracking-wide text-white bg-brand rounded-md px-2 py-1 whitespace-nowrap">
                       Ahorras Bs {formatBs(aBolivares(product.listPrice - product.price, tasa))}
                     </span>
-                  </span>
+                  </div>
                 )}
               </>
             )}
-            </div>
           </div>
 
           {product.description && (

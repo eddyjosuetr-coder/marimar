@@ -6,7 +6,7 @@ import { waHref } from '@/lib/negocio'
 import { codificarPedido, enlaceDelPedido, generarCodigo, mensajeDePedido } from '@/lib/pedido'
 import { useDatosCliente } from '@/hooks/useDatosCliente'
 import { useTasa } from '@/hooks/useTasa'
-import { precioPublico, formatTasa } from '@/lib/tasa'
+import { precioPublico, precioReferencia, formatTasa } from '@/lib/tasa'
 
 const CAMPO =
   'w-full h-11 px-4 rounded-xl bg-paper border border-line text-[15px] text-ink ' +
@@ -208,6 +208,9 @@ export function CartDrawer({ isOpen, onClose, cart, cartCount, cartTotal, update
                 <dd className="text-right">
                   <span className="block font-display text-[24px] font-extrabold text-ink tabular-nums tracking-tight">
                     {precioPublico(cartTotal, tasa.valor)}
+                  </span>
+                  <span className="block text-[12.5px] font-medium text-ink-muted tabular-nums mt-1">
+                    {precioReferencia(cartTotal)}
                   </span>
                   <span className="block text-[11px] text-ink-muted mt-0.5">
                     tasa del día {formatTasa(tasa.valor)}

@@ -6,7 +6,8 @@ import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { getPackaging, scrollToCatalog, cn, productLabel } from '@/lib/utils'
 import { ProductImage } from './ProductImage'
 import { useTasa } from '@/hooks/useTasa'
-import { precioPublico } from '@/lib/tasa'
+import { precioPublico, precioReferencia } from '@/lib/tasa'
+import { EtiquetaProducto } from './EtiquetaProducto'
 
 interface FeaturedRailProps {
   products: Product[]
@@ -40,6 +41,8 @@ function RailCard({ product, onQuickView, inerte }: {
           <span className="absolute top-2 right-2 w-7 h-7 rounded-full bg-gold text-espresso flex items-center justify-center opacity-0 -translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200">
             <ArrowUpRight className="w-3.5 h-3.5" strokeWidth={2.6} />
           </span>
+          {/* Si el producto está de oferta, en la portada es donde más se ve */}
+          <EtiquetaProducto product={product} className="absolute top-2 left-2" />
         </div>
 
         <div className="p-3 border-t border-line">
@@ -56,9 +59,12 @@ function RailCard({ product, onQuickView, inerte }: {
           </h3>
           <p className="mt-2 font-display text-[15px] font-extrabold text-ink leading-none tracking-tight tabular-nums">
             {precioPublico(product.price, tasa)}
+            <span className="block text-[10.5px] font-medium text-ink-muted mt-1">
+              {precioReferencia(product.price)}
+            </span>
             {product.listPrice !== undefined && (
-              <span className="block text-[11.5px] font-semibold text-ink-muted line-through mt-0.5">
-                {precioPublico(product.listPrice, tasa)}
+              <span className="block text-[11px] font-semibold text-ink-muted mt-1">
+                Antes <span className="line-through">{precioPublico(product.listPrice, tasa)}</span>
               </span>
             )}
           </p>

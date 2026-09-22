@@ -277,15 +277,26 @@ export function formatBs(monto: number): string {
 }
 
 /**
- * El precio tal como lo ve el público: sólo bolívares.
+ * El precio tal como lo ve el público: bolívares.
  *
  * El negocio lleva su lista en dólares porque es lo que no se mueve, pero
- * quien compra paga en bolívares y es lo único que necesita leer. Ver las
- * dos monedas obliga a hacer la cuenta mentalmente y siembra la duda de en
- * cuál se cobra.
+ * quien compra paga en bolívares y es lo primero que tiene que leer. Esta es
+ * la cifra grande de toda la tienda.
  */
 export function precioPublico(dolares: number, tasa: number): string {
   return `Bs ${FORMATO_BS.format(aBolivares(dolares, tasa))}`
+}
+
+/**
+ * La misma cifra en divisa, como referencia: "USD 12,49".
+ *
+ * Va siempre debajo del precio en bolívares y más pequeña. No es un segundo
+ * precio: es el número con el que el negocio lleva su lista, puesto ahí para
+ * quien piensa en dólares. Si las dos cifras pesaran igual, el cliente
+ * tendría que adivinar en cuál se le cobra.
+ */
+export function precioReferencia(dolares: number): string {
+  return `USD ${FORMATO_BS.format(dolares)}`
 }
 
 /** Las tasas se dictan con dos decimales aunque lleguen con tres. */
