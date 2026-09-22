@@ -6,12 +6,19 @@ contenido, se encuadran en un lienzo cuadrado uniforme y se guardan en WebP
 con transparencia: el catálogo entero baja a unos pocos MB y todas las fichas
 quedan ópticamente al mismo tamaño.
 """
-import io, os, shutil, sys
+import io, json, os, shutil, sys
 from PIL import Image
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import catalogo as cat
 import descripciones as desc
+
+# Cada producto conserva su número para siempre, aunque el catálogo se
+# reordene o entren productos nuevos. Antes se numeraban por posición, y
+# bastaba agregar una mayonesa para que todos los siguientes se corrieran:
+# las ofertas que el dueño guardó en el panel se habrían aplicado a otros
+# productos, sin aviso y sin forma de notarlo.
+REGISTRO_IDS = 'scripts/ids.json'
 
 DESTINO = 'public/productos'
 MAX_LADO = 810     # resolución máxima del producto; de ahí sale el lienzo
@@ -141,6 +148,11 @@ print('originales archivados en originales/')
 def ts(texto):
     return texto.replace('\\', '\\\\').replace("'", "\\'")
 
+# El registro vive en el repositorio: es lo que hace que los números sobrevivan
+# a cualquier regeneración del catálogo.
+registro = json.load(io.open(REGISTRO_IDS, encoding='utf-8')) if os.path.exists(REGISTRO_IDS) else {}
+siguiente_id = [max(registro.values(), default=0) + 1]
+
 lineas = []
 por_categoria = {}
 for cat_nombre in cat.ORDEN_CATEGORIAS:
@@ -154,7 +166,10 @@ for cat_nombre in cat.ORDEN_CATEGORIAS:
     detalle = f' · {sin_precio} a consultar' if sin_precio else ''
     lineas.append(f'  /* ── {cat_nombre} ({len(filas)}{detalle}) ── */')
     for i, (c, _, archivo, slug, marca, nombre, presentacion, precio) in enumerate(filas):
-        pid = len(lineas)  # placeholder, se reasigna abajo
+        if slug not in registro:
+            registro[slug] = siguiente_id[0]
+            siguiente_id[0] += 1
+        pid = registro[slug]
         # price 0 + priceOnRequest: la ficha pide consultar en vez de mostrar cifra
         consultar = ', priceOnRequest: true' if precio is None else ''
         al_peso = ', soldByWeight: true' if presentacion == 'Al peso' else ''
@@ -165,16 +180,13 @@ for cat_nombre in cat.ORDEN_CATEGORIAS:
             "  {{ id: {id}, image: '{imagen}', brand: '{marca}', "
             "name: '{nombre} - {pres}', price: {precio:.2f}{consultar}{peso}{salsas}, category: '{cat}', "
             "description: '{texto}' }},".format(
-                id=0, imagen=('' if archivo is None else '/productos/%s.webp' % slug), marca=ts(marca), nombre=ts(nombre), pres=presentacion,
+                id=pid, imagen=('' if archivo is None else '/productos/%s.webp' % slug), marca=ts(marca), nombre=ts(nombre), pres=presentacion,
                 precio=0 if precio is None else precio, consultar=consultar,
                 peso=al_peso, salsas=salsas, cat=ts(c), texto=ts(texto)))
 
-# Numeración estable y correlativa en el orden final del catálogo
-n = 0
-for i, l in enumerate(lineas):
-    if l.startswith('  { id: 0,'):
-        n += 1
-        lineas[i] = l.replace('{ id: 0,', '{ id: %d,' % n, 1)
+io.open(REGISTRO_IDS, 'w', encoding='utf-8', newline='\n').write(
+    json.dumps(registro, indent=2, ensure_ascii=False, sort_keys=True) + '\n')
+n = len(cat.CATALOGO)
 
 cabecera = """import type { Product, HeroSlide } from '@/types';
 

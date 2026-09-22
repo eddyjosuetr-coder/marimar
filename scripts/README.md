@@ -12,6 +12,7 @@ edita el resultado a mano, el siguiente generado lo borra.
 | `descripciones.py` | Las reglas que escriben la descripción de cada producto según su tipo, marca y presentación. |
 | `build_catalogo.py` | El generador: recorta y optimiza las fotos y escribe `src/data/products.ts`. |
 | `verificar_encuadre.py` | Revisa que las 277 fotos estén centradas y que ninguna se vea pequeña. |
+| `ids.json` | El número permanente de cada producto. **No se edita a mano ni se borra.** |
 
 ## Para regenerarlo
 
@@ -35,6 +36,21 @@ terminar, los archiva en `originales/`. Esa carpeta **no está en GitHub**: son
 cientos de MB de material del cliente y hay que respaldarla aparte (Drive o un
 disco). Sin ella no se pueden regenerar las fotos desde cero, pero la tienda
 funciona igual, porque usa las de `public/productos/`.
+
+## Por qué existe `ids.json`
+
+El panel del dueño guarda sus ofertas y precios usando el número del
+producto. Antes esos números salían de la posición en el catálogo, así que
+agregar una mayonesa corría todos los siguientes: las ofertas se habrían
+aplicado a productos distintos, en silencio.
+
+Ahora cada producto conserva su número aunque el catálogo se reordene, y los
+nuevos toman el siguiente libre. Si se borra ese archivo, todas las ofertas y
+precios que el dueño tenga guardados se aplicarían al producto equivocado.
+
+Un producto que cambia de `slug` cuenta como nuevo y recibe otro número: sus
+ajustes anteriores quedan huérfanos, que es lo correcto, porque ya no es el
+mismo producto.
 
 ## Un producto sin foto
 
