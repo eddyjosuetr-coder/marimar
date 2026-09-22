@@ -3,7 +3,7 @@ import { RefreshCw, Calculator, Check } from 'lucide-react'
 import { useTasa } from '@/hooks/useTasa'
 import {
   aBolivares, consultarBCV, fijarTasaManual, formatBs, formatTasa,
-  quitarTasaManual, tasaBCVConocida,
+  quitarTasaManual, tasaBCVConocida, tasaManualGuardada,
 } from '@/lib/tasa'
 import { formatAmount, cn } from '@/lib/utils'
 import { parsearPrecio } from './precio'
@@ -27,6 +27,7 @@ const CAMPO =
 export function TasaDelDia() {
   const tasa = useTasa()
   const oficial = tasaBCVConocida()
+  const propia = tasaManualGuardada()
 
   const [manual, setManual] = useState('')
   const [error, setError] = useState('')
@@ -60,10 +61,13 @@ export function TasaDelDia() {
 
   return (
     <section className="mb-8 rounded-xl border border-line bg-paper-raised p-4 md:p-5">
-      <div className="flex flex-wrap items-baseline justify-between gap-3 mb-4">
+      <div className="mb-4">
         <h2 className="font-display text-[18px] font-extrabold text-ink">Tasa del día</h2>
-        <p className="text-[12.5px] text-ink-muted">
-          Los precios están en dólares; el bolívar se calcula con esta tasa.
+        <p className="text-[13px] text-ink-soft mt-1.5 max-w-[62ch] leading-relaxed">
+          De lunes a viernes la tienda toma sola la tasa del BCV. El sábado,
+          antes de abrir, escribe aquí la tuya: manda todo el fin de semana y
+          el lunes la tienda vuelve sola a la oficial, sin que tengas que
+          acordarte de quitarla.
         </p>
       </div>
 
@@ -79,10 +83,10 @@ export function TasaDelDia() {
             {tasa.valor === null ? '—' : `Bs ${formatTasa(tasa.valor)}`}
           </p>
           <p className="text-[12px] text-ink-soft mt-1.5">
-            {tasa.origen === 'manual' && 'Puesta a mano por ti'}
+            {tasa.origen === 'manual' && `La tuya, del ${tasa.fecha ?? 'hoy'} · manda hasta que el BCV publique una más nueva`}
             {tasa.origen === 'bcv' && 'Oficial del BCV, de hoy'}
             {tasa.origen === 'guardada' && `Última conocida${tasa.fecha ? ` (${tasa.fecha})` : ''}`}
-            {tasa.origen === null && 'Sin tasa: la tienda muestra sólo dólares'}
+            {tasa.origen === 'respaldo' && 'De respaldo: todavía no se pudo consultar al BCV'}
           </p>
         </div>
 
@@ -148,11 +152,19 @@ export function TasaDelDia() {
         <p role="alert" className="mt-2 text-[12.5px] font-semibold text-destructive">{error}</p>
       )}
 
-      {tasa.origen === 'manual' && (
+      {/* Si venció, se dice: si no, el dueño creería que sigue vendiendo a la suya */}
+      {propia && !propia.vigente && (
         <p className="mt-3 text-[12.5px] leading-relaxed text-ink-soft">
-          Mientras tengas tasa propia, tus clientes seguirán viendo la del BCV:
-          lo que escribes aquí vive en este equipo. Para que tu tasa les llegue
-          a ellos hay que conectar el panel a internet.
+          Tu tasa del {propia.fecha} (Bs {formatTasa(propia.valor)}) ya venció:
+          el BCV publicó una más nueva y la tienda volvió sola a la oficial.
+        </p>
+      )}
+
+      {tasa.origen === 'manual' && (
+        <p className="mt-3 p-3 rounded-lg bg-gold/10 border border-gold/40 text-[12.5px] leading-relaxed text-ink-soft">
+          <strong className="text-ink">Ojo:</strong> esta tasa vive sólo en
+          este equipo. Tus clientes siguen comprando a la del BCV hasta que
+          conectemos el panel a internet.
         </p>
       )}
 

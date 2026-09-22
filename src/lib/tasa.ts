@@ -6,13 +6,24 @@
  * se multiplica al mostrar.
  *
  * DE DÓNDE SALE, en orden:
- *   1. la que el dueño escribió a mano en el panel, si la escribió
+ *   1. la que el dueño escribió a mano en el panel, MIENTRAS SIGA VIGENTE
  *   2. la oficial del BCV, que la tienda consulta sola al abrir
  *   3. la última que se pudo traer, guardada en el navegador
  *   4. la de respaldo que viaja en el programa, para no quedarse sin precios
  *
  * La tienda muestra sus precios en bolívares, así que siempre hay una tasa:
  * quedarse sin ella sería quedarse sin precios que enseñar.
+ *
+ * CUÁNDO VENCE LA TASA DEL DUEÑO — El sábado por la mañana él pone la tasa
+ * con la que quiere vender el fin de semana, porque el BCV no publica hasta
+ * el lunes. Esa tasa manda hasta que el BCV publique una más nueva que la
+ * que había cuando la escribió: el lunes por la mañana la tienda vuelve sola
+ * a la oficial.
+ *
+ * Que venza sola no es un detalle: sin eso, la tasa de un sábado seguiría
+ * rigiendo el martes, el jueves y el mes siguiente si a alguien se le olvida
+ * quitarla, y la tienda estaría vendiendo a un cambio viejo sin que nadie lo
+ * note.
  */
 
 const LLAVE = 'marimar.tasa.v1'
@@ -41,7 +52,13 @@ export interface EstadoTasa {
 
 interface Guardado {
   manual?: number
+  /** Día en que el dueño la escribió, para poder contarlo. */
   manualFecha?: string
+  /**
+   * Fecha del BCV que se conocía al escribirla. La tasa del dueño vence en
+   * cuanto el BCV publique una posterior a ésta.
+   */
+  manualSobreBcv?: string
   bcv?: number
   bcvFecha?: string
 }
@@ -60,10 +77,11 @@ function leerGuardado(): Guardado {
     if (!crudo) return {}
     const datos: unknown = JSON.parse(crudo)
     if (typeof datos !== 'object' || datos === null) return {}
-    const { manual, manualFecha, bcv, bcvFecha } = datos as Record<string, unknown>
+    const { manual, manualFecha, manualSobreBcv, bcv, bcvFecha } = datos as Record<string, unknown>
     return {
       ...(esTasa(manual) && { manual }),
       ...(typeof manualFecha === 'string' && { manualFecha }),
+      ...(typeof manualSobreBcv === 'string' && { manualSobreBcv }),
       ...(esTasa(bcv) && { bcv }),
       ...(typeof bcvFecha === 'string' && { bcvFecha }),
     }
@@ -84,8 +102,18 @@ let guardado: Guardado = typeof window === 'undefined' ? {} : leerGuardado()
 let estado: EstadoTasa = calcular()
 const oyentes = new Set<() => void>()
 
+/**
+ * ¿Sigue mandando la tasa que puso el dueño? Sí mientras el BCV no haya
+ * publicado una más nueva que la que había cuando la escribió.
+ */
+export function tasaManualVigente(): boolean {
+  if (!esTasa(guardado.manual)) return false
+  if (!guardado.bcvFecha || !guardado.manualSobreBcv) return true
+  return guardado.bcvFecha <= guardado.manualSobreBcv
+}
+
 function calcular(): EstadoTasa {
-  if (esTasa(guardado.manual)) {
+  if (esTasa(guardado.manual) && tasaManualVigente()) {
     return { valor: guardado.manual, origen: 'manual', fecha: guardado.manualFecha ?? null }
   }
   if (esTasa(guardado.bcv)) {
@@ -137,10 +165,20 @@ export async function consultarBCV(): Promise<number | null> {
   }
 }
 
-/** La tasa que el dueño escribe en el panel. Manda sobre la del BCV. */
+/**
+ * La tasa que el dueño escribe en el panel. Manda sobre la del BCV hasta que
+ * éste publique una más nueva.
+ */
 export function fijarTasaManual(valor: number): void {
   if (!esTasa(valor)) return
-  guardado = { ...guardado, manual: valor, manualFecha: hoy() }
+  guardado = {
+    ...guardado,
+    manual: valor,
+    manualFecha: hoy(),
+    // Se apunta contra qué publicación del BCV se puso, que es lo que
+    // después decide si ya venció.
+    manualSobreBcv: guardado.bcvFecha ?? hoy(),
+  }
   escribir(guardado)
   avisar()
 }
@@ -150,9 +188,20 @@ export function quitarTasaManual(): void {
   const resto: Guardado = { ...guardado }
   delete resto.manual
   delete resto.manualFecha
+  delete resto.manualSobreBcv
   guardado = resto
   escribir(guardado)
   avisar()
+}
+
+/** La tasa propia del dueño, esté vigente o ya vencida. */
+export function tasaManualGuardada(): { valor: number; fecha: string; vigente: boolean } | null {
+  if (!esTasa(guardado.manual)) return null
+  return {
+    valor: guardado.manual,
+    fecha: guardado.manualFecha ?? '',
+    vigente: tasaManualVigente(),
+  }
 }
 
 /** Lo último que se supo del BCV, aunque el dueño tenga una tasa propia. */
