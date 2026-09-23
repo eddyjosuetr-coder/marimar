@@ -173,8 +173,8 @@ function EmblemStage() {
       {/* Sello de credibilidad, montado sobre el aro */}
       <div className="absolute z-20 -bottom-5 -left-4 sm:-left-6 lg:-left-14 bg-paper text-ink rounded-2xl pl-4 pr-5 py-3 shadow-lift">
         <span className="brand-sweep absolute left-0 inset-y-3 w-[3px] rounded-full" aria-hidden="true" />
-        <p className="font-display text-[21px] font-extrabold leading-none tracking-tight">+15 años</p>
-        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-ink-muted mt-1">Surtiendo Venezuela</p>
+        <p className="font-display text-[21px] font-extrabold leading-none tracking-tight">36 años</p>
+        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-ink-muted mt-1">Surtiendo a toda Maracay</p>
       </div>
     </div>
   )
