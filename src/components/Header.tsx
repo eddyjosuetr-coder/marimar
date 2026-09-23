@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Menu, Search, ShoppingCart, MapPin, Phone, ChevronDown, X, ArrowRight } from 'lucide-react'
+import { Menu, Search, ShoppingCart, ChevronDown, X, ArrowRight } from 'lucide-react'
 import { scrollToCatalog, scrollToResults, cn } from '@/lib/utils'
 import { useTasa } from '@/hooks/useTasa'
 import { precioPublico } from '@/lib/tasa'
@@ -9,7 +9,7 @@ import { CART_ANCHOR_ATTR } from '@/lib/flyToCart'
 import { BrandLockup } from './BrandLockup'
 import { ThemeToggle } from './ThemeToggle'
 import { RielCategorias } from './RielCategorias'
-import { NEGOCIO, waLink } from '@/lib/negocio'
+import { waLink } from '@/lib/negocio'
 
 interface HeaderProps {
   cartCount: number
@@ -49,7 +49,6 @@ export function Header({
 }: HeaderProps) {
   const { valor: tasa } = useTasa()
   const campoMovil = useRef<HTMLInputElement>(null)
-  const barraServicio = useRef<HTMLDivElement>(null)
   const cabecera = useRef<HTMLElement>(null)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [showProductsDropdown, setShowProductsDropdown] = useState(false)
@@ -68,18 +67,14 @@ export function Header({
     posición fija lo evita, porque entonces el navegador ya considera que el
     campo está a la vista.
 
-    A cambio hay que hacer a mano dos cosas que `sticky` daba gratis: dejar
-    su hueco en la página (el espaciador de abajo) y apartarse mientras la
-    barra de contacto sigue visible, que es lo que hace el `translateY`.
+    A cambio hay que hacer a mano lo que `sticky` daba gratis: dejar su hueco
+    en la página, que es el espaciador del final de este archivo.
   */
   useEffect(() => {
     let pendiente = 0
 
     const actualizar = () => {
       pendiente = 0
-      const altoBarra = barraServicio.current?.offsetHeight ?? 0
-      const separacion = Math.max(0, altoBarra - window.scrollY)
-      if (cabecera.current) cabecera.current.style.transform = `translateY(${separacion}px)`
       setIsScrolled(window.scrollY > 8)
     }
 
@@ -133,24 +128,6 @@ export function Header({
 
   return (
     <>
-      {/* ══ Barra de servicio ══ */}
-      <div ref={barraServicio} className="hidden md:block bg-espresso text-white/70 text-[12px]">
-        <div className="max-w-[1400px] mx-auto px-6 lg:px-10 h-9 flex items-center">
-          <div className="flex items-center gap-7">
-            {/* La barra mide 36px: los enlaces la ocupan entera para que en
-                la tablet el dedo tenga dónde caer, no sólo la línea de texto */}
-            <a href={NEGOCIO.telefonoHref} className="flex items-center gap-2 h-9 hover:text-white transition-colors duration-200">
-              <Phone className="w-3.5 h-3.5 text-gold" strokeWidth={2.2} />
-              {NEGOCIO.telefonoVisible}
-            </a>
-            <span className="flex items-center gap-2">
-              <MapPin className="w-3.5 h-3.5 text-gold" strokeWidth={2.2} />
-              Delivery en toda Maracay
-            </span>
-          </div>
-        </div>
-      </div>
-
       {/* ══ Header principal ══ */}
       <header
         ref={cabecera}

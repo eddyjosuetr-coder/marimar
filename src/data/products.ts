@@ -3,9 +3,9 @@ import type { Product, HeroSlide } from '@/types';
 export const heroSlides: HeroSlide[] = [
   {
     eyebrow: 'Distribuidora Marimar C.A. · Venezuela',
-    title: 'Todo lo que necesitas,',
-    highlight: 'directo a tu mesa',
-    description: 'Salsas, charcutería, víveres, bebidas y combos de las mejores marcas. Compra al detal, a buen precio y con entrega confiable.',
+    title: 'Precios de distribuidora,',
+    highlight: 'compra al detal',
+    description: 'Víveres, charcutería, salsas, bebidas y combos de las mejores marcas. Llévate una unidad o llévate la caja, con entrega en toda Maracay.',
     stats: [
       { value: '290', label: 'Productos' },
       { value: '119', label: 'Marcas' },

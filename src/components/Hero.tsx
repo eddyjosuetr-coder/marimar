@@ -1,7 +1,7 @@
-import { ArrowRight, ShoppingBag } from 'lucide-react'
+import { ArrowRight, ShoppingBag, MapPin, Phone } from 'lucide-react'
 import { scrollToCatalog, cn } from '@/lib/utils'
 import type { HeroSlide } from '@/types'
-import { waLink } from '@/lib/negocio'
+import { NEGOCIO, waLink } from '@/lib/negocio'
 import { IconoWhatsApp } from './IconoWhatsApp'
 
 const BRANDS = [
@@ -42,7 +42,7 @@ function HeroCopy({ slide }: { slide: HeroSlide }) {
       </p>
 
       {/* Acciones — una sola CTA primaria, la secundaria es subordinada */}
-      <div className="flex flex-wrap items-center gap-3 mb-10">
+      <div className="flex flex-wrap items-center gap-3 mb-6">
         <button
           type="button"
           onClick={scrollToCatalog}
@@ -64,6 +64,29 @@ function HeroCopy({ slide }: { slide: HeroSlide }) {
         >
           <IconoWhatsApp className="w-[18px] h-[18px] text-leaf" />
           ¿Dudas? Escríbenos
+        </a>
+      </div>
+
+      {/*
+        Hasta dónde llegamos y a qué número llamar.
+
+        Vivían en una franja negra sobre la cabecera, que es donde nadie mira
+        y que el teléfono ni siquiera mostraba. Aquí caen justo debajo de los
+        botones: quien acaba de leer "ver catálogo" o "escríbenos" lee a
+        continuación que sí le llega y por dónde preguntar.
+      */}
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mb-10 text-[13.5px] text-white/60">
+        <span className="flex items-center gap-2">
+          <MapPin className="w-4 h-4 text-gold flex-shrink-0" strokeWidth={2.2} aria-hidden="true" />
+          Delivery en toda {NEGOCIO.zonaDeEntrega}
+        </span>
+        <a
+          href={NEGOCIO.telefonoHref}
+          data-tap-target
+          className="flex items-center gap-2 hover:text-white transition-colors duration-200"
+        >
+          <Phone className="w-4 h-4 text-gold flex-shrink-0" strokeWidth={2.2} aria-hidden="true" />
+          {NEGOCIO.telefonoVisible}
         </a>
       </div>
 
