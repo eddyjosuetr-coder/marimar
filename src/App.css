@@ -42,22 +42,25 @@
 }
 
 /* Subrayado editorial: el barrido del logo pintado bajo una palabra */
+/*
+  El subrayado del titular.
+
+  Era una barra absoluta sobre un inline-block, y eso sólo funciona mientras
+  la frase quepa en un renglón: con un eslogan largo la barra se dibujaba
+  únicamente bajo la última línea y sobresalía hasta el ancho de la más larga.
+
+  Ahora es un fondo con `box-decoration-break: clone`, así que cada renglón
+  lleva el suyo y ninguno se pasa del texto. Crece de izquierda a derecha
+  animando el ancho del fondo, no una escala.
+*/
 .mark-underline {
-  position: relative;
-  display: inline-block;
-}
-.mark-underline::after {
-  content: '';
-  position: absolute;
-  left: -0.04em;
-  right: -0.04em;
-  bottom: 0.04em;
-  height: 0.26em;
-  background: var(--sweep);
-  opacity: 0.92;
-  border-radius: 2px;
-  z-index: -1;
-  transform-origin: left center;
+  display: inline;
+  background-image: var(--sweep);
+  background-repeat: no-repeat;
+  background-position: 0 0.95em;
+  background-size: 100% 0.26em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
   animation: markSweep 0.7s var(--ease-out-expo) 0.25s both;
 }
 
@@ -204,8 +207,8 @@
    ══════════════════════════════════════════════════════════ */
 
 @keyframes markSweep {
-  from { transform: scaleX(0); }
-  to   { transform: scaleX(1); }
+  from { background-size: 0 0.26em; }
+  to   { background-size: 100% 0.26em; }
 }
 
 @keyframes fadeInUp {
@@ -358,7 +361,7 @@ img {
     transform: none !important;
   }
 
-  .mark-underline::after {
-    transform: scaleX(1);
+  .mark-underline {
+    background-size: 100% 0.26em;
   }
 }

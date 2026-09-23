@@ -19,7 +19,7 @@ const BRANDS = [
 
 function HeroCopy({ slide }: { slide: HeroSlide }) {
   return (
-    <div className="max-w-2xl" style={{ animation: 'heroFadeUp 0.7s var(--ease-out-expo) both' }}>
+    <div className="max-w-3xl" style={{ animation: 'heroFadeUp 0.7s var(--ease-out-expo) both' }}>
 
       {/* Antetítulo con regla */}
       <div className="flex items-center gap-3.5 mb-6">
@@ -30,11 +30,19 @@ function HeroCopy({ slide }: { slide: HeroSlide }) {
       </div>
 
       {/* Titular editorial — el barrido del logo subraya la palabra clave */}
-      <h1 className="font-display text-display-xl font-extrabold text-white mb-7">
+      {/*
+        El interlineado va más suelto que el resto de titulares del sitio, que
+        son apretados a propósito. Aquí el eslogan ocupa cuatro renglones y dos
+        de ellos llevan el subrayado naranja: con la caja apretada, la barra de
+        un renglón quedaba pegada a las letras del siguiente.
+
+        El trozo subrayado no lleva `block`: es texto en línea para que el
+        subrayado acompañe a cada renglón. Empieza en línea nueva igualmente,
+        porque el título que va antes sí es un bloque.
+      */}
+      <h1 className="font-display text-display-lg leading-[1.1] font-extrabold text-white mb-7">
         <span className="block">{slide.title}</span>
-        <span className="mark-underline relative z-0 block w-fit text-white">
-          {slide.highlight}
-        </span>
+        <span className="mark-underline text-white">{slide.highlight}</span>
       </h1>
 
       <p className="text-[17px] leading-relaxed text-white/60 max-w-lg mb-9">
