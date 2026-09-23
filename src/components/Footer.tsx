@@ -146,20 +146,16 @@ export function Footer() {
 
         </div>
 
-        {/* Pie */}
-        <div className="pt-7 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-[13px] text-white/35">
+        {/*
+          Pie. Aquí vivían tres enlaces —Términos, Privacidad, Envíos— que
+          apuntaban a "#" y no abrían nada. El negocio acuerda esas cosas
+          hablando por WhatsApp, así que no hay páginas que enlazar: un enlace
+          que no lleva a ninguna parte es peor que no tenerlo.
+        */}
+        <div className="pt-7 border-t border-white/10">
+          <p className="text-[13px] text-white/35 text-center">
             © {new Date().getFullYear()} Distribuidora Marimar C.A. Todos los derechos reservados.
           </p>
-          <ul className="flex items-center gap-6 text-[13px]">
-            {['Términos', 'Privacidad', 'Envíos'].map(item => (
-              <li key={item}>
-                <a href="#" className="tap-inline text-white/35 hover:text-white transition-colors duration-200">
-                  {item}
-                </a>
-              </li>
-            ))}
-          </ul>
         </div>
       </div>
     </footer>
