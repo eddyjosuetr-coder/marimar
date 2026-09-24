@@ -7,7 +7,7 @@ export const heroSlides: HeroSlide[] = [
     highlight: 'directo a tu mesa',
     description: 'Salsas, charcutería, víveres, bebidas y combos de las mejores marcas. Compra al detal, a buen precio y con entrega confiable.',
     stats: [
-      { value: '342', label: 'Productos' },
+      { value: '343', label: 'Productos' },
       { value: '129', label: 'Marcas' },
       { value: '26', label: 'Categorías' },
     ],
@@ -193,12 +193,13 @@ export const products: Product[] = [
   { id: 132, image: '/productos/margarina-mavesa-250gr.webp', brand: 'Mavesa', name: 'Margarina Mavesa 250 gr - Pote', price: 1.50, category: 'Margarinas y Untables', description: 'Margarina Mavesa para untar en pan y arepas, y para cocinar y hornear. Presentación en pote de 250 gr.' },
   { id: 133, image: '/productos/margarina-mavesa-1kg.webp', brand: 'Mavesa', name: 'Margarina Mavesa 1 KG - Pote', price: 5.80, category: 'Margarinas y Untables', description: 'Margarina Mavesa para untar en pan y arepas, y para cocinar y hornear. Presentación en pote de 1 KG.' },
 
-  /* ── Lácteos (5) ── */
+  /* ── Lácteos (6 · 1 a consultar) ── */
   { id: 134, image: '/productos/leche-purisima-completa-1l.webp', brand: 'Purísima', name: 'Leche Completa Purísima 1 L - Tetrapak', price: 2.90, category: 'Lácteos', description: 'Leche completa Purísima de larga duración, lista para tomar. Presentación en envase tetrapak de 1 L.' },
   { id: 135, image: '/productos/leche-purisima-descremada-1l.webp', brand: 'Purísima', name: 'Leche Descremada Purísima 1 L - Tetrapak', price: 2.60, category: 'Lácteos', description: 'Leche descremada Purísima de larga duración, lista para tomar. Presentación en envase tetrapak de 1 L.' },
   { id: 136, image: '/productos/leche-condensada-la-vina-370gr.webp', brand: 'La Viña', name: 'Leche Condensada La Viña 370 gr - Doypack', price: 2.25, category: 'Lácteos', description: 'Leche condensada La Viña, dulce y espesa, para postres, quesillos y bebidas. Presentación en doypack de 370 gr.' },
   { id: 137, image: '/productos/leche-polvo-purisima-900gr.webp', brand: 'Purísima', name: 'Leche en Polvo Completa Purísima 900 gr - Bolsa', price: 12.00, category: 'Lácteos', description: 'Leche en polvo completa Purísima. Rinde para preparar leche líquida en casa y en recetas. Presentación en bolsa de 900 gr.' },
   { id: 303, image: '/productos/medio-carton-huevos.webp', brand: 'Genérico', name: 'Medio Cartón de Huevos - Cartón', price: 2.40, category: 'Lácteos', description: 'Leche completa Genérico de larga duración, lista para tomar. Presentación en cartón.' },
+  { id: 343, image: '/productos/leche-deslactosada-purisima-1l.webp', brand: 'Purísima', name: 'Leche Deslactosada Purísima 1 L - Tetrapak', price: 0.00, priceOnRequest: true, category: 'Lácteos', description: 'Leche completa Purísima de larga duración, lista para tomar. Presentación en envase tetrapak de 1 L.' },
 
   /* ── Quesos (7) ── */
   { id: 138, image: '/productos/queso-mozzarella-palmira.webp', brand: 'Palmira', name: 'Queso Mozzarella Palmira - Al peso', price: 11.00, soldByWeight: true, category: 'Quesos', description: 'Queso mozzarella Palmira, de buen derretido para pizzas, pastelitos y sándwiches. Se vende al peso: pide desde 100 gr y los KG que necesites.' },

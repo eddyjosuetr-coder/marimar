@@ -177,7 +177,7 @@ CATALOGO = [
 
     # -- Lácteos -----------------------------------------------------------
     (LAC, 'viveres', 'leche-purisima-completa-1lts-unidad.png', 'leche-purisima-completa-1l', 'Purísima', 'Leche Completa Purísima 1 L', 'Tetrapak', 2.90),
-    (LAC, 'variedad', 'leche-descremada-1lts.png', 'leche-purisima-descremada-1l', 'Purísima', 'Leche Descremada Purísima 1 L', 'Tetrapak', 2.60),
+    (LAC, 'viveres', 'leche-purisima-descremada-1lts-unidad.webp', 'leche-purisima-descremada-1l', 'Purísima', 'Leche Descremada Purísima 1 L', 'Tetrapak', 2.60),
     (LAC, 'otros', 'leche-condensada-la-vina-370gr-unidad.png', 'leche-condensada-la-vina-370gr', 'La Viña', 'Leche Condensada La Viña 370 gr', 'Doypack', 2.25),
 
     # -- Café, Té e Infusiones ---------------------------------------------
@@ -491,6 +491,7 @@ CATALOGO = [
     (ADE, 'variedad', 'Aderezo-fritz-ahumadita-de-bolsa-3kg-galon.png', 'aderezo-ahumadita-fritz-3kg', 'Fritz', 'Aderezo Ahumadita Fritz 3 KG', 'Bolsa', None),
     (ADE, 'variedad', 'salsa-de-maiz-monti-1kg.png', 'salsa-maiz-monti-1kg', 'Monti', 'Salsa de Maíz Monti 1 KG', 'Doypack', None),
     (ITA, 'variedad', 'pasta-primor-1kg.png', 'pasta-primor-1kg', 'Primor', 'Pasta Primor 1 KG', 'Bolsa', 1.84),
+    (LAC, 'variedad', 'leche-descremada-1lts.png', 'leche-deslactosada-purisima-1l', 'Purísima', 'Leche Deslactosada Purísima 1 L', 'Tetrapak', None),
     (LAC, 'variedad', 'medio-carton-de-huevo.png', 'medio-carton-huevos', 'Genérico', 'Medio Cartón de Huevos', 'Cartón', 2.40),
     (ENL, 'variedad', 'pepinillo-agridulces-lesmi-3.8kg.png', 'pepinillos-agridulces-lesmi-3-8kg', 'Lesmi', 'Pepinillos Agridulces Lesmi 3,8 KG', 'Pote', None),
     (ENL, 'variedad', 'pepinillo-mt.olive-3.78L.png', 'pepinillos-mt-olive-3-78l', 'Mt. Olive', 'Pepinillos Mt. Olive 3,78 L', 'Galón', 34.50),
