@@ -47,6 +47,7 @@ PESO = 'Al peso'
 MEMBERS = "Member's"
 FARMERS = "Farmer's Friends"
 ROMYS = "Romy's"
+ROROS = "Roro's"
 FRIGOS = "Frigo's"
 LPRADO = "L'Prado"
 
@@ -70,7 +71,7 @@ CATALOGO = [
     (MAY, 'mayonesas', 'mayonesa-dona-nelly-3-35kg.webp', 'mayonesa-dona-nelly-3-35kg', 'Doña Nelly', 'Mayonesa Doña Nelly 3,35 KG', 'Bolsa', 4.90),
     (MAY, 'mayonesas', 'mayonesa-la-colmena-3-35kg.webp', 'mayonesa-la-colmena-3-35kg', 'La Colmena', 'Mayonesa La Colmena 3,35 KG', 'Bolsa', 6.50),
     (MAY, 'mayonesas', 'mayonesa-paraiso-bolsa-3-35kg.webp', 'mayonesa-paraiso-3-35kg', 'Paraíso', 'Mayonesa Paraíso 3,35 KG', 'Bolsa', 6.50),
-    (MAY, 'mayonesas', 'mayonesa-ideal-3-35kg.webp', 'mayonesa-ideal-3-35kg', 'Ideal', 'Mayonesa Ideal 3,35 KG', 'Bolsa', 8.90),
+    (MAY, 'variedad', 'mayonesa-ideal-3-35kg.png', 'mayonesa-ideal-3-35kg', 'Ideal', 'Mayonesa Ideal 3,35 KG', 'Bolsa', 8.90),
     (MAY, 'mayonesas', 'aderezo-mayonesa-monti-3-35kg.webp', 'aderezo-mayonesa-monti-3-35kg', 'Monti', 'Aderezo de Mayonesa Monti 3,35 KG', 'Bolsa', 7.70),
     (MAY, 'mayonesas', 'mayonesa-monti-900gr.webp', 'mayonesa-monti-900gr', 'Monti', 'Mayonesa Monti 900 gr', 'Doypack', 2.85),
     (MAY, 'mayonesas', 'mayonesa-ragah-3-35kg.webp', 'mayonesa-ragah-3-35kg', 'Ragah', 'Mayonesa Ragah 3,35 KG', 'Bolsa', 7.80),
@@ -176,7 +177,7 @@ CATALOGO = [
 
     # -- Lácteos -----------------------------------------------------------
     (LAC, 'viveres', 'leche-purisima-completa-1lts-unidad.png', 'leche-purisima-completa-1l', 'Purísima', 'Leche Completa Purísima 1 L', 'Tetrapak', 2.90),
-    (LAC, 'viveres', 'leche-purisima-descremada-1lts-unidad.png', 'leche-purisima-descremada-1l', 'Purísima', 'Leche Descremada Purísima 1 L', 'Tetrapak', 2.60),
+    (LAC, 'variedad', 'leche-descremada-1lts.png', 'leche-purisima-descremada-1l', 'Purísima', 'Leche Descremada Purísima 1 L', 'Tetrapak', 2.60),
     (LAC, 'otros', 'leche-condensada-la-vina-370gr-unidad.png', 'leche-condensada-la-vina-370gr', 'La Viña', 'Leche Condensada La Viña 370 gr', 'Doypack', 2.25),
 
     # -- Café, Té e Infusiones ---------------------------------------------
@@ -330,7 +331,7 @@ CATALOGO = [
     (CHO, 'embutidos', 'chorizo-de-ajo-ahulux-detallado.png', 'chorizo-de-ajo-ahulux', 'Ahulux', 'Chorizo de Ajo Ahulux', PESO, 6.65),
     (CHO, 'embutidos', 'pepperoni-leyton-detallado.png', 'pepperoni-leyton', 'Leyton', 'Pepperoni Leyton', PESO, 12.28),
     (CHO, 'embutidos', 'pepperoni-gran-cebu-detallado.png', 'pepperoni-gran-cebu', 'Gran Cebú', 'Pepperoni Gran Cebú', PESO, 12.28),
-    (CHO, 'embutidos', 'chorizo-la-montonera-detallado.png', 'chorizo-espanol-la-montserratina', 'La Montserratina', 'Chorizo Español La Montserratina', PESO, 40.02),
+    (CHO, 'variedad', 'Chorizo-Español-La-Montserratina.png', 'chorizo-espanol-la-montserratina', 'La Montserratina', 'Chorizo Español La Montserratina', PESO, 40.02),
     (CHO, 'embutidos', 'salchichon-detallado.png', 'salchichon-italguarico', 'Italguárico', 'Salchichón Italguárico', PESO, 50.41),
 
     # -- Salchichas y Polacas ------------------------------------------------
@@ -364,7 +365,7 @@ CATALOGO = [
     (SDT, 'otros', 'BBQ-detallada-370gr.png', 'salsa-bbq-detallada-370gr', 'Marimar', 'Salsa BBQ Detallada 370 gr', 'Envase', 1.50),
     (SDT, 'otros', 'salsa-detallada-cheddar-370gr.png', 'salsa-cheddar-detallada-370gr', 'Marimar', 'Salsa de Cheddar Detallada 370 gr', 'Envase', 1.50),
     (SDT, 'otros', 'salsa-detallada-maiz-370gr.png', 'salsa-maiz-detallada-370gr', 'Marimar', 'Salsa de Maíz Detallada 370 gr', 'Envase', 1.50),
-    (SDT, 'otros', 'salsa-detallada-tocineta-370gr.png', 'salsa-tocineta-detallada-370gr', 'Marimar', 'Salsa de Tocineta Detallada 370 gr', 'Envase', 1.50),
+    (SDT, 'variedad', 'salsa-tocineta-detallada-370gr.png', 'salsa-tocineta-detallada-370gr', 'Marimar', 'Salsa de Tocineta Detallada 370 gr', 'Envase', 1.50),
 
     # -- Aceites --
     (ACE, 'otros', 'aceite-ixora-4800ml.png', 'aceite-ixora-4-8l', 'Ixora', 'Aceite Ixora 4,8 L', 'Garrafa', 17.00),
@@ -402,19 +403,19 @@ CATALOGO = [
     (DUL, 'otros', 'chocolate-oscuro-savoy-postre-800gr-paquete.png', 'chocolate-savoy-postres-oscuro-55', 'Savoy', 'Chocolate Oscuro 55% Savoy Postres 800 gr', 'Bolsa', 20.60),
 
     # ══ SIN FOTO (archivo None): publicados con nombre y precio ════════════
-    (MOS, None, None, 'mostaza-heinz-galon', 'Heinz', 'Mostaza Heinz Galón', 'Galón', 17.50),
+    (MOS, 'variedad', 'Mostaza-Heinz-galón.png', 'mostaza-heinz-galon', 'Heinz', 'Mostaza Heinz Galón', 'Galón', 17.50),
     (MOS, None, None, 'mostaza-la-marca', 'La Marca', 'Mostaza La Marca', 'Unidad', 12.50),
-    (MOS, None, None, 'mostaza-miel-fritz-250gr', 'Fritz', 'Mostaza con Miel Fritz 250 gr', 'Unidad', 2.10),
-    (TOM, None, None, 'ketchup-sachet-chef-1000und', 'Chef', 'Kétchup Sachet Chef 1.000 und', 'Caja', 63.00),
+    (MOS, 'variedad', 'Mostaza-miel-fritz-250gr.png', 'mostaza-miel-fritz-250gr', 'Fritz', 'Mostaza con Miel Fritz 250 gr', 'Unidad', 2.10),
+    (TOM, 'variedad', 'Kétchup-sachet-chef-caja-mil-und.png', 'ketchup-sachet-chef-1000und', 'Chef', 'Kétchup Sachet Chef 1.000 und', 'Caja', 63.00),
     (ADE, None, None, 'aderezo-tocineta-fritz-3kg', 'Fritz', 'Aderezo de Tocineta Fritz 3 KG', 'Bolsa', 9.85),
-    (ACE, None, None, 'vinagre-avila-500ml', 'Ávila', 'Vinagre Ávila 500 ml', 'Botella', 1.01),
-    (ACE, None, None, 'vinagre-fritz-3-7l', 'Fritz', 'Vinagre Fritz 3,7 L', 'Galón', 6.26),
-    (UNT, None, None, 'margarina-mavesa-250gr', 'Mavesa', 'Margarina Mavesa 250 gr', 'Pote', 1.50),
-    (UNT, None, None, 'margarina-mavesa-1kg', 'Mavesa', 'Margarina Mavesa 1 KG', 'Pote', 5.80),
-    (AGJ, None, None, 'gatorade-naranja', 'Gatorade', 'Gatorade Naranja', 'Botella', 2.19),
-    (AGJ, None, None, 'agua-minalba-1-5l', 'Minalba', 'Agua Mineral Minalba 1,5 L', 'Botella', 1.90),
-    (AGJ, None, None, 'jugo-yukery-pera-1-5l', 'Yukery', 'Jugo Yukery Pera 1,5 L', 'Botella', 4.80),
-    (JAM, None, None, 'jamon-ahumado-ahulux', 'Ahulux', 'Jamón Ahumado Ahulux', PESO, 8.35),
+    (ACE, 'variedad', 'Vinagre-avila-500ml.png', 'vinagre-avila-500ml', 'Ávila', 'Vinagre Ávila 500 ml', 'Botella', 1.01),
+    (ACE, 'variedad', 'Vinagre-fritz-3.7lts.png', 'vinagre-fritz-3-7l', 'Fritz', 'Vinagre Fritz 3,7 L', 'Galón', 6.26),
+    (UNT, 'variedad', 'Margarina-mavesa-250gr.png', 'margarina-mavesa-250gr', 'Mavesa', 'Margarina Mavesa 250 gr', 'Pote', 1.50),
+    (UNT, 'variedad', 'Margarina-mavesa-1kg.png', 'margarina-mavesa-1kg', 'Mavesa', 'Margarina Mavesa 1 KG', 'Pote', 5.80),
+    (AGJ, 'variedad', 'Gatorade-naranja-500ml.png', 'gatorade-naranja', 'Gatorade', 'Gatorade Naranja 500 ml', 'Botella', 2.19),
+    (AGJ, 'variedad', 'Agua-Mineral-Minalba-1.5lts.png', 'agua-minalba-1-5l', 'Minalba', 'Agua Mineral Minalba 1,5 L', 'Botella', 1.90),
+    (AGJ, 'variedad', 'Jugo-Yukery-pera-1,5L.png', 'jugo-yukery-pera-1-5l', 'Yukery', 'Jugo Yukery Pera 1,5 L', 'Botella', 4.80),
+    (JAM, 'variedad', 'ahumado-ahulux.png', 'jamon-ahumado-ahulux', 'Ahulux', 'Jamón Ahumado Ahulux', PESO, 8.35),
 
     # -- Desechables y Papelería ---------------------------------------------
     (DES2, 'otros', 'porta-perro-grande-unidad.png', 'porta-perro-grande', 'Genérico', 'Porta Perro Grande', 'Paquete', 1.70),
@@ -422,4 +423,75 @@ CATALOGO = [
     (DES2, 'otros', 'servilleta-z-unidad.png', 'servilletas-z-160und', 'Z', 'Servilletas Z Pequeñas 160 und', 'Paquete', 1.00),
     # Sin precio: la lista sólo trae "SERVILLETA Z"; estas de 200 no aparecen.
     (DES2, 'otros', 'servilletas-pequenas-unidad.png', 'servilletas-pequenas-200und', 'Britlux', 'Servilletas Pequeñas Britlux 200 und', 'Paquete', 1.08),
+    # ══ Entrega "variedad" — 52 productos nuevos ═══════════════════════════
+    # Precio None = la lista de precios no lo trae. La ficha manda a consultar
+    # por WhatsApp en vez de enseñar una cifra inventada.
+
+    # -- Vasos plásticos Maxiplast --
+    (DES2, 'variedad', 'vasos-27-plasticos-maxiplast.png', 'vaso-maxiplast-27', 'Maxiplast', 'Vaso Plástico Maxiplast N° 27 · 2 oz · 100 und', 'Paquete', None),
+    (DES2, 'variedad', 'vasos-57-plasticos-maxiplast.png', 'vaso-maxiplast-57', 'Maxiplast', 'Vaso Plástico Maxiplast N° 57 · 5 oz · 100 und', 'Paquete', 1.96),
+    (DES2, 'variedad', 'vasos-67-plasticos-maxiplast.png', 'vaso-maxiplast-67', 'Maxiplast', 'Vaso Plástico Maxiplast N° 67 · 6 oz · 100 und', 'Paquete', 1.97),
+    (DES2, 'variedad', 'vasos-77-plasticos-maxiplast.png', 'vaso-maxiplast-77', 'Maxiplast', 'Vaso Plástico Maxiplast N° 77 · 7 oz · 100 und', 'Paquete', 1.77),
+    (DES2, 'variedad', 'vasos-89-plasticos-maxiplast.png', 'vaso-maxiplast-89', 'Maxiplast', 'Vaso Plástico Maxiplast N° 89 · 8,5 oz · 50 und', 'Paquete', 1.43),
+    (DES2, 'variedad', 'vasos-107-plasticos-maxiplast.png', 'vaso-maxiplast-107', 'Maxiplast', 'Vaso Plástico Maxiplast N° 107 · 10 oz · 50 und', 'Paquete', 1.24),
+    (DES2, 'variedad', 'vasos-127-plasticos-maxiplast.png', 'vaso-maxiplast-127', 'Maxiplast', 'Vaso Plástico Maxiplast N° 127 · 345 cc · 50 und', 'Paquete', 1.95),
+    (DES2, 'variedad', 'vasos-147-plasticos-maxiplast.png', 'vaso-maxiplast-147', 'Maxiplast', 'Vaso Plástico Maxiplast N° 147 · 14 oz · 50 und', 'Paquete', 2.42),
+    (DES2, 'variedad', 'vasos-227-plasticos-maxiplast.png', 'vaso-maxiplast-227', 'Maxiplast', 'Vaso Plástico Maxiplast N° 227 · 22 oz · 30 und', 'Paquete', 2.10),
+
+    # -- Papel para charcutería y empaque --
+    (DES2, 'variedad', 'Papel-encerado-grande-10und.png', 'papel-encerado-grande-10und', 'Genérico', 'Papel Encerado Grande 10 und', 'Paquete', None),
+    (DES2, 'variedad', 'Papel-encerado-negro-grande-10und.png', 'papel-encerado-negro-grande-10und', 'Genérico', 'Papel Encerado Negro Grande 10 und', 'Paquete', None),
+    (DES2, 'variedad', 'Papel-encerado-negro-pequeno-10und.png', 'papel-encerado-negro-pequeno-10und', 'Genérico', 'Papel Encerado Negro Pequeño 10 und', 'Paquete', None),
+    (DES2, 'variedad', 'Papel-encerado-rojo-grande-10und.png', 'papel-encerado-rojo-grande-10und', 'Genérico', 'Papel Encerado Rojo Grande 10 und', 'Paquete', None),
+    (DES2, 'variedad', 'Papel-estampado-100und.png', 'papel-estampado-100und', 'Genérico', 'Papel Estampado 100 und', 'Paquete', 7.00),
+    (DES2, 'variedad', 'Papel-estampado-Navidad-100und.png', 'papel-estampado-navidad-100und', 'Genérico', 'Papel Estampado Navidad 100 und', 'Paquete', 7.00),
+    (DES2, 'variedad', 'Papel-gris-2kg.png', 'papel-gris-2kg', 'Genérico', 'Papel Gris 2 KG', 'Paquete', 2.00),
+    (DES2, 'variedad', 'Papel-gris-500gr.png', 'papel-gris-500gr', 'Genérico', 'Papel Gris 500 gr', 'Paquete', 1.25),
+    (DES2, 'variedad', 'Papel-parafinado-Rollo-rojo-80und.png', 'papel-parafinado-rojo-80und', 'Genérico', 'Papel Parafinado Rojo 80 und', 'Rollo', 3.50),
+    (DES2, 'variedad', 'Papel-parafinado-Rollo-verde-80und.png', 'papel-parafinado-verde-80und', 'Genérico', 'Papel Parafinado Verde 80 und', 'Rollo', 3.50),
+    (DES2, 'variedad', 'Papel-térmico-10und.png', 'papel-termico-10und', 'Genérico', 'Papel Térmico 10 und', 'Paquete', 1.25),
+
+    # -- Papel higiénico y toallín --
+    (LIM, 'variedad', 'papel-higienico-jazmin.png', 'papel-higienico-jazmin', 'Jazmín', 'Papel Higiénico Jazmín 200 hojas', 'Paquete', 1.74),
+    (LIM, 'variedad', 'papel-higienico-petalo.png', 'papel-higienico-petalo', 'Pétalo', 'Papel Higiénico Pétalo 300 hojas', 'Paquete', 2.20),
+    (LIM, 'variedad', 'papel-higienico-rosal.png', 'papel-higienico-rosal', 'Rosal', 'Papel Higiénico Rosal', 'Paquete', 1.45),
+    (LIM, 'variedad', 'toallin-rosal.png', 'toallin-rosal', 'Rosal', 'Toallín Rosal', 'Rollo', 1.36),
+
+    # -- Papas para perros calientes --
+    (CON, 'variedad', 'papa-para-perros-calientes-frito-mix-cabello-de-angel-1kg.png', 'papa-frito-mix-cabello-angel-1kg', 'Frito Mix', 'Papa Frito Mix Cabello de Ángel 1 KG', 'Bolsa', 4.72),
+    (CON, 'variedad', 'papa-para-perros-calientes-frito-mix-cabello-de-angel-200gr.png', 'papa-frito-mix-cabello-angel-200gr', 'Frito Mix', 'Papa Frito Mix Cabello de Ángel 200 gr', 'Bolsa', None),
+    (CON, 'variedad', 'papa-para-perros-calientes-frito-mix-corte-tradicional-1kg.png', 'papa-frito-mix-tradicional-1kg', 'Frito Mix', 'Papa Frito Mix Corte Tradicional 1 KG', 'Bolsa', 4.80),
+    (CON, 'variedad', 'papa-para-perros-calientes-marly-corte-tradicional-1kg.png', 'papa-marly-tradicional-1kg', 'Marly', 'Papa Marly Corte Tradicional 1 KG', 'Bolsa', 6.00),
+    (CON, 'variedad', 'papa-para-perros-calientes-novachips-cabello-de-angel-1kg.png', 'papa-novachips-cabello-angel-1kg', 'Nova Chips', 'Papa Nova Chips Cabello de Ángel 1 KG', 'Bolsa', 3.70),
+
+    # -- Refrescos por bulto de 6 --
+    (REF, 'variedad', '7up-bulto-6und-1lts.png', 'refresco-7up-1l-bulto-6und', '7up', 'Refresco 7up 1 L (bulto de 6)', 'Bulto', None),
+    (REF, 'variedad', 'cocacola-bulto-6und-1,5lts.png', 'cocacola-1-5l-bulto-6und', 'Coca-Cola', 'Coca-Cola 1,5 L (bulto de 6)', 'Bulto', None),
+    (REF, 'variedad', 'cocacola-bulto-6und-1lts.png', 'cocacola-1l-bulto-6und', 'Coca-Cola', 'Coca-Cola 1 L (bulto de 6)', 'Bulto', None),
+    (REF, 'variedad', 'fanta-naranja-bulto-6und-1lts.png', 'fanta-naranja-1l-bulto-6und', 'Fanta', 'Fanta Naranja 1 L (bulto de 6)', 'Bulto', None),
+    (REF, 'variedad', 'fanta-toronja-bulto-6und-1lts.png', 'fanta-toronja-1l-bulto-6und', 'Fanta', 'Fanta Toronja 1 L (bulto de 6)', 'Bulto', None),
+    (REF, 'variedad', 'golden-kolita-bulto-6und-1lts.png', 'golden-kolita-1l-bulto-6und', 'Golden', 'Refresco Golden Kolita 1 L (bulto de 6)', 'Bulto', None),
+    (REF, 'variedad', 'golden-manzanita-bulto-6und-1lts.png', 'golden-manzanita-1l-bulto-6und', 'Golden', 'Refresco Golden Manzanita 1 L (bulto de 6)', 'Bulto', None),
+
+    # -- Panes de sándwich --
+    (PAN, 'variedad', 'pan-bimbo-artesano-500gr.png', 'pan-sandwich-artesano-bimbo-500gr', 'Bimbo', 'Pan Sándwich Artesano Bimbo 500 gr', 'Bolsa', 3.00),
+    (PAN, 'variedad', 'pan-bimbo-blanco-500gr.png', 'pan-sandwich-blanco-bimbo-500gr', 'Bimbo', 'Pan Sándwich Blanco Bimbo 500 gr', 'Bolsa', 1.98),
+    (PAN, 'variedad', 'pan-holsum-integral-420gr.png', 'pan-sandwich-holsum-integral-420gr', 'Holsum', 'Pan Sándwich Holsum Integral 420 gr', 'Bolsa', 3.50),
+
+    # -- Aderezos en sobre --
+    (ADE, 'variedad', 'sobre-fritz-cheddar-45gr.png', 'sobre-cheddar-fritz-45gr', 'Fritz', 'Aderezo Cheddar Fritz 45 gr', 'Sobre', 1.55),
+    (ADE, 'variedad', 'sobre-fritz-maiz-45gr.png', 'sobre-maiz-fritz-45gr', 'Fritz', 'Aderezo de Maíz Fritz 45 gr', 'Sobre', 1.55),
+    (ADE, 'variedad', 'sobre-fritz-tocineta-45gr.png', 'sobre-tocineta-fritz-45gr', 'Fritz', 'Aderezo de Tocineta Fritz 45 gr', 'Sobre', 1.55),
+    (ADE, 'variedad', "sobre-roro's-ajo-y-perejil-45gr.png", 'sobre-ajo-perejil-roros-45gr', ROROS, "Aderezo de Ajo y Perejil Roro's 45 gr", 'Sobre', 1.25),
+    (ADE, 'variedad', "sobre-roro's-cheddar-45gr.png", 'sobre-cheddar-roros-45gr', ROROS, "Aderezo Cheddar Roro's 45 gr", 'Sobre', 1.48),
+    (ADE, 'variedad', "sobre-roro's-maiz-45gr.png", 'sobre-maiz-roros-45gr', ROROS, "Aderezo de Maíz Roro's 45 gr", 'Sobre', 1.37),
+    (ADE, 'variedad', "sobre-roro's-tocineta-54gr.png", 'sobre-tocineta-roros-54gr', ROROS, "Aderezo de Tocineta Roro's 54 gr", 'Sobre', 1.48),
+
+    # -- Sueltos --
+    (ADE, 'variedad', 'Aderezo-fritz-ahumadita-de-bolsa-3kg-galon.png', 'aderezo-ahumadita-fritz-3kg', 'Fritz', 'Aderezo Ahumadita Fritz 3 KG', 'Bolsa', None),
+    (ADE, 'variedad', 'salsa-de-maiz-monti-1kg.png', 'salsa-maiz-monti-1kg', 'Monti', 'Salsa de Maíz Monti 1 KG', 'Doypack', None),
+    (ITA, 'variedad', 'pasta-primor-1kg.png', 'pasta-primor-1kg', 'Primor', 'Pasta Primor 1 KG', 'Bolsa', 1.84),
+    (LAC, 'variedad', 'medio-carton-de-huevo.png', 'medio-carton-huevos', 'Genérico', 'Medio Cartón de Huevos', 'Cartón', 2.40),
+    (ENL, 'variedad', 'pepinillo-agridulces-lesmi-3.8kg.png', 'pepinillos-agridulces-lesmi-3-8kg', 'Lesmi', 'Pepinillos Agridulces Lesmi 3,8 KG', 'Pote', None),
+    (ENL, 'variedad', 'pepinillo-mt.olive-3.78L.png', 'pepinillos-mt-olive-3-78l', 'Mt. Olive', 'Pepinillos Mt. Olive 3,78 L', 'Galón', 34.50),
 ]

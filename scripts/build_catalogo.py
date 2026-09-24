@@ -133,7 +133,8 @@ print(f'catálogo completo: {peso_src/1048576:.1f} MB -> {peso_out/1048576:.1f} 
 # ── 2. Originales fuera de public/ para que no viajen en el build ───────────
 for carpeta in ('aderezos', 'bbq', 'mostazas', 'salsas-de-tomate', 'viveres',
                 'producto-limpieza', 'Productos_frios', 'mayonesas', 'bebidas',
-                'panes', 'otros', 'queso', 'jamones', 'embutidos', 'combos'):
+                'panes', 'otros', 'queso', 'jamones', 'embutidos', 'combos',
+                'variedad'):
     src = f'public/{carpeta}'
     if not os.path.isdir(src):
         continue
