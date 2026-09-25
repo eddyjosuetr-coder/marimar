@@ -152,7 +152,7 @@ export function CartDrawer({ isOpen, onClose, cart, cartCount, cartTotal, update
                       <button
                         type="button"
                         onClick={() => removeFromCart(item.lineId)}
-                        className="tap-inline flex-shrink-0 p-1.5 -mt-1 -mr-1 rounded-lg text-ink-muted hover:text-destructive hover:bg-destructive/10 transition-colors"
+                        className="flex-shrink-0 w-10 h-10 -mt-1.5 -mr-1.5 rounded-lg flex items-center justify-center text-ink-muted hover:text-destructive hover:bg-destructive/10 transition-colors"
                         aria-label={`Quitar ${item.name} del pedido`}
                       >
                         <Trash2 className="w-4 h-4" strokeWidth={2} />
@@ -169,7 +169,7 @@ export function CartDrawer({ isOpen, onClose, cart, cartCount, cartTotal, update
                           type="button"
                           onClick={() => updateQuantity(item.lineId, -1)}
                           disabled={item.quantity <= (item.soldByWeight ? MINIMO_PESO_GR : 1)}
-                          className="tap-inline w-7 h-7 rounded-full flex items-center justify-center text-ink-soft hover:bg-paper-sunken hover:text-ink disabled:opacity-35 disabled:pointer-events-none transition-colors"
+                          className="w-10 h-10 rounded-full flex items-center justify-center text-ink-soft hover:bg-paper-sunken hover:text-ink disabled:opacity-35 disabled:pointer-events-none transition-colors"
                           aria-label={item.soldByWeight ? `Quitar ${PASO_PESO_GR} gramos` : 'Reducir cantidad'}
                         >
                           <Minus className="w-3.5 h-3.5" strokeWidth={2.6} />
@@ -188,7 +188,7 @@ export function CartDrawer({ isOpen, onClose, cart, cartCount, cartTotal, update
                         <button
                           type="button"
                           onClick={() => updateQuantity(item.lineId, 1)}
-                          className="tap-inline w-7 h-7 rounded-full flex items-center justify-center text-ink-soft hover:bg-paper-sunken hover:text-ink transition-colors"
+                          className="w-10 h-10 rounded-full flex items-center justify-center text-ink-soft hover:bg-paper-sunken hover:text-ink transition-colors"
                           aria-label={item.soldByWeight ? `Agregar ${PASO_PESO_GR} gramos` : 'Aumentar cantidad'}
                         >
                           <Plus className="w-3.5 h-3.5" strokeWidth={2.6} />
@@ -202,33 +202,32 @@ export function CartDrawer({ isOpen, onClose, cart, cartCount, cartTotal, update
           )}
         </div>
 
-        {/* Resumen */}
+        {/*
+          Resumen.
+
+          Se llevaba la mitad de la pantalla del teléfono porque estaba escrito
+          como una factura: una fila de "Subtotal" con la misma cifra del total
+          —no hay descuentos ni costo de envío que los separen— y otra sólo
+          para decir que el envío es gratis. Ahora el total es una línea y el
+          envío gratis va como nota al lado, que es lo que es: una buena
+          noticia, no un renglón de la cuenta.
+        */}
         {cart.length > 0 && (
-          <div className="flex-shrink-0 p-5 border-t border-line bg-paper-raised">
-            <dl className="space-y-2.5 mb-5">
-              <div className="flex justify-between text-[14px] text-ink-soft">
-                <dt>Subtotal</dt>
-                <dd className="tabular-nums">{precioPublico(cartTotal, tasa.valor)}</dd>
+          <div className="flex-shrink-0 p-4 sm:p-5 border-t border-line bg-paper-raised">
+            <div className="flex items-baseline justify-between gap-3 mb-3.5">
+              <div>
+                <p className="font-display text-[16px] font-bold text-ink leading-none">Total</p>
+                <p className="text-[11.5px] font-semibold text-leaf mt-1">Envío gratis</p>
               </div>
-              <div className="flex justify-between text-[14px] text-ink-soft">
-                <dt>Envío estimado</dt>
-                <dd className="font-semibold text-leaf">Gratis</dd>
+              <div className="text-right">
+                <span className="block font-display text-[24px] font-extrabold text-ink tabular-nums tracking-tight leading-none">
+                  {precioPublico(cartTotal, tasa.valor)}
+                </span>
+                <span className="block text-[12.5px] font-medium text-ink-muted tabular-nums mt-1.5">
+                  {precioReferencia(cartTotal)} · tasa {formatTasa(tasa.valor)}
+                </span>
               </div>
-              <div className="flex justify-between items-baseline pt-3 border-t border-line">
-                <dt className="font-display text-[16px] font-bold text-ink">Total</dt>
-                <dd className="text-right">
-                  <span className="block font-display text-[24px] font-extrabold text-ink tabular-nums tracking-tight">
-                    {precioPublico(cartTotal, tasa.valor)}
-                  </span>
-                  <span className="block text-[12.5px] font-medium text-ink-muted tabular-nums mt-1">
-                    {precioReferencia(cartTotal)}
-                  </span>
-                  <span className="block text-[11px] text-ink-muted mt-0.5">
-                    tasa del día {formatTasa(tasa.valor)}
-                  </span>
-                </dd>
-              </div>
-            </dl>
+            </div>
 
             {/*
               Dos datos, no más. Sin ellos el pedido llega desde un número
@@ -236,9 +235,9 @@ export function CartDrawer({ isOpen, onClose, cart, cartCount, cartTotal, update
               antes de poder preparar nada. Se recuerdan en el teléfono del
               cliente para que la segunda compra no cueste escribirlos.
             */}
-            <div className="space-y-2.5 mb-4">
+            <div className="space-y-2 mb-3">
               <div>
-                <label htmlFor="pedido-nombre" className="block text-[11px] font-bold uppercase tracking-[0.12em] text-ink-muted mb-1.5">
+                <label htmlFor="pedido-nombre" className="block text-[10.5px] font-bold uppercase tracking-[0.1em] text-ink-muted mb-1">
                   ¿A nombre de quién?
                 </label>
                 <input
@@ -251,7 +250,7 @@ export function CartDrawer({ isOpen, onClose, cart, cartCount, cartTotal, update
                 />
               </div>
               <div>
-                <label htmlFor="pedido-zona" className="block text-[11px] font-bold uppercase tracking-[0.12em] text-ink-muted mb-1.5">
+                <label htmlFor="pedido-zona" className="block text-[10.5px] font-bold uppercase tracking-[0.1em] text-ink-muted mb-1">
                   ¿Dónde lo entregamos?
                 </label>
                 <input
@@ -276,21 +275,20 @@ export function CartDrawer({ isOpen, onClose, cart, cartCount, cartTotal, update
                 target="_blank"
                 rel="noopener noreferrer"
                 data-tap-target
-                className="group flex items-center justify-center gap-2 w-full py-4 rounded-full bg-brand text-white font-semibold text-[15px] shadow-brand hover:bg-brand-deep transition-all duration-200"
+                className="group flex items-center justify-center gap-2 w-full py-3.5 rounded-full bg-brand text-white font-semibold text-[15px] shadow-brand hover:bg-brand-deep transition-all duration-200"
               >
                 Enviar pedido por WhatsApp
                 <ArrowRight className="w-[18px] h-[18px] group-hover:translate-x-1 transition-transform duration-200" strokeWidth={2.2} />
               </a>
             ) : (
-              <p className="flex items-center justify-center gap-2 w-full py-4 rounded-full bg-paper-sunken text-ink-muted font-semibold text-[14px] text-center px-4">
+              <p className="flex items-center justify-center gap-2 w-full py-3.5 rounded-full bg-paper-sunken text-ink-muted font-semibold text-[14px] text-center px-4">
                 Completa tu nombre y la zona de entrega
               </p>
             )}
 
-            <p className="text-[12px] text-ink-muted text-center mt-3">
-              Se abre WhatsApp con tu pedido escrito, con el código{' '}
+            <p className="text-[11.5px] leading-snug text-ink-muted text-center mt-2.5">
+              Se abre WhatsApp con tu pedido escrito, código{' '}
               <span className="font-semibold text-ink-soft">{codigo}</span>.
-              Confirmamos disponibilidad y coordinamos la entrega.
             </p>
           </div>
         )}

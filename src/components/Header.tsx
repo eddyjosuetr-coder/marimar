@@ -123,7 +123,20 @@ export function Header({
     onCategorySelect(category)
     setShowProductsDropdown(false)
     setIsMenuOpen(false)
-    scrollToCatalog()
+    /*
+      Dos correcciones sobre lo que hacía antes.
+
+      Iba al principio de la sección, y en el teléfono entre ese punto y la
+      primera ficha caben el título, el contador, el botón de filtros y el
+      orden: el visitante elegía "Mostazas" y veía de todo menos mostazas —el
+      primer producto quedaba a 719px de una pantalla de 844. Ahora baja a la
+      rejilla de resultados.
+
+      Y se desplazaba con el menú todavía abierto, que bloquea el scroll del
+      fondo. Se espera un fotograma, ya con el menú cerrado y el scroll
+      devuelto, o el salto se hace sobre una página congelada.
+    */
+    requestAnimationFrame(() => requestAnimationFrame(scrollToResults))
   }
 
   return (
@@ -260,7 +273,7 @@ export function Header({
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                   placeholder="Busca pan, queso, salsa…"
-                  className="sin-limpiar-nativo bg-transparent outline-none text-[14px] ml-2.5 w-full text-ink placeholder:text-ink-muted"
+                  className="sin-limpiar-nativo h-full bg-transparent outline-none text-[14px] ml-2.5 w-full text-ink placeholder:text-ink-muted"
                 />
                 {searchQuery && (
                   <button
@@ -348,6 +361,23 @@ export function Header({
                   ref={campoMovil}
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
+                  onBlur={e => {
+                    /*
+                      El botón "listo" del teclado de iOS cierra el teclado
+                      pero NO envía el formulario, así que el buscador se
+                      quedaba montado sobre la cabecera y tapaba el carrito:
+                      no había manera de salir de ahí.
+
+                      Soltar el foco cierra el buscador, que es lo que el
+                      gesto significa. No se pierde nada: los resultados se
+                      filtran según se escribe. Si el dedo fue a parar a otro
+                      control del propio formulario —la × de limpiar, el botón
+                      Buscar— se le deja actuar primero.
+                    */
+                    const destino = e.relatedTarget as Node | null
+                    if (destino && e.currentTarget.form?.contains(destino)) return
+                    setShowMobileSearch(false)
+                  }}
                   placeholder="Busca pan, queso, salsa…"
                   /* 16px: con menos, el iPhone hace zoom al enfocar y descuadra todo */
                   className="sin-limpiar-nativo bg-transparent outline-none text-[16px] ml-2.5 w-full text-ink placeholder:text-ink-muted"
@@ -420,7 +450,7 @@ export function Header({
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                   placeholder="Buscar productos…"
-                  className="bg-transparent outline-none text-[16px] ml-2.5 w-full text-ink placeholder:text-ink-muted"
+                  className="h-full bg-transparent outline-none text-[16px] ml-2.5 w-full text-ink placeholder:text-ink-muted"
                 />
               </div>
 
