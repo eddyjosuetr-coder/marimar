@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { Eye, Plus, Check, MessageCircle, ListChecks } from 'lucide-react'
+import { Eye, Plus, Check, MessageCircle, ListChecks, Scale } from 'lucide-react'
 import type { Product } from '@/types'
 import { getPackaging, cn, productLabel } from '@/lib/utils'
 import { waLink } from '@/lib/negocio'
@@ -162,6 +162,22 @@ export function ProductCard({ product, onAddToCart, onQuickView }: ProductCardPr
               <MessageCircle className="w-4 h-4" strokeWidth={2.4} />
               <span>Consultar</span>
             </a>
+          ) : product.soldByWeight ? (
+            /*
+              Al peso no se agrega a ciegas: el botón abre la ficha, donde se
+              elige cuánto se lleva —en gramos o en bolívares— antes de que
+              entre al pedido. Antes metía 100 gr y el cliente tenía que
+              corregirlos después en el carrito.
+            */
+            <button
+              type="button"
+              onClick={() => onQuickView(product)}
+              className="inline-flex items-center justify-center gap-1.5 w-full h-10 px-3.5 rounded-full bg-brand text-white font-semibold text-[12.5px] hover:bg-brand-deep active:scale-95 transition-all duration-200"
+              aria-label={`Elegir cuánto llevas de ${product.name}`}
+            >
+              <Scale className="w-4 h-4" strokeWidth={2.4} />
+              <span>Elegir peso</span>
+            </button>
           ) : product.comboSalsas ? (
             <button
               type="button"

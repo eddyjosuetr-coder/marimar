@@ -37,6 +37,14 @@ export function QuickView({ product, onClose, onAddToCart }: QuickViewProps) {
   }
   const foto = product?.colores?.find(c => c.nombre === color)?.imagen ?? product?.image
 
+  /* Igual que el color: el peso se guarda junto al producto al que pertenece,
+     para que al abrir otra ficha vuelva solo al mínimo. */
+  const [pesado, setPesado] = useState<{ id: number; gramos: number } | null>(null)
+  const gramos = pesado && product && pesado.id === product.id ? pesado.gramos : MINIMO_PESO_GR
+  const elegirPeso = (valor: number) => {
+    if (product) setPesado({ id: product.id, gramos: valor })
+  }
+
   /* Mismo gesto que en la ficha: el producto vuela al carrito y el diálogo cierra. */
   const agregar = (salsas?: string[], cantidad?: number) => {
     if (!product) return
@@ -142,6 +150,15 @@ export function QuickView({ product, onClose, onAddToCart }: QuickViewProps) {
             )}
           </div>
 
+          {product.soldByWeight && !product.priceOnRequest && (
+            <SelectorPeso
+              precioPorKg={product.price}
+              tasa={tasa}
+              gramos={gramos}
+              onCambiar={elegirPeso}
+            />
+          )}
+
           {product.colores && color && (
             <div className="pb-6 mb-6 border-b border-line">
               <SelectorColor
@@ -177,7 +194,7 @@ export function QuickView({ product, onClose, onAddToCart }: QuickViewProps) {
             )}
           </ul>
 
-          <Compra key={product.id} product={product} tasa={tasa} onAgregar={agregar} />
+          <Compra key={product.id} product={product} gramos={gramos} onAgregar={agregar} />
         </div>
       </div>
     </div>
@@ -190,15 +207,13 @@ export function QuickView({ product, onClose, onAddToCart }: QuickViewProps) {
  * Vive en su propio componente con `key` por producto: al abrir otro producto
  * las salsas elegidas se reinician solas, sin efectos que limpien a mano.
  */
-function Compra({ product, tasa, onAgregar }: {
+function Compra({ product, gramos, onAgregar }: {
   product: Product
-  tasa: number
+  /** Lo que el cliente eligió arriba, en gramos, si se vende al peso. */
+  gramos: number
   onAgregar: (salsas?: string[], cantidad?: number) => void
 }) {
   const [salsas, setSalsas] = useState<Record<number, number>>({})
-  /* Al peso el cliente decide cuánto se lleva antes de agregar, en gramos o
-     en bolívares; en lo demás se agrega de uno en uno. */
-  const [gramos, setGramos] = useState(MINIMO_PESO_GR)
   const requeridas = product.comboSalsas ?? 0
   const faltan = requeridas - totalElegidas(salsas)
 
@@ -221,14 +236,6 @@ function Compra({ product, tasa, onAgregar }: {
     <>
       {requeridas > 0 && (
         <SalsaPicker total={requeridas} value={salsas} onChange={setSalsas} />
-      )}
-      {product.soldByWeight && (
-        <SelectorPeso
-          precioPorKg={product.price}
-          tasa={tasa}
-          gramos={gramos}
-          onCambiar={setGramos}
-        />
       )}
       <button
         type="button"
