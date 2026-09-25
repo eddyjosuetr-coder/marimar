@@ -420,7 +420,6 @@ CATALOGO = [
     (MOS, None, None, 'mostaza-la-marca', 'La Marca', 'Mostaza La Marca', 'Unidad', 12.50),
     (MOS, 'variedad', 'Mostaza-miel-fritz-250gr.png', 'mostaza-miel-fritz-250gr', 'Fritz', 'Mostaza con Miel Fritz 250 gr', 'Unidad', 2.10),
     (TOM, 'variedad', 'Kétchup-sachet-chef-caja-mil-und.png', 'ketchup-sachet-chef-1000und', 'Chef', 'Kétchup Sachet Chef 1.000 und', 'Caja', 63.00),
-    (ADE, None, None, 'aderezo-tocineta-fritz-3kg', 'Fritz', 'Aderezo de Tocineta Fritz 3 KG', 'Bolsa', 9.85),
     (ACE, 'variedad', 'Vinagre-avila-500ml.png', 'vinagre-avila-500ml', 'Ávila', 'Vinagre Ávila 500 ml', 'Botella', 1.01),
     (ACE, 'variedad', 'Vinagre-fritz-3.7lts.png', 'vinagre-fritz-3-7l', 'Fritz', 'Vinagre Fritz 3,7 L', 'Galón', 6.26),
     (UNT, 'variedad', 'Margarina-mavesa-250gr.png', 'margarina-mavesa-250gr', 'Mavesa', 'Margarina Mavesa 250 gr', 'Pote', 1.50),

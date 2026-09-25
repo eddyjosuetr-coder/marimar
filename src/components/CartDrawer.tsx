@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { X, Trash2, Plus, Minus, ArrowRight, ShoppingCart } from 'lucide-react'
 import type { CartItem } from '@/types'
-import { scrollToCatalog, formatWeight, lineTotal, cn, productLabel } from '@/lib/utils'
+import { scrollToCatalog, formatWeight, lineTotal, productLabel, redondearPeso, MINIMO_PESO_GR, PASO_PESO_GR } from '@/lib/utils'
 import { waHref } from '@/lib/negocio'
 import { codificarPedido, enlaceDelPedido, generarCodigo, mensajeDePedido } from '@/lib/pedido'
 import { useDatosCliente } from '@/hooks/useDatosCliente'
@@ -19,10 +19,11 @@ interface CartDrawerProps {
   cartCount: number
   cartTotal: number
   updateQuantity: (lineId: string, delta: number) => void
+  setQuantity: (lineId: string, cantidad: number) => void
   removeFromCart: (lineId: string) => void
 }
 
-export function CartDrawer({ isOpen, onClose, cart, cartCount, cartTotal, updateQuantity, removeFromCart }: CartDrawerProps) {
+export function CartDrawer({ isOpen, onClose, cart, cartCount, cartTotal, updateQuantity, setQuantity, removeFromCart }: CartDrawerProps) {
   const { datos, actualizar } = useDatosCliente()
   const tasa = useTasa()
 
@@ -167,23 +168,28 @@ export function CartDrawer({ isOpen, onClose, cart, cartCount, cartTotal, update
                         <button
                           type="button"
                           onClick={() => updateQuantity(item.lineId, -1)}
-                          disabled={item.quantity <= (item.soldByWeight ? 100 : 1)}
+                          disabled={item.quantity <= (item.soldByWeight ? MINIMO_PESO_GR : 1)}
                           className="tap-inline w-7 h-7 rounded-full flex items-center justify-center text-ink-soft hover:bg-paper-sunken hover:text-ink disabled:opacity-35 disabled:pointer-events-none transition-colors"
-                          aria-label={item.soldByWeight ? 'Quitar 100 gramos' : 'Reducir cantidad'}
+                          aria-label={item.soldByWeight ? `Quitar ${PASO_PESO_GR} gramos` : 'Reducir cantidad'}
                         >
                           <Minus className="w-3.5 h-3.5" strokeWidth={2.6} />
                         </button>
-                        <span className={cn(
-                          'text-center text-[13px] font-bold text-ink tabular-nums',
-                          item.soldByWeight ? 'w-[52px]' : 'w-6'
-                        )}>
-                          {item.soldByWeight ? formatWeight(item.quantity) : item.quantity}
-                        </span>
+                        {item.soldByWeight ? (
+                          <CampoGramos
+                            gramos={item.quantity}
+                            onFijar={valor => setQuantity(item.lineId, redondearPeso(valor))}
+                            nombre={productLabel(item.name)}
+                          />
+                        ) : (
+                          <span className="w-6 text-center text-[13px] font-bold text-ink tabular-nums">
+                            {item.quantity}
+                          </span>
+                        )}
                         <button
                           type="button"
                           onClick={() => updateQuantity(item.lineId, 1)}
                           className="tap-inline w-7 h-7 rounded-full flex items-center justify-center text-ink-soft hover:bg-paper-sunken hover:text-ink transition-colors"
-                          aria-label={item.soldByWeight ? 'Agregar 100 gramos' : 'Aumentar cantidad'}
+                          aria-label={item.soldByWeight ? `Agregar ${PASO_PESO_GR} gramos` : 'Aumentar cantidad'}
                         >
                           <Plus className="w-3.5 h-3.5" strokeWidth={2.6} />
                         </button>
@@ -290,5 +296,37 @@ export function CartDrawer({ isOpen, onClose, cart, cartCount, cartTotal, update
         )}
       </div>
     </div>
+  )
+}
+
+/**
+ * Los gramos de una línea al peso, escribibles.
+ *
+ * Con los botones de ± se avanza de cincuenta en cincuenta, que para llegar a
+ * un kilo son dieciocho toques. Quien ya sabe cuánto quiere lo escribe, y al
+ * salir del campo el número se acomoda al salto de la balanza.
+ */
+function CampoGramos({ gramos, onFijar, nombre }: {
+  gramos: number
+  onFijar: (valor: number) => void
+  nombre: string
+}) {
+  const [texto, setTexto] = useState<string | null>(null)
+
+  return (
+    <input
+      type="text"
+      inputMode="numeric"
+      aria-label={`Gramos de ${nombre}`}
+      value={texto ?? formatWeight(gramos)}
+      onFocus={() => setTexto(String(gramos))}
+      onChange={e => setTexto(e.target.value.replace(/[^0-9]/g, ''))}
+      onBlur={() => {
+        if (texto !== null) onFijar(Number(texto))
+        setTexto(null)
+      }}
+      onKeyDown={e => { if (e.key === 'Enter') e.currentTarget.blur() }}
+      className="w-[58px] bg-transparent text-center text-[13px] font-bold text-ink tabular-nums outline-none rounded focus:ring-2 focus:ring-brand/40"
+    />
   )
 }

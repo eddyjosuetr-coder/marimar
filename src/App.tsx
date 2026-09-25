@@ -61,7 +61,7 @@ export default function App() {
   */
   const products = useCatalogo()
 
-  const { cart, addToCart, removeFromCart, updateQuantity, cartCount, cartTotal } = useCart(products)
+  const { cart, addToCart, removeFromCart, updateQuantity, setQuantity, cartCount, cartTotal } = useCart(products)
 
   const [searchQuery, setSearchQuery] = useState('')
   const [isCartOpen, setIsCartOpen] = useState(false)
@@ -469,6 +469,7 @@ export default function App() {
         cartCount={cartCount}
         cartTotal={cartTotal}
         updateQuantity={updateQuantity}
+        setQuantity={setQuantity}
         removeFromCart={removeFromCart}
       />
       <QuickView

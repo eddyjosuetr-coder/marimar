@@ -56,8 +56,45 @@ export function productLabel(productName: string): string {
   return separador === -1 ? productName : productName.slice(0, separador)
 }
 
-/* Charcutería: el pedido se arma de cien en cien gramos, desde 100 gr. */
-export const PASO_PESO_GR = 100
+/*
+  Charcutería: el mostrador corta de cincuenta en cincuenta gramos y el
+  pedido más pequeño es de 100 gr.
+
+  Antes se avanzaba de cien en cien, que para media libra obligaba a pasar de
+  200 a 300 sin escala. Y el salto existe para que no salgan pesos que nadie
+  pide: quien escribe 303 gr recibe 300, que es lo que la balanza va a marcar
+  de todas formas.
+*/
+export const PASO_PESO_GR = 50
+export const MINIMO_PESO_GR = 100
+
+/** Acomoda unos gramos al salto de la balanza: 303 → 300; 137 → 150. */
+export function redondearPeso(gramos: number): number {
+  if (!Number.isFinite(gramos)) return MINIMO_PESO_GR
+  const ajustado = Math.round(gramos / PASO_PESO_GR) * PASO_PESO_GR
+  return Math.max(MINIMO_PESO_GR, ajustado)
+}
+
+/**
+ * Cuántos gramos dan unos bolívares.
+ *
+ * Mucha gente no pide un peso, pide un gasto: "dame dos mil de jamón". El
+ * precio del catálogo es por KG y en dólares, así que hay que pasar por la
+ * tasa, y el peso que sale se acomoda al salto de la balanza.
+ *
+ * Se acomoda HACIA ABAJO, no al más cercano: quien escribe dos mil no espera
+ * que le cobren dos mil cien. Así el importe final nunca se pasa de lo que
+ * pidió, aunque a veces quede algo por debajo.
+ */
+export function gramosDesdeBolivares(
+  precioPorKgUsd: number,
+  bolivares: number,
+  tasa: number
+): number {
+  if (!(precioPorKgUsd > 0) || !(tasa > 0) || !(bolivares > 0)) return MINIMO_PESO_GR
+  const crudos = (bolivares / tasa / precioPorKgUsd) * 1000
+  return Math.max(MINIMO_PESO_GR, Math.floor(crudos / PASO_PESO_GR) * PASO_PESO_GR)
+}
 
 const PESO_FORMATTER = new Intl.NumberFormat('es-VE', { maximumFractionDigits: 2 })
 
@@ -83,7 +120,7 @@ export function lineTotal(
 
 /** Cantidad inicial al agregar: 100 gr al peso, 1 unidad en lo demás. */
 export function cantidadInicial(producto: { soldByWeight?: boolean }): number {
-  return producto.soldByWeight ? PASO_PESO_GR : 1
+  return producto.soldByWeight ? MINIMO_PESO_GR : 1
 }
 
 /* El enlace de WhatsApp vive en `negocio.ts`, con el resto de los datos

@@ -48,9 +48,11 @@ export function useCart(catalogo: Product[]) {
 
 
 
-  const addToCart = useCallback((product: Product, salsas?: string[], variante?: string) => {
+  const addToCart = useCallback((product: Product, salsas?: string[], variante?: string, cantidad?: number) => {
     const lineId = idDeLinea(product, salsas, variante)
-    const paso = cantidadInicial(product)
+    /* Al peso el cliente elige cuánto quiere antes de agregar; en lo demás
+       se agrega de uno en uno. */
+    const paso = cantidad && cantidad > 0 ? cantidad : cantidadInicial(product)
     setLineas(prev => {
       const existing = prev.find(item => item.lineId === lineId)
       if (existing) {
@@ -67,6 +69,13 @@ export function useCart(catalogo: Product[]) {
         : undefined
       return [...prev, { ...product, ...(imagen ? { image: imagen } : {}), lineId, quantity: paso, salsas, variante }]
     })
+  }, [])
+
+  /** Fija los gramos de una línea al peso: escribirlos evita tocar ± diez veces. */
+  const setQuantity = useCallback((lineId: string, cantidad: number) => {
+    setLineas(prev => prev.map(item =>
+      item.lineId === lineId ? { ...item, quantity: Math.max(1, Math.round(cantidad)) } : item
+    ))
   }, [])
 
   const removeFromCart = useCallback((lineId: string) => {
@@ -100,6 +109,7 @@ export function useCart(catalogo: Product[]) {
   return {
     cart,
     addToCart,
+    setQuantity,
     removeFromCart,
     updateQuantity,
     cartCount,
