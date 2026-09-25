@@ -23,6 +23,13 @@ export interface Product {
    * detalladas que existen en el catálogo, nunca una lista escrita a mano.
    */
   comboSalsas?: number;
+  /**
+   * El mismo producto en varios colores: una sola ficha y el cliente elige.
+   * El primero es el que se enseña de entrada, y al elegir otro su foto pasa
+   * a ser la principal. Cuatro fichas idénticas cambiando una palabra ocupan
+   * la cuadrícula sin decir nada nuevo.
+   */
+  colores?: { nombre: string; imagen: string }[];
   /** Qué es el producto y para qué sirve. Se muestra en la vista rápida. */
   description?: string;
   /**
@@ -46,6 +53,8 @@ export interface CartItem extends Product {
   quantity: number;
   /** Salsas elegidas para un combo, en el orden en que se eligieron. */
   salsas?: string[];
+  /** Color elegido, en los productos que se venden en varios. */
+  variante?: string;
 }
 
 

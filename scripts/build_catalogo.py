@@ -6,7 +6,7 @@ contenido, se encuadran en un lienzo cuadrado uniforme y se guardan en WebP
 con transparencia: el catálogo entero baja a unos pocos MB y todas las fichas
 quedan ópticamente al mismo tamaño.
 """
-import io, json, os, shutil, sys
+import io, json, os, re, shutil, sys, unicodedata
 from PIL import Image
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -41,6 +41,13 @@ MIN_PIXELES = 4     # columnas/filas con menos que esto son ruido del recorte
 
 
 ASTILLA = 0.04      # tira aislada en el borde más fina que esto: resto del recorte
+
+
+def _slug(texto):
+    """'Amarillo' -> 'amarillo'. Para el nombre de archivo de cada color."""
+    limpio = unicodedata.normalize('NFD', texto.lower())
+    limpio = ''.join(c for c in limpio if unicodedata.category(c) != 'Mn')
+    return re.sub(r'[^a-z0-9]+', '-', limpio).strip('-')
 
 
 def sin_astillas(indices, largo):
@@ -127,6 +134,21 @@ for _, carpeta, archivo, slug, *_ in cat.CATALOGO:
     peso_src += os.path.getsize(origen)
     peso_out += os.path.getsize(destino)
 
+# Los productos que se venden en varios colores llevan una foto por color,
+# guardada como <slug>--<color>.webp. La del primer color es la del producto.
+for slug_base, colores in getattr(cat, 'VARIANTES', {}).items():
+    for nombre_color, carpeta_c, archivo_c in colores[1:]:
+        destino = f'{DESTINO}/{slug_base}--{_slug(nombre_color)}.webp'
+        if os.path.exists(destino):
+            continue
+        im = recortar(Image.open(buscar(carpeta_c, archivo_c)).convert('RGBA'))
+        im.thumbnail((MAX_LADO, MAX_LADO), Image.LANCZOS)
+        lado = round(max(im.size) / (1 - 2 * MARGEN))
+        lienzo = Image.new('RGBA', (lado, lado), (0, 0, 0, 0))
+        lienzo.paste(im, ((lado - im.width) // 2, (lado - im.height) // 2))
+        lienzo.save(destino, 'WEBP', quality=84, method=6)
+        nuevas += 1
+
 print(f'{nuevas} fotos nuevas optimizadas de {len(cat.CATALOGO)}')
 print(f'catálogo completo: {peso_src/1048576:.1f} MB -> {peso_out/1048576:.1f} MB')
 
@@ -176,14 +198,24 @@ for cat_nombre in cat.ORDEN_CATEGORIAS:
         al_peso = ', soldByWeight: true' if presentacion == 'Al peso' else ''
         # Combos con salsas: el cliente elige 3 de las salsas detalladas de la tienda
         salsas = ', comboSalsas: 3' if c == 'Combos' and 'con Salsas' in nombre else ''
+        variantes = getattr(cat, 'VARIANTES', {}).get(slug)
+        if variantes:
+            partes = ", ".join(
+                "{{ nombre: '{n}', imagen: '{i}' }}".format(
+                    n=ts(nc),
+                    i='/productos/%s.webp' % (slug if k == 0 else f'{slug}--{_slug(nc)}'))
+                for k, (nc, _, _) in enumerate(variantes))
+            colores = ', colores: [%s]' % partes
+        else:
+            colores = ''
         texto = desc.describir(c, slug, marca, nombre, presentacion)
         lineas.append(
             "  {{ id: {id}, image: '{imagen}', brand: '{marca}', "
-            "name: '{nombre} - {pres}', price: {precio:.2f}{consultar}{peso}{salsas}, category: '{cat}', "
+            "name: '{nombre} - {pres}', price: {precio:.2f}{consultar}{peso}{salsas}{colores}, category: '{cat}', "
             "description: '{texto}' }},".format(
                 id=pid, imagen=('' if archivo is None else '/productos/%s.webp' % slug), marca=ts(marca), nombre=ts(nombre), pres=presentacion,
                 precio=0 if precio is None else precio, consultar=consultar,
-                peso=al_peso, salsas=salsas, cat=ts(c), texto=ts(texto)))
+                peso=al_peso, salsas=salsas, colores=colores, cat=ts(c), texto=ts(texto)))
 
 io.open(REGISTRO_IDS, 'w', encoding='utf-8', newline='\n').write(
     json.dumps(registro, indent=2, ensure_ascii=False, sort_keys=True) + '\n')
@@ -193,10 +225,10 @@ cabecera = """import type { Product, HeroSlide } from '@/types';
 
 export const heroSlides: HeroSlide[] = [
   {
-    eyebrow: 'Distribuidora Marimar C.A. · Venezuela',
-    title: 'Todo lo que necesitas,',
-    highlight: 'directo a tu mesa',
-    description: 'Salsas, charcutería, víveres, bebidas y combos de las mejores marcas. Compra al detal, a buen precio y con entrega confiable.',
+    eyebrow: 'Distribuidora Marimar C.A.',
+    title: 'Somos tu mejor opción en ventas de',
+    highlight: 'charcutería, víveres y mucho más',
+    description: 'Quesos, jamones, salsas, bebidas y combos de las mejores marcas, a precio de distribuidora. Llévate una unidad o llévate la caja, con entrega en toda Maracay.',
     stats: [
       { value: '__TOTAL__', label: 'Productos' },
       { value: '__MARCAS__', label: 'Marcas' },

@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { Printer, ArrowLeft, Package, MapPin, User } from 'lucide-react'
 import { products } from '@/data/products'
+import type { Product } from '@/types'
 import { leerPedido, type LineaPedido } from '@/lib/pedido'
 import { formatAmount, formatWeight, lineTotal, productLabel } from '@/lib/utils'
 import { formatTasa, precioPublico } from '@/lib/tasa'
@@ -139,6 +140,18 @@ function Dato({ icono, titulo, valor }: { icono: React.ReactNode; titulo: string
   )
 }
 
+/**
+ * La fotografía del color que el cliente pidió.
+ *
+ * El pedido guarda el color por su nombre, no la foto: quien prepara la caja
+ * tiene que ver el papel rojo si pidió el rojo, no el primero de la lista.
+ */
+function fotoDelColor(producto: Product, variante?: string): Product {
+  if (!variante || !producto.colores) return producto
+  const elegido = producto.colores.find(c => c.nombre === variante)
+  return elegido ? { ...producto, image: elegido.imagen } : producto
+}
+
 function Fila({ linea, posicion, tasa }: { linea: LineaPedido; posicion: number; tasa: number | null }) {
   const producto = catalogo.get(linea.id)
   const cantidad = producto?.soldByWeight
@@ -161,7 +174,7 @@ function Fila({ linea, posicion, tasa }: { linea: LineaPedido; posicion: number;
 
       <div className="w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 rounded-lg bg-vitrina p-1.5">
         {producto
-          ? <ProductImage product={producto} />
+          ? <ProductImage product={fotoDelColor(producto, linea.variante)} />
           : <span className="w-full h-full flex items-center justify-center text-ink-muted">
               <Package className="w-6 h-6" strokeWidth={1.8} />
             </span>}
@@ -174,6 +187,11 @@ function Fila({ linea, posicion, tasa }: { linea: LineaPedido; posicion: number;
         <p className="text-[15px] font-semibold text-ink leading-snug">
           {producto ? productLabel(producto.name) : `Referencia ${linea.id}`}
         </p>
+        {linea.variante && (
+          <p className="text-[12.5px] text-ink-soft mt-0.5">
+            <span className="font-semibold text-ink">Color:</span> {linea.variante}
+          </p>
+        )}
         {linea.salsas.length > 0 && (
           <p className="text-[12.5px] text-ink-soft mt-0.5">
             <span className="font-semibold text-ink">Salsas:</span> {linea.salsas.join(' · ')}

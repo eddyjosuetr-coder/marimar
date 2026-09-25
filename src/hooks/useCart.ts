@@ -7,9 +7,13 @@ import { cantidadInicial, lineTotal, PASO_PESO_GR } from '@/lib/utils'
  * Las salsas se ordenan para que "Cheddar + Maíz + BBQ" y "BBQ + Cheddar +
  * Maíz" caigan en la misma línea: es el mismo pedido dicho en otro orden.
  */
-function idDeLinea(product: Product, salsas?: string[]): string {
-  if (!salsas || salsas.length === 0) return String(product.id)
-  return `${product.id}|${[...salsas].sort().join('+')}`
+function idDeLinea(product: Product, salsas?: string[], variante?: string): string {
+  const extras = [
+    salsas?.length ? [...salsas].sort().join('+') : '',
+    variante ?? '',
+  ].filter(Boolean)
+  if (extras.length === 0) return String(product.id)
+  return `${product.id}|${extras.join('|')}`
 }
 
 /**
@@ -44,8 +48,8 @@ export function useCart(catalogo: Product[]) {
 
 
 
-  const addToCart = useCallback((product: Product, salsas?: string[]) => {
-    const lineId = idDeLinea(product, salsas)
+  const addToCart = useCallback((product: Product, salsas?: string[], variante?: string) => {
+    const lineId = idDeLinea(product, salsas, variante)
     const paso = cantidadInicial(product)
     setLineas(prev => {
       const existing = prev.find(item => item.lineId === lineId)
@@ -56,7 +60,12 @@ export function useCart(catalogo: Product[]) {
             : item
         )
       }
-      return [...prev, { ...product, lineId, quantity: paso, salsas }]
+      /* La línea guarda la foto del color elegido: en el carrito y en el
+         pedido tiene que verse el papel que pidió, no el primero. */
+      const imagen = variante
+        ? product.colores?.find(c => c.nombre === variante)?.imagen
+        : undefined
+      return [...prev, { ...product, ...(imagen ? { image: imagen } : {}), lineId, quantity: paso, salsas, variante }]
     })
   }, [])
 

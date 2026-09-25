@@ -12,6 +12,18 @@ de "sin gluten", "orgánico" ni promesas que no consten en el empaque.
 import re
 
 ESPECIALES = {
+    # ── Papelería: lo que trae dentro el paquete sólo lo sabe el negocio ──
+    'papel-encerado-grande-10und':
+        'Papel encerado para charcutería y comida rápida, en paquete de 10 '
+        'unidades. Elige el color: amarillo a cuadros, rojo a rayas o negro a '
+        'rayas.',
+    'papel-encerado-negro-pequeno-10und':
+        'Papel encerado negro a cuadros, en paquete de 10 unidades. El tamaño '
+        'pequeño, para porciones y empaque del día a día.',
+    'papel-gris-2kg':
+        'Paquete de 2 KG de papel gris para charcutería y empaque. Trae cuatro '
+        'resmas de 1/2 KG.',
+
     # ── Combos: el contenido sale de la foto y de la publicación oficial ──
     'combo-perro-10und-con-salsas':
         'Combo listo para 10 perros calientes, sin tener que buscar nada más. Incluye 10 panes de perro, un paquete de 10 salchichas, papitas de 180 gr y 3 salsas detalladas de 370 gr que eliges tú al agregarlo al pedido.',

@@ -58,7 +58,12 @@ function deBase64Url(codificado: string): string {
 
 /**
  * Empaqueta el pedido en un texto corto.
- * Formato: `1|código|nombre|zona|id:cantidad:centavos:salsas;…`
+ * Formato: `1|código|nombre|zona|id:cantidad:centavos:opciones;…`
+ *
+ * El campo de opciones lleva las salsas de un combo separadas por comas, y el
+ * color elegido —cuando el producto se vende en varios— con una almohadilla
+ * delante. Así cabe en el mismo hueco y los enlaces viejos, que nunca traen
+ * almohadilla, se siguen leyendo igual.
  * Los centavos guardan el precio del momento: si mañana cambia, el enlace
  * sigue mostrando lo que el cliente vio al pedir.
  */
@@ -69,8 +74,11 @@ export function codificarPedido(
   tasa: number
 ): string {
   const lineas = cart.map(item => {
-    const salsas = item.salsas?.length ? item.salsas.map(limpiar).join(',') : ''
-    return `${item.id}:${item.quantity}:${Math.round(item.price * 100)}:${salsas}`
+    const opciones = [
+      ...(item.salsas ?? []).map(limpiar),
+      ...(item.variante ? ['#' + limpiar(item.variante)] : []),
+    ].join(',')
+    return `${item.id}:${item.quantity}:${Math.round(item.price * 100)}:${opciones}`
   })
   const cuerpo = [
     '2',
@@ -88,6 +96,8 @@ export interface LineaPedido {
   cantidad: number
   precio: number
   salsas: string[]
+  /** Color elegido, si el producto se vende en varios. */
+  variante?: string
 }
 
 export interface PedidoLeido {
@@ -116,12 +126,15 @@ export function leerPedido(codificado: string): PedidoLeido | null {
     const lineas: LineaPedido[] = []
     for (const cruda of partes[version === '1' ? 4 : 5].split(';')) {
       if (!cruda) continue
-      const [id, cantidad, centavos, salsas = ''] = cruda.split(':')
+      const [id, cantidad, centavos, opciones = ''] = cruda.split(':')
+      const partidas = opciones ? opciones.split(',').filter(Boolean) : []
+      const variante = partidas.find(o => o.startsWith('#'))?.slice(1)
       const linea: LineaPedido = {
         id: Number(id),
         cantidad: Number(cantidad),
         precio: Number(centavos) / 100,
-        salsas: salsas ? salsas.split(',').filter(Boolean) : [],
+        salsas: partidas.filter(o => !o.startsWith('#')),
+        ...(variante ? { variante } : {}),
       }
       if (!Number.isFinite(linea.id) || !Number.isFinite(linea.cantidad) || linea.cantidad <= 0) return null
       if (!Number.isFinite(linea.precio) || linea.precio < 0) return null
@@ -186,8 +199,12 @@ export function mensajeDePedido(
 
   const lineas = resumido ? cart.map((item, i) => {
     const cantidad = item.soldByWeight ? formatWeight(item.quantity) : `${item.quantity} und`
-    const salsas = item.salsas?.length ? ` (${item.salsas.join(', ')})` : ''
-    return `${i + 1}. ${cantidad} — ${productLabel(item.name)}${salsas} = ${precioPublico(lineTotal(item, item.quantity), tasa)}`
+    const extras = [
+      item.variante ? item.variante : '',
+      item.salsas?.length ? item.salsas.join(', ') : '',
+    ].filter(Boolean).join(' · ')
+    const detalle = extras ? ` (${extras})` : ''
+    return `${i + 1}. ${cantidad} — ${productLabel(item.name)}${detalle} = ${precioPublico(lineTotal(item, item.quantity), tasa)}`
   }) : cart.map((item, i) => {
     const cantidad = item.soldByWeight
       ? formatWeight(item.quantity)
@@ -200,6 +217,7 @@ export function mensajeDePedido(
       `${i + 1}. *${productLabel(item.name)}*`,
       `    ${cantidad} × ${unitario} = ${precioPublico(lineTotal(item, item.quantity), tasa)}`,
     ]
+    if (item.variante) partes.push(`    Color: ${item.variante}`)
     if (item.salsas?.length) partes.push(`    Salsas: ${item.salsas.join(', ')}`)
     if (item.listPrice !== undefined) partes.push(`    En oferta (antes ${precioPublico(item.listPrice, tasa)})`)
     return partes.join('\n')

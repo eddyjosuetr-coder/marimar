@@ -132,6 +132,11 @@ export function CartDrawer({ isOpen, onClose, cart, cartCount, cartTotal, update
                         <h4 className="text-[13px] font-medium text-ink leading-snug line-clamp-2 mt-0.5">
                           {productLabel(item.name)}
                         </h4>
+                        {item.variante && (
+                          <p className="text-[11px] text-ink-muted mt-1 leading-snug">
+                            <span className="font-semibold text-ink-soft">Color:</span> {item.variante}
+                          </p>
+                        )}
                         {item.salsas && item.salsas.length > 0 && (
                           <p className="text-[11px] text-ink-muted mt-1 leading-snug">
                             <span className="font-semibold text-ink-soft">Salsas:</span> {item.salsas.join(' · ')}

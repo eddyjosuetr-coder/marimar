@@ -48,6 +48,19 @@ MEMBERS = "Member's"
 FARMERS = "Farmer's Friends"
 ROMYS = "Romy's"
 ROROS = "Roro's"
+
+# ── Productos que se venden en varios colores ──────────────────────────────
+# Una sola ficha: el cliente elige y la foto de su color pasa a ser la
+# principal. Tres fichas idénticas cambiando una palabra llenan la cuadrícula
+# sin decir nada nuevo, y el cliente igual tiene que abrir las tres.
+# El primer color es el que se enseña de entrada.
+VARIANTES = {
+    'papel-encerado-grande-10und': [
+        ('Amarillo', 'variedad', 'Papel-encerado-grande-10und.png'),
+        ('Rojo', 'variedad', 'Papel-encerado-rojo-grande-10und.png'),
+        ('Negro', 'variedad', 'Papel-encerado-negro-grande-10und.png'),
+    ],
+}
 FRIGOS = "Frigo's"
 LPRADO = "L'Prado"
 
@@ -428,7 +441,7 @@ CATALOGO = [
     # por WhatsApp en vez de enseñar una cifra inventada.
 
     # -- Vasos plásticos Maxiplast --
-    (DES2, 'variedad', 'vasos-27-plasticos-maxiplast.png', 'vaso-maxiplast-27', 'Maxiplast', 'Vaso Plástico Maxiplast N° 27 · 2 oz · 100 und', 'Paquete', None),
+    (DES2, 'variedad', 'vasos-27-plasticos-maxiplast.png', 'vaso-maxiplast-27', 'Maxiplast', 'Vaso Plástico Maxiplast N° 27 · 2 oz · 100 und', 'Paquete', 1.07),
     (DES2, 'variedad', 'vasos-57-plasticos-maxiplast.png', 'vaso-maxiplast-57', 'Maxiplast', 'Vaso Plástico Maxiplast N° 57 · 5 oz · 100 und', 'Paquete', 1.96),
     (DES2, 'variedad', 'vasos-67-plasticos-maxiplast.png', 'vaso-maxiplast-67', 'Maxiplast', 'Vaso Plástico Maxiplast N° 67 · 6 oz · 100 und', 'Paquete', 1.97),
     (DES2, 'variedad', 'vasos-77-plasticos-maxiplast.png', 'vaso-maxiplast-77', 'Maxiplast', 'Vaso Plástico Maxiplast N° 77 · 7 oz · 100 und', 'Paquete', 1.77),
@@ -439,17 +452,15 @@ CATALOGO = [
     (DES2, 'variedad', 'vasos-227-plasticos-maxiplast.png', 'vaso-maxiplast-227', 'Maxiplast', 'Vaso Plástico Maxiplast N° 227 · 22 oz · 30 und', 'Paquete', 2.10),
 
     # -- Papel para charcutería y empaque --
-    (DES2, 'variedad', 'Papel-encerado-grande-10und.png', 'papel-encerado-grande-10und', 'Genérico', 'Papel Encerado Grande 10 und', 'Paquete', None),
-    (DES2, 'variedad', 'Papel-encerado-negro-grande-10und.png', 'papel-encerado-negro-grande-10und', 'Genérico', 'Papel Encerado Negro Grande 10 und', 'Paquete', None),
-    (DES2, 'variedad', 'Papel-encerado-negro-pequeno-10und.png', 'papel-encerado-negro-pequeno-10und', 'Genérico', 'Papel Encerado Negro Pequeño 10 und', 'Paquete', None),
-    (DES2, 'variedad', 'Papel-encerado-rojo-grande-10und.png', 'papel-encerado-rojo-grande-10und', 'Genérico', 'Papel Encerado Rojo Grande 10 und', 'Paquete', None),
+    (DES2, 'variedad', 'Papel-encerado-grande-10und.png', 'papel-encerado-grande-10und', 'Genérico', 'Papel Encerado Grande 10 und', 'Paquete', 1.05),
+    (DES2, 'variedad', 'Papel-encerado-negro-pequeno-10und.png', 'papel-encerado-negro-pequeno-10und', 'Genérico', 'Papel Encerado Pequeño 10 und', 'Paquete', 0.75),
     (DES2, 'variedad', 'Papel-estampado-100und.png', 'papel-estampado-100und', 'Genérico', 'Papel Estampado 100 und', 'Paquete', 7.00),
     (DES2, 'variedad', 'Papel-estampado-Navidad-100und.png', 'papel-estampado-navidad-100und', 'Genérico', 'Papel Estampado Navidad 100 und', 'Paquete', 7.00),
-    (DES2, 'variedad', 'Papel-gris-2kg.png', 'papel-gris-2kg', 'Genérico', 'Papel Gris 2 KG', 'Paquete', 2.00),
-    (DES2, 'variedad', 'Papel-gris-500gr.png', 'papel-gris-500gr', 'Genérico', 'Papel Gris 500 gr', 'Paquete', 1.25),
+    (DES2, 'variedad', 'Papel-gris-2kg.png', 'papel-gris-2kg', 'Genérico', 'Papel Gris 2 KG', 'Paquete', 7.40),
+    (DES2, 'variedad', 'Papel-gris-500gr.png', 'papel-gris-500gr', 'Genérico', 'Papel Gris 1/2 KG', 'Paquete', 2.00),
     (DES2, 'variedad', 'Papel-parafinado-Rollo-rojo-80und.png', 'papel-parafinado-rojo-80und', 'Genérico', 'Papel Parafinado Rojo 80 und', 'Rollo', 3.50),
     (DES2, 'variedad', 'Papel-parafinado-Rollo-verde-80und.png', 'papel-parafinado-verde-80und', 'Genérico', 'Papel Parafinado Verde 80 und', 'Rollo', 3.50),
-    (DES2, 'variedad', 'Papel-térmico-10und.png', 'papel-termico-10und', 'Genérico', 'Papel Térmico 10 und', 'Paquete', 1.25),
+    (DES2, 'variedad', 'Papel-térmico-10und.png', 'papel-termico-10und', 'Genérico', 'Papel Térmico Importado 10 und', 'Paquete', 1.25),
 
     # -- Papel higiénico y toallín --
     (LIM, 'variedad', 'papel-higienico-jazmin.png', 'papel-higienico-jazmin', 'Jazmín', 'Papel Higiénico Jazmín 200 hojas', 'Paquete', 1.74),
@@ -458,20 +469,20 @@ CATALOGO = [
     (LIM, 'variedad', 'toallin-rosal.png', 'toallin-rosal', 'Rosal', 'Toallín Rosal', 'Rollo', 1.36),
 
     # -- Papas para perros calientes --
-    (CON, 'variedad', 'papa-para-perros-calientes-frito-mix-cabello-de-angel-1kg.png', 'papa-frito-mix-cabello-angel-1kg', 'Frito Mix', 'Papa Frito Mix Cabello de Ángel 1 KG', 'Bolsa', 4.72),
-    (CON, 'variedad', 'papa-para-perros-calientes-frito-mix-cabello-de-angel-200gr.png', 'papa-frito-mix-cabello-angel-200gr', 'Frito Mix', 'Papa Frito Mix Cabello de Ángel 200 gr', 'Bolsa', None),
-    (CON, 'variedad', 'papa-para-perros-calientes-frito-mix-corte-tradicional-1kg.png', 'papa-frito-mix-tradicional-1kg', 'Frito Mix', 'Papa Frito Mix Corte Tradicional 1 KG', 'Bolsa', 4.80),
+    (CON, 'variedad', 'papa-para-perros-calientes-frito-mix-cabello-de-angel-1kg.png', 'papa-frito-mix-cabello-angel-1kg', 'Frito Mix', 'Papa Frito Mix Cabello de Ángel 1 KG', 'Bolsa', 4.90),
+    (CON, 'variedad', 'papa-para-perros-calientes-frito-mix-cabello-de-angel-200gr.png', 'papa-frito-mix-cabello-angel-200gr', 'Frito Mix', 'Papa Frito Mix Cabello de Ángel 200 gr', 'Bolsa', 1.35),
+    (CON, 'variedad', 'papa-para-perros-calientes-frito-mix-corte-tradicional-1kg.png', 'papa-frito-mix-tradicional-1kg', 'Frito Mix', 'Papa Frito Mix Corte Tradicional 1 KG', 'Bolsa', 4.90),
     (CON, 'variedad', 'papa-para-perros-calientes-marly-corte-tradicional-1kg.png', 'papa-marly-tradicional-1kg', 'Marly', 'Papa Marly Corte Tradicional 1 KG', 'Bolsa', 6.00),
     (CON, 'variedad', 'papa-para-perros-calientes-novachips-cabello-de-angel-1kg.png', 'papa-novachips-cabello-angel-1kg', 'Nova Chips', 'Papa Nova Chips Cabello de Ángel 1 KG', 'Bolsa', 3.70),
 
     # -- Refrescos por bulto de 6 --
     (REF, 'variedad', '7up-bulto-6und-1lts.png', 'refresco-7up-1l-bulto-6und', '7up', 'Refresco 7up 1 L (bulto de 6)', 'Bulto', None),
-    (REF, 'variedad', 'cocacola-bulto-6und-1,5lts.png', 'cocacola-1-5l-bulto-6und', 'Coca-Cola', 'Coca-Cola 1,5 L (bulto de 6)', 'Bulto', None),
-    (REF, 'variedad', 'cocacola-bulto-6und-1lts.png', 'cocacola-1l-bulto-6und', 'Coca-Cola', 'Coca-Cola 1 L (bulto de 6)', 'Bulto', None),
-    (REF, 'variedad', 'fanta-naranja-bulto-6und-1lts.png', 'fanta-naranja-1l-bulto-6und', 'Fanta', 'Fanta Naranja 1 L (bulto de 6)', 'Bulto', None),
-    (REF, 'variedad', 'fanta-toronja-bulto-6und-1lts.png', 'fanta-toronja-1l-bulto-6und', 'Fanta', 'Fanta Toronja 1 L (bulto de 6)', 'Bulto', None),
-    (REF, 'variedad', 'golden-kolita-bulto-6und-1lts.png', 'golden-kolita-1l-bulto-6und', 'Golden', 'Refresco Golden Kolita 1 L (bulto de 6)', 'Bulto', None),
-    (REF, 'variedad', 'golden-manzanita-bulto-6und-1lts.png', 'golden-manzanita-1l-bulto-6und', 'Golden', 'Refresco Golden Manzanita 1 L (bulto de 6)', 'Bulto', None),
+    (REF, 'variedad', 'cocacola-bulto-6und-1,5lts.png', 'cocacola-1-5l-bulto-6und', 'Coca-Cola', 'Coca-Cola 1,5 L (bulto de 6)', 'Bulto', 6.82),
+    (REF, 'variedad', 'cocacola-bulto-6und-1lts.png', 'cocacola-1l-bulto-6und', 'Coca-Cola', 'Coca-Cola 1 L (bulto de 6)', 'Bulto', 5.22),
+    (REF, 'variedad', 'fanta-naranja-bulto-6und-1lts.png', 'fanta-naranja-1l-bulto-6und', 'Fanta', 'Fanta Naranja 1 L (bulto de 6)', 'Bulto', 3.90),
+    (REF, 'variedad', 'fanta-toronja-bulto-6und-1lts.png', 'fanta-toronja-1l-bulto-6und', 'Fanta', 'Fanta Toronja 1 L (bulto de 6)', 'Bulto', 3.90),
+    (REF, 'variedad', 'golden-kolita-bulto-6und-1lts.png', 'golden-kolita-1l-bulto-6und', 'Golden', 'Refresco Golden Kolita 1 L (bulto de 6)', 'Bulto', 5.51),
+    (REF, 'variedad', 'golden-manzanita-bulto-6und-1lts.png', 'golden-manzanita-1l-bulto-6und', 'Golden', 'Refresco Golden Manzanita 1 L (bulto de 6)', 'Bulto', 5.51),
 
     # -- Panes de sándwich --
     (PAN, 'variedad', 'pan-bimbo-artesano-500gr.png', 'pan-sandwich-artesano-bimbo-500gr', 'Bimbo', 'Pan Sándwich Artesano Bimbo 500 gr', 'Bolsa', 3.00),
@@ -488,11 +499,11 @@ CATALOGO = [
     (ADE, 'variedad', "sobre-roro's-tocineta-54gr.png", 'sobre-tocineta-roros-54gr', ROROS, "Aderezo de Tocineta Roro's 54 gr", 'Sobre', 1.48),
 
     # -- Sueltos --
-    (ADE, 'variedad', 'Aderezo-fritz-ahumadita-de-bolsa-3kg-galon.png', 'aderezo-ahumadita-fritz-3kg', 'Fritz', 'Aderezo Ahumadita Fritz 3 KG', 'Bolsa', None),
-    (ADE, 'variedad', 'salsa-de-maiz-monti-1kg.png', 'salsa-maiz-monti-1kg', 'Monti', 'Salsa de Maíz Monti 1 KG', 'Doypack', None),
-    (ITA, 'variedad', 'pasta-primor-1kg.png', 'pasta-primor-1kg', 'Primor', 'Pasta Primor 1 KG', 'Bolsa', 1.84),
+    (ADE, 'variedad', 'Aderezo-fritz-ahumadita-de-bolsa-3kg-galon.png', 'aderezo-ahumadita-fritz-3kg', 'Fritz', 'Aderezo Ahumadita Fritz 3 KG', 'Bolsa', 9.85),
+    (ADE, 'variedad', 'salsa-de-maiz-monti-1kg.png', 'salsa-maiz-monti-1kg', 'Monti', 'Salsa de Maíz Monti 1 KG', 'Doypack', 3.95),
+    (ITA, 'variedad', 'pasta-primor-1kg.png', 'pasta-primor-1kg', 'Primor', 'Pasta Larga Primor 1 KG', 'Bolsa', 1.84),
     (LAC, 'variedad', 'leche-descremada-1lts.png', 'leche-deslactosada-purisima-1l', 'Purísima', 'Leche Deslactosada Purísima 1 L', 'Tetrapak', None),
-    (LAC, 'variedad', 'medio-carton-de-huevo.png', 'medio-carton-huevos', 'Genérico', 'Medio Cartón de Huevos', 'Cartón', 2.40),
-    (ENL, 'variedad', 'pepinillo-agridulces-lesmi-3.8kg.png', 'pepinillos-agridulces-lesmi-3-8kg', 'Lesmi', 'Pepinillos Agridulces Lesmi 3,8 KG', 'Pote', None),
+    (LAC, 'variedad', 'medio-carton-de-huevo.png', 'medio-carton-huevos', 'Genérico', 'Medio Cartón de Huevos', 'Cartón', 3.19),
+    (ENL, 'variedad', 'pepinillo-agridulces-lesmi-3.8kg.png', 'pepinillos-agridulces-lesmi-3-8kg', 'Lesmi', 'Pepinillos Agridulces Lesmi 3,8 KG', 'Pote', 22.80),
     (ENL, 'variedad', 'pepinillo-mt.olive-3.78L.png', 'pepinillos-mt-olive-3-78l', 'Mt. Olive', 'Pepinillos Mt. Olive 3,78 L', 'Galón', 34.50),
 ]

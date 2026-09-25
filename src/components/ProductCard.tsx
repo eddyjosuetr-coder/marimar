@@ -8,10 +8,11 @@ import { useTasa } from '@/hooks/useTasa'
 import { precioPublico, precioReferencia } from '@/lib/tasa'
 import { flyToCart } from '@/lib/flyToCart'
 import { EtiquetaProducto } from './EtiquetaProducto'
+import { SelectorColor } from './SelectorColor'
 
 interface ProductCardProps {
   product: Product
-  onAddToCart: (p: Product) => void
+  onAddToCart: (p: Product, salsas?: string[], variante?: string) => void
   onQuickView: (p: Product) => void
 }
 
@@ -20,11 +21,14 @@ export function ProductCard({ product, onAddToCart, onQuickView }: ProductCardPr
   const { valor: tasa } = useTasa()
   const fotoRef = useRef<HTMLButtonElement>(null)
   const [agregado, setAgregado] = useState(false)
+  /* Productos de varios colores: el primero es el que se enseña de entrada. */
+  const [color, setColor] = useState(product.colores?.[0]?.nombre)
+  const foto = product.colores?.find(c => c.nombre === color)?.imagen ?? product.image
 
   /* El vuelo sale de la foto; el botón confirma con un visto durante 1s. */
   const agregar = () => {
-    flyToCart(fotoRef.current, product.image)
-    onAddToCart(product)
+    flyToCart(fotoRef.current, foto)
+    onAddToCart(product, undefined, color)
     setAgregado(true)
     window.setTimeout(() => setAgregado(false), 1000)
   }
@@ -41,7 +45,7 @@ export function ProductCard({ product, onAddToCart, onQuickView }: ProductCardPr
         aria-label={`Vista rápida de ${product.name}`}
       >
         <ProductImage
-          product={product}
+          product={product.colores ? { ...product, image: foto } : product}
           className={cn(
             'p-3 transition-transform duration-500 ease-out-expo group-hover:scale-[1.07]',
             product.hoverImage && 'group-hover:opacity-0'
@@ -84,6 +88,15 @@ export function ProductCard({ product, onAddToCart, onQuickView }: ProductCardPr
         <h3 className="text-[13px] md:text-[14px] font-medium text-ink leading-snug line-clamp-2 min-h-[2.6em]">
           {productLabel(product.name)}
         </h3>
+
+        {product.colores && color && (
+          <SelectorColor
+            colores={product.colores}
+            elegido={color}
+            onElegir={setColor}
+            className="mt-2.5"
+          />
+        )}
 
         {/*
           Sin precio de lista no se muestra una cifra ni se deja agregar al

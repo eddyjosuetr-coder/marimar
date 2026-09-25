@@ -52,6 +52,34 @@ Un producto que cambia de `slug` cuenta como nuevo y recibe otro número: sus
 ajustes anteriores quedan huérfanos, que es lo correcto, porque ya no es el
 mismo producto.
 
+## El titular de la portada también se genera
+
+`src/data/products.ts` no sólo trae los productos: trae el titular, el
+antetítulo y el texto de la portada. Están escritos dentro de
+`build_catalogo.py`, en la plantilla `cabecera`. **Editarlos en
+`src/data/products.ts` no sirve de nada**: el siguiente generado los borra, y
+eso ya pasó una vez — la tienda volvió sola a un eslogan viejo sin que nadie
+tocara la portada. Se cambian en `build_catalogo.py`.
+
+## Un producto en varios colores
+
+Cuando el mismo producto se vende en varios colores —el papel encerado— no se
+hacen tres fichas: se pone una y se declara en `VARIANTES`, en `catalogo.py`:
+
+```python
+VARIANTES = {
+    'papel-encerado-grande-10und': [
+        ('Amarillo', 'variedad', 'Papel-encerado-grande-10und.png'),
+        ('Rojo', 'variedad', 'Papel-encerado-rojo-grande-10und.png'),
+    ],
+}
+```
+
+El primer color es el que se enseña de entrada y su foto es la del producto;
+los demás se guardan como `<slug>--<color>.webp`. La ficha del catálogo sale
+con muestras para elegir, y el color viaja al carrito, al mensaje de WhatsApp
+y a la vista del pedido.
+
 ## Un producto sin foto
 
 En `catalogo.py` se pone `None` en la columna del archivo. El producto se

@@ -9,23 +9,38 @@ import { precioPublico, precioReferencia, aBolivares, formatBs } from '@/lib/tas
 import { flyToCart } from '@/lib/flyToCart'
 import { nombresElegidos, totalElegidas } from '@/lib/salsas'
 import { SalsaPicker } from './SalsaPicker'
+import { SelectorColor } from './SelectorColor'
 import { EtiquetaProducto } from './EtiquetaProducto'
 
 interface QuickViewProps {
   product: Product | null
   onClose: () => void
-  onAddToCart: (p: Product, salsas?: string[]) => void
+  onAddToCart: (p: Product, salsas?: string[], variante?: string) => void
 }
 
 export function QuickView({ product, onClose, onAddToCart }: QuickViewProps) {
   const fotoRef = useRef<HTMLDivElement>(null)
   const { valor: tasa } = useTasa()
 
+  /*
+    El color elegido se guarda junto al producto al que pertenece, en vez de
+    reiniciarse con un efecto: así, al abrir otra ficha, el color vuelve solo
+    al primero sin un render intermedio con el color del producto anterior.
+  */
+  const [eleccion, setEleccion] = useState<{ id: number; color: string } | null>(null)
+  const color = eleccion && product && eleccion.id === product.id
+    ? eleccion.color
+    : product?.colores?.[0]?.nombre
+  const elegirColor = (nombre: string) => {
+    if (product) setEleccion({ id: product.id, color: nombre })
+  }
+  const foto = product?.colores?.find(c => c.nombre === color)?.imagen ?? product?.image
+
   /* Mismo gesto que en la ficha: el producto vuela al carrito y el diálogo cierra. */
   const agregar = (salsas?: string[]) => {
     if (!product) return
-    flyToCart(fotoRef.current, product.image)
-    onAddToCart(product, salsas)
+    flyToCart(fotoRef.current, foto ?? product.image)
+    onAddToCart(product, salsas, color)
     onClose()
   }
 
@@ -68,7 +83,10 @@ export function QuickView({ product, onClose, onAddToCart }: QuickViewProps) {
         {/* Imagen */}
         <div ref={fotoRef} className="relative w-full md:w-1/2 vitrina-panel flex items-center justify-center p-8 md:p-12 min-h-[280px]">
           <EtiquetaProducto product={product} grande className="absolute top-5 left-5" />
-          <ProductImage product={product} className="max-w-sm" />
+          <ProductImage
+            product={product.colores && foto ? { ...product, image: foto } : product}
+            className="max-w-sm"
+          />
         </div>
 
         {/* Ficha */}
@@ -122,6 +140,17 @@ export function QuickView({ product, onClose, onAddToCart }: QuickViewProps) {
               </>
             )}
           </div>
+
+          {product.colores && color && (
+            <div className="pb-6 mb-6 border-b border-line">
+              <SelectorColor
+                colores={product.colores}
+                elegido={color}
+                onElegir={elegirColor}
+                grande
+              />
+            </div>
+          )}
 
           {product.description && (
             <p className="text-[15px] leading-relaxed text-ink-soft mb-6">
