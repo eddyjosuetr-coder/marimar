@@ -157,6 +157,10 @@ export default function App() {
     (minPrice ? 1 : 0) +
     (maxPrice !== defaultMaxPrice ? 1 : 0)
 
+  /* La fila de fichas también muestra la búsqueda, que no es un filtro del
+     panel pero acota la lista igual. */
+  const hayAlgoAcotando = activeFilterCount > 0 || searchQuery.trim() !== ''
+
   /*
     Rescate, no acompañamiento.
 
@@ -189,8 +193,29 @@ export default function App() {
     return () => { document.body.style.overflow = '' }
   }, [showFiltersMobile])
 
+  /*
+    Elegir una categoría es pedir ver esa categoría.
+
+    Lo que quedara escrito en el buscador sobra, y si no se borra la lista
+    sale vacía: quien buscó "leche" y después tocó "Salsas BBQ" veía cero
+    productos y ninguna pista de por qué —el buscador del teléfono ya se había
+    cerrado—. Parecía que la tienda no tenía nada.
+  */
   const handleCategorySelect = (cat: string) => {
     setSelectedCategory(cat)
+    setSearchQuery('')
+    setPage(1)
+  }
+
+  /*
+    Y al revés: buscar mira SIEMPRE toda la tienda.
+
+    Si la búsqueda se quedara acotada a la categoría abierta, escribir "leche"
+    estando en Mayonesas daría la misma lista vacía por el mismo motivo.
+  */
+  const handleSearch = (texto: string) => {
+    setSearchQuery(texto)
+    if (texto.trim()) setSelectedCategory('Todos')
     setPage(1)
   }
 
@@ -254,7 +279,7 @@ export default function App() {
         hayOfertas={hayOfertas}
         onOfertasClick={() => { setSoloOfertas(true); setPage(1) }}
         searchQuery={searchQuery}
-        setSearchQuery={q => { setSearchQuery(q); setPage(1) }}
+        setSearchQuery={handleSearch}
       />
 
       <main>
@@ -336,8 +361,17 @@ export default function App() {
               </div>
 
               {/* Fichas de filtros activos: siempre visible qué está acotando la lista */}
-              {activeFilterCount > 0 && (
+              {hayAlgoAcotando && (
                 <div className="flex flex-wrap items-center gap-2 mb-6 pb-6 border-b border-line">
+                  {/* Lo que se buscó, a la vista y con su × : en el teléfono
+                      el buscador se cierra y no quedaba ni rastro de que
+                      había una búsqueda acotando la lista. */}
+                  {searchQuery.trim() && (
+                    <FilterChip
+                      label={`Buscando: ${searchQuery.trim()}`}
+                      onRemove={() => { setSearchQuery(''); setPage(1) }}
+                    />
+                  )}
                   {soloOfertas && (
                     <FilterChip label="Solo ofertas" onRemove={() => { setSoloOfertas(false); setPage(1) }} />
                   )}
@@ -384,15 +418,20 @@ export default function App() {
                   <h3 className="font-display text-display-sm font-bold text-ink mb-2">
                     Sin resultados
                   </h3>
+                  {/* El motivo concreto, no una frase general: quien no está
+                      acostumbrado a una tienda en línea no adivina que lo que
+                      sobra es una palabra escrita hace dos pantallas. */}
                   <p className="text-[14.5px] text-ink-muted max-w-sm mx-auto mb-7">
-                    No encontramos productos con esos criterios. Prueba ampliando el rango de precio o quitando alguna marca.
+                    {searchQuery.trim()
+                      ? <>No hay ningún producto que diga «{searchQuery.trim()}». Revisa cómo está escrito, o mira todo el catálogo.</>
+                      : 'No encontramos productos con esos criterios. Prueba ampliando el rango de precio o quitando alguna marca.'}
                   </p>
                   <button
                     type="button"
                     onClick={clearAllFilters}
                     className="inline-flex items-center h-11 px-6 rounded-full bg-brand text-white font-semibold text-[14px] hover:bg-brand-deep transition-colors"
                   >
-                    Limpiar todos los filtros
+                    Ver todo el catálogo
                   </button>
                 </div>
               )}
