@@ -476,7 +476,7 @@ CATALOGO = [
     (CON, 'variedad', 'papa-para-perros-calientes-novachips-cabello-de-angel-1kg.png', 'papa-novachips-cabello-angel-1kg', 'Nova Chips', 'Papa Nova Chips Cabello de Ángel 1 KG', 'Bolsa', 3.70),
 
     # -- Refrescos por bulto de 6 --
-    (REF, 'variedad', '7up-bulto-6und-1lts.png', 'refresco-7up-1l-bulto-6und', '7up', 'Refresco 7up 1 L (bulto de 6)', 'Bulto', None),
+    (REF, 'variedad', '7up-bulto-6und-1lts.png', 'refresco-7up-1l-bulto-6und', '7up', 'Refresco 7up 1 L (bulto de 6)', 'Bulto', 5.51),
     (REF, 'variedad', 'cocacola-bulto-6und-1,5lts.png', 'cocacola-1-5l-bulto-6und', 'Coca-Cola', 'Coca-Cola 1,5 L (bulto de 6)', 'Bulto', 6.82),
     (REF, 'variedad', 'cocacola-bulto-6und-1lts.png', 'cocacola-1l-bulto-6und', 'Coca-Cola', 'Coca-Cola 1 L (bulto de 6)', 'Bulto', 5.22),
     (REF, 'variedad', 'fanta-naranja-bulto-6und-1lts.png', 'fanta-naranja-1l-bulto-6und', 'Fanta', 'Fanta Naranja 1 L (bulto de 6)', 'Bulto', 3.90),
