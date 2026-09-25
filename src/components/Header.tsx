@@ -163,19 +163,25 @@ export function Header({
             </button>
 
             {/*
-              En el teléfono la marca va centrada, que es donde el ojo la
-              busca: el menú queda a la izquierda y las acciones a la derecha.
-              Desde `md` vuelve a su sitio, porque ahí entra el buscador y
-              centrarla la haría chocar con él.
+              La marca va junto al menú, a la izquierda, que es por donde se
+              empieza a leer. Estuvo centrada en el teléfono y se veía sola:
+              el emblema es pequeño y la rotulación se escondía por falta de
+              sitio, así que quedaba un icono suelto en medio de la barra.
+
+              Para que quepa el nombre se sacó de aquí el botón de tema, que
+              ahora vive en el menú: cambiar de claro a oscuro se hace una vez,
+              y no merecía el mejor sitio de la cabecera.
+
+              Por debajo de 360px la rotulación se retira sola (lo hace
+              `BrandLockup`): ahí ya no cabe y el emblema basta.
             */}
             <a
               href="/"
-              className="absolute inset-y-0 left-1/2 -translate-x-1/2 flex items-center flex-shrink-0 group md:static md:translate-x-0"
+              className="flex items-center flex-shrink-0 min-w-0 group"
               aria-label="Distribuidora Marimar C.A. — inicio"
             >
               <BrandLockup
                 size="md"
-                compacto
                 className="transition-transform duration-300 ease-out-expo group-hover:-translate-y-0.5"
               />
             </a>
@@ -300,7 +306,11 @@ export function Header({
                 <Search className="w-5 h-5" strokeWidth={2.2} />
               </button>
 
-              <ThemeToggle />
+              {/* En el teléfono vive dentro del menú: aquí le quitaba el
+                  sitio al nombre del negocio. */}
+              <span className="hidden md:inline-flex">
+                <ThemeToggle />
+              </span>
 
               <button
                 type="button"
@@ -485,7 +495,11 @@ export function Header({
               </div>
             </nav>
 
-            <div className="p-4 border-t border-line flex-shrink-0">
+            <div className="p-4 border-t border-line flex-shrink-0 space-y-3">
+              <div className="flex items-center justify-between gap-3 px-1">
+                <span className="text-[14px] text-ink-soft">Modo claro u oscuro</span>
+                <ThemeToggle />
+              </div>
               <a
                 href={WA_LINK}
                 target="_blank"
