@@ -12,6 +12,11 @@ de "sin gluten", "orgánico" ni promesas que no consten en el empaque.
 import re
 
 ESPECIALES = {
+    # ── El corte exacto sólo se ve en el empaque ──
+    'pasta-primor-1kg':
+        'Pasta larga Primor tipo vermicelli, de sémola de trigo durum. '
+        'Presentación en bolsa de 1 KG.',
+
     # ── Papelería: lo que trae dentro el paquete sólo lo sabe el negocio ──
     'papel-encerado-grande-10und':
         'Papel encerado para charcutería y comida rápida, en paquete de 10 '
@@ -179,6 +184,8 @@ def _por_tipo(cat, marca, nombre, pres):
             base = f'Salsa inglesa {marca} para marinar carnes y realzar guisos y salsas.'
         elif 'soya' in n:
             base = f'Salsa de soya {marca} para arroces, salteados, marinados y comida oriental.'
+        elif 'tocineta' in n:
+            base = f'Salsa sabor tocineta {marca}, ahumada y cremosa, para hamburguesas y papitas.'
         else:
             base = f'Aderezo {marca} para dar sabor a tus comidas.'
         return base + (COCINA if _grande(nombre) or pres == 'Galón' else '')
@@ -188,6 +195,13 @@ def _por_tipo(cat, marca, nombre, pres):
             return f'Passata {marca}: puré de tomate colado, base perfecta para salsas de pasta y pizza.'
         if 'boloñesa' in n:
             return f'Salsa boloñesa {marca} lista para servir sobre tu pasta favorita.'
+        # En esta categoría conviven dos cosas que se llaman igual: la pasta
+        # que se come y la pasta de tomate. Las separa el "de tomate" — sin
+        # él, un espagueti salía descrito como concentrado para guisos.
+        if n.startswith('pasta') and 'de tomate' not in n:
+            corte = 'larga' if 'larga' in n else ('corta' if 'corta' in n else '')
+            cuerpo = f'Pasta {corte} {marca}'.replace('  ', ' ')
+            return f'{cuerpo}, de sémola de trigo. ' + _formato(nombre, pres)
         return f'Pasta de tomate {marca}, concentrada, para salsas, guisos y pizzas.' + (
             COCINA if pres == 'Galón' else '')
 
@@ -234,6 +248,12 @@ def _por_tipo(cat, marca, nombre, pres):
             return f'Leche en polvo completa {marca}. Rinde para preparar leche líquida en casa y en recetas.'
         if 'condensada' in n:
             return f'Leche condensada {marca}, dulce y espesa, para postres, quesillos y bebidas.'
+        if 'huevo' in n:
+            return 'Medio cartón de huevos frescos, 15 unidades.'
+        # La deslactosada se comprueba antes que la descremada: este envase
+        # dice las dos cosas y lo que lo distingue es que no lleva lactosa.
+        if 'deslactosada' in n:
+            return f'Leche descremada y deslactosada {marca}, de larga duración y sin lactosa.'
         if 'descremada' in n:
             return f'Leche descremada {marca} de larga duración, lista para tomar.'
         return f'Leche completa {marca} de larga duración, lista para tomar.'
@@ -343,7 +363,15 @@ def _por_tipo(cat, marca, nombre, pres):
         if 'árabe' in n:
             return 'Pan árabe Piter, suave y plano, para shawarmas y sándwiches rellenos.'
         if 'sándwich' in n:
-            return f'Pan de sándwich {marca}' + (' con mantequilla' if 'mantequilla' in n else ' blanco') + ', rebanado, para desayunos y meriendas.'
+            if 'mantequilla' in n:
+                clase = ' con mantequilla'
+            elif 'integral' in n:
+                clase = ' integral'
+            elif 'artesano' in n:
+                clase = ' artesano'
+            else:
+                clase = ' blanco'
+            return f'Pan de sándwich {marca}{clase}, rebanado, para desayunos y meriendas.'
         uds = re.search(r'(\d+) und', nombre)
         cant = f' Bolsa de {uds.group(1)} unidades.' if uds else ''
         if 'hamburguesa' in n:
@@ -376,11 +404,36 @@ def _por_tipo(cat, marca, nombre, pres):
             return f'Jabón líquido {marca} para lavar platos y utensilios de cocina.'
         if 'bebé' in n:
             return f'Detergente en polvo {marca} para ropa de bebé, a mano o en lavadora.'
+        # Sin estos dos casos el papel higiénico caía en el por defecto y la
+        # ficha lo describía como detergente para la ropa.
+        if 'higiénico' in n:
+            hojas = re.search(r'(\d+) hojas', nombre)
+            cuenta = f' Rollo de {hojas.group(1)} hojas.' if hojas else ''
+            return f'Papel higiénico {marca}, suave y resistente.{cuenta}'
+        if 'toallín' in n or 'toalla' in n:
+            return f'Rollo de toallas absorbentes {marca}, para cocina y limpieza rápida.'
         return f'Detergente en polvo {marca} para lavar la ropa a mano o en lavadora.'
 
     if cat == 'Desechables y Papelería':
         if 'servilleta' in n:
             return f'Paquete de servilletas pequeñas{" " + marca if marca != "Genérico" else ""}, suaves y absorbentes, para mesas y dispensadores.'
+        if 'vaso' in n:
+            medida = re.search(r'· ([\d,]+ oz|[\d,]+ cc) ·', nombre)
+            cuenta = re.search(r'· (\d+) und', nombre)
+            partes = [f'Vasos plásticos {marca}']
+            if medida:
+                partes.append(f'de {medida.group(1)}')
+            texto = ' '.join(partes) + ', para refrescos, jugos y batidos.'
+            return texto + (f' Paquete de {cuenta.group(1)} unidades.' if cuenta else '')
+        if 'térmico' in n:
+            return 'Papel térmico para impresoras de tickets y balanzas de charcutería.'
+        if 'parafinado' in n:
+            return 'Rollo de papel parafinado para envolver charcutería y comida rápida, resistente a la grasa.'
+        if 'estampado' in n:
+            fiesta = ' navideño' if 'navidad' in n else ''
+            return f'Papel estampado{fiesta} para forrar bandejas y envolver comida rápida.'
+        if 'gris' in n:
+            return 'Papel gris para charcutería y empaque, resistente y sin recubrimiento.'
         return 'Artículo desechable para servir comida.'
 
     if cat == 'Dulces y Galletas':
