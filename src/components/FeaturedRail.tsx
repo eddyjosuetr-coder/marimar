@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { ArrowUpRight } from 'lucide-react'
 import type { Product } from '@/types'
 import { useReveal } from '@/hooks/useReveal'
@@ -14,8 +14,20 @@ interface FeaturedRailProps {
   onQuickView: (p: Product) => void
 }
 
-/** Segundos que tarda una vuelta completa, por ficha. Más fichas, más lento. */
-const SEGUNDOS_POR_FICHA = 5
+/*
+  A qué velocidad avanza solo, en píxeles por segundo.
+
+  Se mide en píxeles y no en "segundos por vuelta" para que la velocidad no
+  dependa de cuántos productos haya: si mañana entran treinta artículos más,
+  el riel seguiría moviéndose igual de rápido en vez de acelerarse.
+*/
+const PIXELES_POR_SEGUNDO = 42
+
+/** Lo que se espera tras soltar para que el riel vuelva a andar solo. */
+const ESPERA_TRAS_TOCAR_MS = 2500
+
+/** A partir de aquí el gesto es un arrastre y no un clic en la ficha. */
+const UMBRAL_ARRASTRE_PX = 6
 
 function RailCard({ product, onQuickView, inerte }: {
   product: Product
@@ -94,11 +106,113 @@ function RailCard({ product, onQuickView, inerte }: {
 export function FeaturedRail({ products, onQuickView }: FeaturedRailProps) {
   const ref = useReveal<HTMLElement>()
   const movimientoReducido = useReducedMotion()
-  const [pausado, setPausado] = useState(false)
+  const pista = useRef<HTMLDivElement>(null)
+
+  /* Nada de esto vive en el estado de React: cambia en cada fotograma y un
+     re-render por fotograma daría tirones justo en lo que debe verse suave. */
+  const quieto = useRef(false)
+  const reanudar = useRef<number>(0)
+  const arrastrando = useRef(false)
+  const arrastroDeVerdad = useRef(false)
+  const partida = useRef({ x: 0, scroll: 0 })
+
+  const detener = useCallback(() => {
+    quieto.current = true
+    window.clearTimeout(reanudar.current)
+  }, [])
+
+  const soltar = useCallback(() => {
+    window.clearTimeout(reanudar.current)
+    reanudar.current = window.setTimeout(() => { quieto.current = false }, ESPERA_TRAS_TOCAR_MS)
+  }, [])
+
+  /*
+    El avance automático.
+
+    Antes era una animación CSS sobre la pista entera, y eso no se puede
+    agarrar: el dedo resbalaba por encima sin mover nada. Ahora el riel es un
+    contenedor que se desplaza de verdad, así que el dedo, la rueda del ratón
+    y la barra de desplazamiento funcionan solos, y el movimiento automático
+    se limita a empujar unos píxeles en cada fotograma.
+
+    El bucle cierra sin salto porque la lista va duplicada: al pasar de la
+    mitad se resta la mitad, y hacia atrás se suma. Nadie nota el corte porque
+    lo que hay en los dos puntos es exactamente lo mismo.
+  */
+  useEffect(() => {
+    if (movimientoReducido || products.length === 0) return
+    const el = pista.current
+    if (!el) return
+
+    let pedido = 0
+    let anterior = performance.now()
+
+    const paso = (ahora: number) => {
+      const dt = Math.min((ahora - anterior) / 1000, 0.05) // una pestaña dormida no debe dar un salto
+      anterior = ahora
+      const mitad = el.scrollWidth / 2
+      if (mitad > 0) {
+        if (!quieto.current && !arrastrando.current) {
+          el.scrollLeft += PIXELES_POR_SEGUNDO * dt
+        }
+        if (el.scrollLeft >= mitad) el.scrollLeft -= mitad
+        else if (el.scrollLeft <= 0) el.scrollLeft += mitad
+      }
+      pedido = requestAnimationFrame(paso)
+    }
+
+    pedido = requestAnimationFrame(paso)
+    return () => {
+      cancelAnimationFrame(pedido)
+      window.clearTimeout(reanudar.current)
+    }
+  }, [movimientoReducido, products.length])
+
+  /* Arrastre con el ratón. El dedo no pasa por aquí: el desplazamiento táctil
+     nativo ya lo hace mejor —con su inercia— y capturar el puntero lo rompería. */
+  const alBajar = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.pointerType !== 'mouse' || !pista.current) return
+    arrastrando.current = true
+    arrastroDeVerdad.current = false
+    partida.current = { x: e.clientX, scroll: pista.current.scrollLeft }
+    detener()
+  }
+
+  const alMover = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!arrastrando.current || !pista.current) return
+    const avance = e.clientX - partida.current.x
+    if (Math.abs(avance) > UMBRAL_ARRASTRE_PX) {
+      arrastroDeVerdad.current = true
+      /* Sólo se captura al confirmar que es un arrastre: hacerlo antes se
+         comería los clics normales sobre una ficha. */
+      if (e.currentTarget.hasPointerCapture?.(e.pointerId) === false) {
+        e.currentTarget.setPointerCapture(e.pointerId)
+      }
+    }
+    pista.current.scrollLeft = partida.current.scroll - avance
+  }
+
+  const alSubir = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!arrastrando.current) return
+    arrastrando.current = false
+    if (e.currentTarget.hasPointerCapture?.(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId)
+    }
+    soltar()
+  }
+
+  /* Al terminar de arrastrar, el dedo o el ratón suele levantarse encima de
+     una ficha: sin esto se abriría la vista rápida del producto que pasaba
+     por ahí, que no es lo que nadie pidió. */
+  const alPulsar = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!arrastroDeVerdad.current) return
+    e.preventDefault()
+    e.stopPropagation()
+    arrastroDeVerdad.current = false
+  }
 
   if (products.length === 0) return null
 
-  const duracion = products.length * SEGUNDOS_POR_FICHA
   const pistas = movimientoReducido ? [0] : [0, 1]
 
   return (
@@ -131,20 +245,33 @@ export function FeaturedRail({ products, onQuickView }: FeaturedRailProps) {
 
       {/* El riel sangra a todo el ancho: refuerza que hay más de lo que se ve */}
       <div
-        className={cn('mask-fade-x pb-12 md:pb-16', movimientoReducido && 'overflow-x-auto custom-scrollbar')}
-        onMouseEnter={() => setPausado(true)}
-        onMouseLeave={() => setPausado(false)}
-        onFocusCapture={() => setPausado(true)}
-        onBlurCapture={() => setPausado(false)}
+        ref={pista}
+        className={cn(
+          'mask-fade-x pb-12 md:pb-16 overflow-x-auto scrollbar-hide',
+          /* `auto` y no `smooth`: el empujón de cada fotograma no debe
+             animarse, y el salto del bucle tiene que ser instantáneo. */
+          'scroll-auto',
+          /* Sin esto, al mover el ratón el navegador empieza a arrastrar la
+             fotografía del producto —las imágenes son arrastrables de fábrica—
+             y el gesto de desplazar el riel muere en el primer píxel. */
+          'select-none',
+          !movimientoReducido && 'cursor-grab active:cursor-grabbing'
+        )}
+        onDragStart={e => e.preventDefault()}
+        onMouseEnter={detener}
+        onMouseLeave={() => { arrastrando.current = false; soltar() }}
+        onFocusCapture={detener}
+        onBlurCapture={soltar}
+        onTouchStart={detener}
+        onTouchEnd={soltar}
+        onWheel={() => { detener(); soltar() }}
+        onPointerDown={alBajar}
+        onPointerMove={alMover}
+        onPointerUp={alSubir}
+        onPointerCancel={alSubir}
+        onClickCapture={alPulsar}
       >
-        <ul
-          className="flex w-max"
-          style={movimientoReducido ? undefined : {
-            animation: `marqueeLeft ${duracion}s linear infinite`,
-            animationPlayState: pausado ? 'paused' : 'running',
-            willChange: 'transform',
-          }}
-        >
+        <ul className="flex w-max">
           {pistas.map(pista => (
             products.map(product => (
               <RailCard
