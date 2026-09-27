@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react'
-import { ArrowUpRight } from 'lucide-react'
+import { ArrowUpRight, ChevronLeft, ChevronRight } from 'lucide-react'
 import type { Product } from '@/types'
 import { useReveal } from '@/hooks/useReveal'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
@@ -23,8 +23,18 @@ interface FeaturedRailProps {
 */
 const PIXELES_POR_SEGUNDO = 42
 
-/** Lo que se espera tras soltar para que el riel vuelva a andar solo. */
+/*
+  Cuánto se queda quieto tras una interacción.
+
+  TODA pausa vence. La primera versión paraba el riel sin fecha de vuelta
+  mientras el cursor estuviera encima, y en un portátil el cursor se queda
+  parado en mitad de la pantalla —justo encima del riel— sin que nadie lo
+  piense: el riel no volvía a moverse nunca. En el teléfono era peor, porque
+  un toque cualquiera sintetiza un "cursor encima" que ya no se retira: con
+  tocar una vez, muerto.
+*/
 const ESPERA_TRAS_TOCAR_MS = 2500
+const ESPERA_CON_EL_CURSOR_MS = 3000
 
 /** A partir de aquí el gesto es un arrastre y no un clic en la ficha. */
 const UMBRAL_ARRASTRE_PX = 6
@@ -114,16 +124,20 @@ export function FeaturedRail({ products, onQuickView }: FeaturedRailProps) {
   const reanudar = useRef<number>(0)
   const arrastrando = useRef(false)
   const arrastroDeVerdad = useRef(false)
-  const partida = useRef({ x: 0, scroll: 0 })
+  /* `partida` sólo sirve para saber si el gesto ya cuenta como arrastre;
+     el desplazamiento se aplica por incrementos desde `ultimoX`. */
+  const partida = useRef({ x: 0 })
+  const ultimoX = useRef(0)
 
-  const detener = useCallback(() => {
+  /**
+   * Para el riel y programa su vuelta. Nunca se para sin vencimiento: si algo
+   * queda mal —un cursor olvidado encima, un evento de ratón inventado por el
+   * teléfono tras un toque— el riel se recupera solo en unos segundos.
+   */
+  const pausar = useCallback((ms: number) => {
     quieto.current = true
     window.clearTimeout(reanudar.current)
-  }, [])
-
-  const soltar = useCallback(() => {
-    window.clearTimeout(reanudar.current)
-    reanudar.current = window.setTimeout(() => { quieto.current = false }, ESPERA_TRAS_TOCAR_MS)
+    reanudar.current = window.setTimeout(() => { quieto.current = false }, ms)
   }, [])
 
   /*
@@ -174,14 +188,14 @@ export function FeaturedRail({ products, onQuickView }: FeaturedRailProps) {
     if (e.pointerType !== 'mouse' || !pista.current) return
     arrastrando.current = true
     arrastroDeVerdad.current = false
-    partida.current = { x: e.clientX, scroll: pista.current.scrollLeft }
-    detener()
+    partida.current = { x: e.clientX }
+    ultimoX.current = e.clientX
+    pausar(ESPERA_TRAS_TOCAR_MS)
   }
 
   const alMover = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!arrastrando.current || !pista.current) return
-    const avance = e.clientX - partida.current.x
-    if (Math.abs(avance) > UMBRAL_ARRASTRE_PX) {
+    if (Math.abs(e.clientX - partida.current.x) > UMBRAL_ARRASTRE_PX) {
       arrastroDeVerdad.current = true
       /* Sólo se captura al confirmar que es un arrastre: hacerlo antes se
          comería los clics normales sobre una ficha. */
@@ -189,7 +203,15 @@ export function FeaturedRail({ products, onQuickView }: FeaturedRailProps) {
         e.currentTarget.setPointerCapture(e.pointerId)
       }
     }
-    pista.current.scrollLeft = partida.current.scroll - avance
+    /*
+      Se mueve por incrementos, no fijando la posición de salida menos lo
+      andado. Con la posición absoluta el arrastre peleaba con el salto del
+      bucle: al llegar a cero el bucle saltaba al final, el siguiente
+      movimiento volvía a calcular desde una salida ya vieja y lo devolvía a
+      cero. Arrastrando hacia atrás el riel se quedaba clavado en el principio.
+    */
+    pista.current.scrollLeft -= e.clientX - ultimoX.current
+    ultimoX.current = e.clientX
   }
 
   const alSubir = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -198,7 +220,7 @@ export function FeaturedRail({ products, onQuickView }: FeaturedRailProps) {
     if (e.currentTarget.hasPointerCapture?.(e.pointerId)) {
       e.currentTarget.releasePointerCapture(e.pointerId)
     }
-    soltar()
+    pausar(ESPERA_TRAS_TOCAR_MS)
   }
 
   /* Al terminar de arrastrar, el dedo o el ratón suele levantarse encima de
@@ -209,6 +231,20 @@ export function FeaturedRail({ products, onQuickView }: FeaturedRailProps) {
     e.preventDefault()
     e.stopPropagation()
     arrastroDeVerdad.current = false
+  }
+
+  /*
+    Flechas para moverlo a golpes.
+
+    El riel se arrastra, pero eso no se ve: quien no está acostumbrado a una
+    tienda en línea no prueba a agarrar una tira de productos. Una flecha sí
+    se entiende sin explicación, y de paso sirve a quien no puede arrastrar.
+  */
+  const empujar = (sentido: 1 | -1) => {
+    const el = pista.current
+    if (!el) return
+    pausar(ESPERA_TRAS_TOCAR_MS)
+    el.scrollBy({ left: sentido * Math.min(el.clientWidth * 0.8, 600), behavior: 'smooth' })
   }
 
   if (products.length === 0) return null
@@ -244,6 +280,7 @@ export function FeaturedRail({ products, onQuickView }: FeaturedRailProps) {
       </div>
 
       {/* El riel sangra a todo el ancho: refuerza que hay más de lo que se ve */}
+      <div className="relative">
       <div
         ref={pista}
         className={cn(
@@ -258,15 +295,29 @@ export function FeaturedRail({ products, onQuickView }: FeaturedRailProps) {
           !movimientoReducido && 'cursor-grab active:cursor-grabbing'
         )}
         onDragStart={e => e.preventDefault()}
-        onMouseEnter={detener}
-        onMouseLeave={() => { arrastrando.current = false; soltar() }}
-        onFocusCapture={detener}
-        onBlurCapture={soltar}
-        onTouchStart={detener}
-        onTouchEnd={soltar}
-        onWheel={() => { detener(); soltar() }}
+        /*
+          El cursor encima lo detiene, pero sólo tres segundos y se rearma con
+          cada movimiento: mientras alguien recorre el riel con el ratón sigue
+          quieto —para poder hacer clic en una ficha— y en cuanto deja el
+          cursor parado, el riel sigue su camino.
+
+          Se comprueba que el puntero sea un ratón de verdad: el teléfono
+          inventa eventos de ratón al tocar la pantalla y esos no deben parar
+          nada, que para eso están los de tacto.
+        */
+        onPointerEnter={e => { if (e.pointerType === 'mouse') pausar(ESPERA_CON_EL_CURSOR_MS) }}
+        onPointerMove={e => {
+          alMover(e)
+          if (e.pointerType === 'mouse' && !arrastrando.current) pausar(ESPERA_CON_EL_CURSOR_MS)
+        }}
+        onPointerLeave={() => { arrastrando.current = false; pausar(ESPERA_TRAS_TOCAR_MS) }}
+        onFocusCapture={() => pausar(ESPERA_CON_EL_CURSOR_MS)}
+        onBlurCapture={() => pausar(ESPERA_TRAS_TOCAR_MS)}
+        onTouchStart={() => pausar(ESPERA_TRAS_TOCAR_MS)}
+        onTouchMove={() => pausar(ESPERA_TRAS_TOCAR_MS)}
+        onTouchEnd={() => pausar(ESPERA_TRAS_TOCAR_MS)}
+        onWheel={() => pausar(ESPERA_TRAS_TOCAR_MS)}
         onPointerDown={alBajar}
-        onPointerMove={alMover}
         onPointerUp={alSubir}
         onPointerCancel={alSubir}
         onClickCapture={alPulsar}
@@ -284,6 +335,37 @@ export function FeaturedRail({ products, onQuickView }: FeaturedRailProps) {
           ))}
         </ul>
       </div>
+
+        {!movimientoReducido && (
+          <>
+            <Flecha lado="izquierda" onClick={() => empujar(-1)} />
+            <Flecha lado="derecha" onClick={() => empujar(1)} />
+          </>
+        )}
+      </div>
     </section>
+  )
+}
+
+/** Flecha redonda a un lado del riel. Sólo en escritorio: en el teléfono el
+ *  gesto natural es deslizar, y dos botones ahí taparían producto. */
+function Flecha({ lado, onClick }: { lado: 'izquierda' | 'derecha'; onClick: () => void }) {
+  const esIzquierda = lado === 'izquierda'
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={esIzquierda ? 'Ver productos anteriores' : 'Ver más productos'}
+      className={cn(
+        'hidden md:flex absolute top-1/2 -translate-y-1/2 z-10 w-11 h-11 items-center justify-center',
+        'rounded-full bg-paper-raised/95 backdrop-blur-sm border border-line shadow-card text-ink-soft',
+        'hover:text-ink hover:border-ink/35 hover:scale-105 active:scale-95 transition-all duration-200',
+        esIzquierda ? 'left-3 lg:left-6' : 'right-3 lg:right-6'
+      )}
+    >
+      {esIzquierda
+        ? <ChevronLeft className="w-5 h-5" strokeWidth={2.4} />
+        : <ChevronRight className="w-5 h-5" strokeWidth={2.4} />}
+    </button>
   )
 }
