@@ -21,6 +21,13 @@ const DESTINO = 'dist/_headers'
 const SUPABASE = 'https://wtwrqdqlntcixaoojkbf.supabase.co'
 const TASA = 'https://ve.dolarapi.com'
 const FUENTES_CSS = 'https://fonts.googleapis.com'
+/*
+  El medidor de visitas que Cloudflare inyecta solo en los dominios propios.
+  No usa cookies ni sigue a nadie entre sitios: sólo cuenta visitas, y saber
+  cuánta gente entra a la tienda vale más que ahorrarse cinco kilobytes. Sin
+  esta línea la política lo bloquea y el negocio se queda a ciegas.
+*/
+const MEDIDOR = 'https://static.cloudflareinsights.com'
 const FUENTES_ARCHIVOS = 'https://fonts.gstatic.com'
 
 const html = readFileSync(INDEX, 'utf8')
@@ -37,7 +44,7 @@ if (huellas.length === 0) {
 
 const csp = [
   "default-src 'self'",
-  `script-src 'self' ${huellas.join(' ')}`,
+  `script-src 'self' ${MEDIDOR} ${huellas.join(' ')}`,
   /* Los estilos en línea sí se permiten: React escribe atributos `style` en
      varios sitios y la alternativa sería reescribirlos todos para protegerse
      de algo mucho menos grave que un guion ajeno. */
