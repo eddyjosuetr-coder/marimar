@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef } from 'react'
 import { ArrowUpRight, ChevronLeft, ChevronRight } from 'lucide-react'
 import type { Product } from '@/types'
 import { useReveal } from '@/hooks/useReveal'
-import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { getPackaging, scrollToCatalog, cn, productLabel } from '@/lib/utils'
 import { ProductImage } from './ProductImage'
 import { useTasa } from '@/hooks/useTasa'
@@ -108,14 +107,17 @@ function RailCard({ product, onQuickView, inerte }: {
  *  · la pista se duplica para que el bucle cierre sin salto (se anima a -50%)
  *  · se detiene al pasar el cursor o al enfocar con teclado — si no, sería
  *    imposible hacer clic en una ficha en movimiento
- *  · con movimiento reducido no hay desplazamiento automático: el riel queda
- *    quieto y se arrastra a mano
+ *  · el avance automático NO se apaga con la preferencia de movimiento
+ *    reducida del sistema. Es una decisión del negocio: en Windows basta con
+ *    tener las animaciones desactivadas —o el ahorro de batería puesto— para
+ *    que el navegador la pida, y entonces el carrusel se quedaba muerto sin
+ *    que el visitante entendiera por qué. El resto de animaciones del sitio sí
+ *    la respetan; ésta es la excepción, y es lenta y se detiene al tocarla
  *  · la copia duplicada va `aria-hidden` y fuera del orden de tabulación para
  *    que el lector de pantalla no lea el catálogo dos veces
  */
 export function FeaturedRail({ products, onQuickView }: FeaturedRailProps) {
   const ref = useReveal<HTMLElement>()
-  const movimientoReducido = useReducedMotion()
   const pista = useRef<HTMLDivElement>(null)
 
   /* Nada de esto vive en el estado de React: cambia en cada fotograma y un
@@ -154,19 +156,28 @@ export function FeaturedRail({ products, onQuickView }: FeaturedRailProps) {
     lo que hay en los dos puntos es exactamente lo mismo.
   */
   useEffect(() => {
-    if (movimientoReducido || products.length === 0) return
+    if (products.length === 0) return
     const el = pista.current
     if (!el) return
 
     let pedido = 0
     let anterior = performance.now()
 
+    /* Mientras el riel no se ve no hay nada que animar: en un teléfono eso es
+       batería gastada en mover algo que nadie está mirando. */
+    let aLaVista = true
+    const observador = new IntersectionObserver(
+      ([entrada]) => { aLaVista = entrada.isIntersecting; anterior = performance.now() },
+      { threshold: 0 }
+    )
+    observador.observe(el)
+
     const paso = (ahora: number) => {
       const dt = Math.min((ahora - anterior) / 1000, 0.05) // una pestaña dormida no debe dar un salto
       anterior = ahora
       const mitad = el.scrollWidth / 2
       if (mitad > 0) {
-        if (!quieto.current && !arrastrando.current) {
+        if (aLaVista && !quieto.current && !arrastrando.current) {
           el.scrollLeft += PIXELES_POR_SEGUNDO * dt
         }
         if (el.scrollLeft >= mitad) el.scrollLeft -= mitad
@@ -178,9 +189,10 @@ export function FeaturedRail({ products, onQuickView }: FeaturedRailProps) {
     pedido = requestAnimationFrame(paso)
     return () => {
       cancelAnimationFrame(pedido)
+      observador.disconnect()
       window.clearTimeout(reanudar.current)
     }
-  }, [movimientoReducido, products.length])
+  }, [products.length])
 
   /* Arrastre con el ratón. El dedo no pasa por aquí: el desplazamiento táctil
      nativo ya lo hace mejor —con su inercia— y capturar el puntero lo rompería. */
@@ -249,7 +261,7 @@ export function FeaturedRail({ products, onQuickView }: FeaturedRailProps) {
 
   if (products.length === 0) return null
 
-  const pistas = movimientoReducido ? [0] : [0, 1]
+  const pistas = [0, 1]
 
   return (
     <section
@@ -291,8 +303,7 @@ export function FeaturedRail({ products, onQuickView }: FeaturedRailProps) {
           /* Sin esto, al mover el ratón el navegador empieza a arrastrar la
              fotografía del producto —las imágenes son arrastrables de fábrica—
              y el gesto de desplazar el riel muere en el primer píxel. */
-          'select-none',
-          !movimientoReducido && 'cursor-grab active:cursor-grabbing'
+          'select-none cursor-grab active:cursor-grabbing'
         )}
         onDragStart={e => e.preventDefault()}
         /*
@@ -336,12 +347,8 @@ export function FeaturedRail({ products, onQuickView }: FeaturedRailProps) {
         </ul>
       </div>
 
-        {!movimientoReducido && (
-          <>
-            <Flecha lado="izquierda" onClick={() => empujar(-1)} />
-            <Flecha lado="derecha" onClick={() => empujar(1)} />
-          </>
-        )}
+        <Flecha lado="izquierda" onClick={() => empujar(-1)} />
+        <Flecha lado="derecha" onClick={() => empujar(1)} />
       </div>
     </section>
   )
