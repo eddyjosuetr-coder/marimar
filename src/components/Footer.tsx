@@ -1,8 +1,8 @@
-import { MapPin, Phone, Mail } from 'lucide-react'
+import { MapPin, Phone, Mail, Clock } from 'lucide-react'
 import { scrollToCatalog } from '@/lib/utils'
 import { BrandLockup } from './BrandLockup'
 import { CATEGORIES } from '@/data/products'
-import { NEGOCIO, FORMAS_DE_PAGO, waLink } from '@/lib/negocio'
+import { NEGOCIO, FORMAS_DE_PAGO, HORARIO, waLink } from '@/lib/negocio'
 import { IconoWhatsApp } from './IconoWhatsApp'
 
 function InstagramGlyph() {
@@ -112,11 +112,29 @@ export function Footer() {
           <div className="lg:col-span-4">
             <ColumnHeading>Contacto</ColumnHeading>
             <ul className="space-y-4">
-              {/* Sin dirección publicada mientras el cliente no la confirme:
-                  una dirección inventada manda gente a tocar a otra puerta. */}
-              <li className="flex items-start gap-3 text-[14px] text-white/55">
+              {/* La dirección lleva al mapa por coordenadas, no por texto: una
+                  búsqueda por nombre de avenida puede dejar a alguien a diez
+                  cuadras del local. */}
+              <li className="flex items-start gap-3 text-[14px]">
                 <MapPin className="w-4 h-4 text-gold flex-shrink-0 mt-1" strokeWidth={2.2} aria-hidden="true" />
-                <span>Delivery en toda Maracay</span>
+                <span className="text-white/55">
+                  <a
+                    href={NEGOCIO.mapa}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="tap-inline hover:text-white transition-colors"
+                  >
+                    {NEGOCIO.direccion}
+                  </a>
+                  <span className="block text-white/40">Delivery en toda {NEGOCIO.zonaDeEntrega}</span>
+                </span>
+              </li>
+              <li className="flex items-start gap-3 text-[14px] text-white/55">
+                <Clock className="w-4 h-4 text-gold flex-shrink-0 mt-1" strokeWidth={2.2} aria-hidden="true" />
+                <span>
+                  {HORARIO.dias} de {HORARIO.abre} a {HORARIO.cierra}
+                  <span className="block text-white/40">{HORARIO.cerrado}</span>
+                </span>
               </li>
               <li className="flex items-center gap-3 text-[14px]">
                 <Phone className="w-4 h-4 text-gold flex-shrink-0" strokeWidth={2.2} aria-hidden="true" />
