@@ -35,12 +35,28 @@
   <link rel="apple-touch-icon" href="/brand/apple-touch-icon.png" />
   <link rel="mask-icon" href="/brand/marimar-emblema-256.png" color="#FF6600" />
 
+  <!--
+    La dirección oficial. Con el dominio y el www sirviendo lo mismo, el
+    buscador podría tomarlos por dos tiendas iguales y repartir entre ambas lo
+    que ha ganado una; esta etiqueta dice cuál es la de verdad.
+  -->
+  <link rel="canonical" href="https://distribuidoramarimar.com/" />
+
+  <meta property="og:url" content="https://distribuidoramarimar.com/" />
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="es_VE" />
   <meta property="og:site_name" content="Distribuidora Marimar C.A." />
   <meta property="og:title" content="Distribuidora Marimar C.A. | Tu mejor opción en charcutería y víveres" />
   <meta property="og:description" content="Las mejores marcas al detal: mayonesas, salsas, charcutería, víveres y combos, con delivery en toda Maracay." />
-  <meta property="og:image" content="/brand/marimar-emblema-512.png" />
+  <!--
+    Dirección completa, no "/brand/...": quien lee estas etiquetas es el
+    servidor de WhatsApp o de Instagram, no el navegador del visitante, y una
+    ruta relativa no le dice desde qué sitio descargar la imagen. El enlace se
+    compartía sin el emblema.
+  -->
+  <meta property="og:image" content="https://distribuidoramarimar.com/brand/marimar-emblema-512.png" />
+  <meta property="og:image:alt" content="Emblema de Distribuidora Marimar C.A." />
+  <meta name="twitter:image" content="https://distribuidoramarimar.com/brand/marimar-emblema-512.png" />
   <meta name="twitter:card" content="summary" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -48,6 +64,39 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap"
     rel="stylesheet" />
+
+  <!--
+    Ficha del negocio para los buscadores. No cambia nada de lo que se ve, pero
+    permite que Google entienda que esto es un comercio de víveres en Maracay
+    con teléfono y formas de pago, en vez de una página cualquiera.
+
+    Sólo se afirma lo que es cierto: falta la dirección de la calle, y una
+    inventada mandaría gente a tocar a otra puerta. Se agrega cuando el dueño
+    la confirme.
+  -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "GroceryStore",
+    "name": "Distribuidora Marimar C.A.",
+    "url": "https://distribuidoramarimar.com/",
+    "image": "https://distribuidoramarimar.com/brand/marimar-emblema-512.png",
+    "logo": "https://distribuidoramarimar.com/brand/marimar-emblema-512.png",
+    "description": "Víveres, charcutería, salsas, bebidas y combos a precio de distribuidora. Compra al detal con entrega en toda Maracay.",
+    "telephone": "+58 414-4748871",
+    "email": "Dmarimar04@gmail.com",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Maracay",
+      "addressRegion": "Aragua",
+      "addressCountry": "VE"
+    },
+    "areaServed": { "@type": "City", "name": "Maracay" },
+    "currenciesAccepted": "VES",
+    "paymentAccepted": "Pago Móvil, Efectivo, Transferencia",
+    "sameAs": ["https://www.instagram.com/distribuidoramarimar/"]
+  }
+  </script>
 
   <title>Distribuidora Marimar C.A. | Víveres y Charcutería · Maracay</title>
 </head>

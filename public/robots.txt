@@ -1,0 +1,11 @@
+# Distribuidora Marimar C.A.
+# La tienda entera es pública: no hay nada que esconderle a los buscadores.
+
+User-agent: *
+Allow: /
+
+# El panel del dueño no es una página distinta —vive tras una almohadilla, que
+# los buscadores no ven— así que no hace falta prohibirlo aquí. Y nombrarlo
+# sería anunciar dónde está.
+
+Sitemap: https://distribuidoramarimar.com/sitemap.xml

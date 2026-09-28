@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  La tienda es una sola página: el catálogo, las categorías y las fichas de
+  producto viven todos en ella y se muestran sin cambiar de dirección. Por eso
+  el mapa del sitio tiene una sola entrada; anunciar direcciones que no existen
+  sería mandar al buscador a puertas cerradas.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://distribuidoramarimar.com/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>
