@@ -23,7 +23,9 @@ export const NEGOCIO = {
    * las coordenadas y no a un texto buscado, que es lo que evita que alguien
    * termine en otra Santos Michelena.
    */
-  direccion: 'Av. Santos Michelena, Maracay',
+  /* La referencia del edificio la confirmó la propia ficha del negocio en
+     Google Maps: es lo que un cliente pregunta al llegar a la avenida. */
+  direccion: 'Av. Santos Michelena, Residencias Marimar',
   ciudad: 'Maracay',
   estado: 'Aragua',
   pais: 'VE',
