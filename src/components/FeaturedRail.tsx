@@ -33,7 +33,7 @@ const PIXELES_POR_SEGUNDO = 42
   tocar una vez, muerto.
 */
 const ESPERA_TRAS_TOCAR_MS = 2500
-const ESPERA_CON_EL_CURSOR_MS = 3000
+const ESPERA_CON_EL_TECLADO_MS = 5000
 
 /** A partir de aquí el gesto es un arrastre y no un clic en la ficha. */
 const UMBRAL_ARRASTRE_PX = 6
@@ -163,6 +163,17 @@ export function FeaturedRail({ products, onQuickView }: FeaturedRailProps) {
     let pedido = 0
     let anterior = performance.now()
 
+    /*
+      La posición se lleva aquí, en decimales, y no sumándosela a `scrollLeft`.
+
+      A 42 px/s y 60 cuadros por segundo cada empujón son 0,7 px. El navegador
+      puede redondear `scrollLeft` a píxeles enteros, y entonces esa fracción
+      se pierde en cada cuadro: el riel se queda clavado sin avanzar nunca. Es
+      exactamente lo que pasaba en la máquina del cliente y no en la de
+      pruebas, donde el navegador sí guarda los decimales.
+    */
+    let posicion = el.scrollLeft
+
     /* Mientras el riel no se ve no hay nada que animar: en un teléfono eso es
        batería gastada en mover algo que nadie está mirando. */
     let aLaVista = true
@@ -176,12 +187,23 @@ export function FeaturedRail({ products, onQuickView }: FeaturedRailProps) {
       const dt = Math.min((ahora - anterior) / 1000, 0.05) // una pestaña dormida no debe dar un salto
       anterior = ahora
       const mitad = el.scrollWidth / 2
+      const avanzando = aLaVista && !quieto.current && !arrastrando.current
       if (mitad > 0) {
-        if (aLaVista && !quieto.current && !arrastrando.current) {
-          el.scrollLeft += PIXELES_POR_SEGUNDO * dt
+        if (avanzando) {
+          /* Si alguien lo movió por su cuenta —dedo, rueda, flecha— manda él:
+             se vuelve a tomar la posición real antes de seguir empujando. */
+          if (Math.abs(el.scrollLeft - posicion) > 1) posicion = el.scrollLeft
+          posicion += PIXELES_POR_SEGUNDO * dt
+          if (posicion >= mitad) posicion -= mitad
+          else if (posicion <= 0) posicion += mitad
+          el.scrollLeft = posicion
+        } else {
+          /* Quieto: no se le escribe nada encima, que sería pelearse con el
+             desplazamiento suave de las flechas o con el dedo. */
+          posicion = el.scrollLeft
+          if (el.scrollLeft >= mitad) el.scrollLeft -= mitad
+          else if (el.scrollLeft <= 0) el.scrollLeft += mitad
         }
-        if (el.scrollLeft >= mitad) el.scrollLeft -= mitad
-        else if (el.scrollLeft <= 0) el.scrollLeft += mitad
       }
       pedido = requestAnimationFrame(paso)
     }
@@ -307,22 +329,20 @@ export function FeaturedRail({ products, onQuickView }: FeaturedRailProps) {
         )}
         onDragStart={e => e.preventDefault()}
         /*
-          El cursor encima lo detiene, pero sólo tres segundos y se rearma con
-          cada movimiento: mientras alguien recorre el riel con el ratón sigue
-          quieto —para poder hacer clic en una ficha— y en cuanto deja el
-          cursor parado, el riel sigue su camino.
+          Tener el cursor encima ya NO lo detiene.
 
-          Se comprueba que el puntero sea un ratón de verdad: el teléfono
-          inventa eventos de ratón al tocar la pantalla y esos no deben parar
-          nada, que para eso están los de tacto.
+          Se detenía, y en un portátil el cursor se queda en mitad de la
+          pantalla —justo sobre el riel— sin que nadie lo piense. El dueño lo
+          veía parado una y otra vez y no había forma de explicarle que era su
+          propio ratón. Se para sólo con lo que es una intención de verdad:
+          arrastrar, deslizar con el dedo, la rueda o el foco del teclado.
+
+          Hacer clic en una ficha sigue siendo fácil: a esta velocidad se
+          mueve cuatro píxeles en lo que dura un clic.
         */
-        onPointerEnter={e => { if (e.pointerType === 'mouse') pausar(ESPERA_CON_EL_CURSOR_MS) }}
-        onPointerMove={e => {
-          alMover(e)
-          if (e.pointerType === 'mouse' && !arrastrando.current) pausar(ESPERA_CON_EL_CURSOR_MS)
-        }}
-        onPointerLeave={() => { arrastrando.current = false; pausar(ESPERA_TRAS_TOCAR_MS) }}
-        onFocusCapture={() => pausar(ESPERA_CON_EL_CURSOR_MS)}
+        onPointerMove={alMover}
+        onPointerLeave={() => { arrastrando.current = false }}
+        onFocusCapture={() => pausar(ESPERA_CON_EL_TECLADO_MS)}
         onBlurCapture={() => pausar(ESPERA_TRAS_TOCAR_MS)}
         onTouchStart={() => pausar(ESPERA_TRAS_TOCAR_MS)}
         onTouchMove={() => pausar(ESPERA_TRAS_TOCAR_MS)}
@@ -364,7 +384,11 @@ function Flecha({ lado, onClick }: { lado: 'izquierda' | 'derecha'; onClick: () 
       onClick={onClick}
       aria-label={esIzquierda ? 'Ver productos anteriores' : 'Ver más productos'}
       className={cn(
-        'hidden md:flex absolute top-1/2 -translate-y-1/2 z-10 w-11 h-11 items-center justify-center',
+        /* Centrada sobre la FOTOGRAFÍA, no sobre la ficha entera: la ficha
+           incluye marca, nombre y precio, así que su centro cae en el texto y
+           la flecha quedaba baja. La foto es cuadrada y mide lo que la ficha
+           de ancho, así que su mitad es la mitad de ese ancho. */
+        'hidden md:flex absolute top-[106px] -translate-y-1/2 z-10 w-11 h-11 items-center justify-center',
         'rounded-full bg-paper-raised/95 backdrop-blur-sm border border-line shadow-card text-ink-soft',
         'hover:text-ink hover:border-ink/35 hover:scale-105 active:scale-95 transition-all duration-200',
         esIzquierda ? 'left-3 lg:left-6' : 'right-3 lg:right-6'
