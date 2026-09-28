@@ -14,6 +14,16 @@ edita el resultado a mano, el siguiente generado lo borra.
 | `verificar_encuadre.py` | Revisa que las 277 fotos estén centradas y que ninguna se vea pequeña. |
 | `ids.json` | El número permanente de cada producto. **No se edita a mano ni se borra.** |
 
+## `npm run build` NO regenera el catálogo
+
+Compilar la tienda no vuelve a leer `catalogo.py`: sólo empaqueta lo que ya
+está en `src/data/products.ts`. Quien edite la tabla maestra y compile sin
+ejecutar antes `build_catalogo.py` publica el catálogo viejo sin enterarse.
+
+Ya pasó: se retiró un producto de la tabla, se compiló, y el producto siguió
+en la tienda hasta que el dueño lo ocultó a mano desde el panel sin saber que
+ya no debía estar ahí.
+
 ## Para regenerarlo
 
 Hace falta Python con Pillow (`pip install pillow`). Desde la raíz del

@@ -7,7 +7,7 @@ export const heroSlides: HeroSlide[] = [
     highlight: 'charcutería, víveres y mucho más',
     description: 'Quesos, jamones, salsas, bebidas y combos de las mejores marcas, a precio de distribuidora. Llévate una unidad o llévate la caja, con entrega en toda Maracay.',
     stats: [
-      { value: '341', label: 'Productos' },
+      { value: '340', label: 'Productos' },
       { value: '129', label: 'Marcas' },
       { value: '26', label: 'Categorías' },
     ],
@@ -98,7 +98,7 @@ export const products: Product[] = [
   { id: 61, image: '/productos/bbq-ideal-4kg.webp', brand: 'Ideal', name: 'Salsa BBQ Ideal 4 KG - Bolsa', price: 8.47, category: 'Salsas BBQ', description: 'Salsa BBQ Ideal de sabor ahumado, para costillas, alitas, hamburguesas y parrillas. Formato rendidor para cocinas, food trucks y locales de comida rápida. Presentación en bolsa de 4 KG.' },
   { id: 62, image: '/productos/bbq-hot-fritz-930gr.webp', brand: 'Fritz', name: 'Salsa BBQ Hot Fritz 930 gr - Botella', price: 4.95, category: 'Salsas BBQ', description: 'Salsa BBQ Fritz de sabor ahumado con un toque picante, para costillas, alitas, hamburguesas y parrillas. Presentación en botella de 930 gr.' },
 
-  /* ── Aderezos y Picantes (31) ── */
+  /* ── Aderezos y Picantes (30) ── */
   { id: 63, image: '/productos/aderezo-cheddar-fritz-240gr.webp', brand: 'Fritz', name: 'Aderezo Cheddar Fritz 240 gr - Botella', price: 2.95, category: 'Aderezos y Picantes', description: 'Salsa de queso cheddar Fritz, cremosa, para papitas, nachos y perros. Presentación en botella de 240 gr.' },
   { id: 64, image: '/productos/aderezo-cheddar-fritz-740gr.webp', brand: 'Fritz', name: 'Aderezo Cheddar Fritz 740 gr - Botella', price: 5.95, category: 'Aderezos y Picantes', description: 'Salsa de queso cheddar Fritz, cremosa, para papitas, nachos y perros. Presentación en botella de 740 gr.' },
   { id: 65, image: '/productos/aderezo-cheddar-fritz-1kg.webp', brand: 'Fritz', name: 'Aderezo Cheddar Fritz 1 KG - Doypack', price: 4.42, category: 'Aderezos y Picantes', description: 'Salsa de queso cheddar Fritz, cremosa, para papitas, nachos y perros. Presentación en doypack de 1 KG.' },
@@ -129,7 +129,6 @@ export const products: Product[] = [
   { id: 297, image: '/productos/sobre-tocineta-roros-54gr.webp', brand: 'Roro\'s', name: 'Aderezo de Tocineta Roro\'s 54 gr - Sobre', price: 1.48, category: 'Aderezos y Picantes', description: 'Salsa sabor tocineta Roro\'s, ahumada y cremosa, para hamburguesas y papitas. Presentación en sobre de 54 gr.' },
   { id: 298, image: '/productos/aderezo-ahumadita-fritz-3kg.webp', brand: 'Fritz', name: 'Aderezo Ahumadita Fritz 3 KG - Bolsa', price: 9.85, category: 'Aderezos y Picantes', description: 'Aderezo Ahumadita Fritz de sabor ahumado, para hamburguesas y carnes. Formato rendidor para cocinas, food trucks y locales de comida rápida. Presentación en bolsa de 3 KG.' },
   { id: 299, image: '/productos/salsa-maiz-monti-1kg.webp', brand: 'Monti', name: 'Salsa de Maíz Monti 1 KG - Doypack', price: 3.95, category: 'Aderezos y Picantes', description: 'Salsa de maíz Monti, dulce y cremosa, infaltable en el perro caliente. Presentación en doypack de 1 KG.' },
-  { id: 84, image: '', brand: 'Fritz', name: 'Aderezo de Tocineta Fritz 3 KG - Bolsa', price: 9.85, category: 'Aderezos y Picantes', description: 'Salsa sabor tocineta Fritz, ahumada y cremosa, para hamburguesas y papitas. Formato rendidor para cocinas, food trucks y locales de comida rápida. Presentación en bolsa de 3 KG.' },
 
   /* ── Salsas Detalladas (7) ── */
   { id: 85, image: '/productos/mayonesa-detallada-370gr.webp', brand: 'Marimar', name: 'Mayonesa Detallada 370 gr - Envase', price: 1.50, category: 'Salsas Detalladas', description: 'Mayonesa servida en envase con tapa de 370 gr. Práctica para el día a día y una de las opciones para elegir en los combos.' },
