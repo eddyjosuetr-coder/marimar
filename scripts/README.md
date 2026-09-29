@@ -95,3 +95,30 @@ y a la vista del pedido.
 En `catalogo.py` se pone `None` en la columna del archivo. El producto se
 publica con su nombre y precio, y la ficha muestra "Foto próximamente" hasta
 que llegue la fotografía.
+
+## Cambiar el nombre de un producto
+
+Si sólo cambia el nombre que se lee, no toques la columna del slug: el slug es
+la llave del identificador en `ids.json`, y el identificador es lo que usa el
+panel del dueño para recordar qué producto tiene oferta o está oculto. Cambiar
+el slug le da al producto un identificador nuevo, y el dueño pierde lo que
+hubiera configurado para él.
+
+Al cambiar un slug la foto vieja se queda en `public/productos/` con su nombre
+viejo y ya nadie la nombra. El generador avisa de esas fotos huérfanas al
+terminar; bórralas a mano si el cambio fue a propósito.
+
+## No preguntes por una foto antes de publicarla
+
+Al subir una foto nueva, para comprobar si ya está **no pidas su dirección en
+un bucle**. Mira la portada y espera a que aparezca el nombre del programa
+recién compilado; sólo entonces pide la foto.
+
+La razón: hasta que el despliegue termina, esa dirección no existe, y la
+respuesta que se recibe mientras tanto es la que se queda guardada en la caché
+de Cloudflare durante toda la vigencia que declara `cabeceras.mjs`. Comprobarlo
+antes de tiempo es lo que rompe lo que se quería comprobar.
+
+Esto ya no puede acabar en una foto falsa —una dirección que no existe contesta
+404 y sin guardar nada, gracias al `404.html`— pero sigue costando una espera
+inútil.
