@@ -7,7 +7,7 @@ export const heroSlides: HeroSlide[] = [
     highlight: 'charcutería, víveres y mucho más',
     description: 'Quesos, jamones, salsas, bebidas y combos de las mejores marcas, a precio de distribuidora. Llévate una unidad o llévate la caja, con entrega en toda Maracay.',
     stats: [
-      { value: '340', label: 'Productos' },
+      { value: '341', label: 'Productos' },
       { value: '129', label: 'Marcas' },
       { value: '26', label: 'Categorías' },
     ],
@@ -222,8 +222,9 @@ export const products: Product[] = [
   { id: 154, image: '/productos/pechuga-pavo-lprado.webp', brand: 'L\'Prado', name: 'Pechuga de Pavo L\'Prado - Al peso', price: 8.70, soldByWeight: true, category: 'Jamones y Pechugas', description: 'Pechuga de pavo L\'Prado, magra y de sabor suave, para sándwiches. Se vende al peso: pide desde 100 gr y los KG que necesites.' },
   { id: 155, image: '/productos/jamon-ahumado-ahulux.webp', brand: 'Ahulux', name: 'Jamón Ahumado Ahulux - Al peso', price: 8.35, soldByWeight: true, category: 'Jamones y Pechugas', description: 'Jamón ahumado Ahulux de sabor intenso, para sándwiches y tablas. Se vende al peso: pide desde 100 gr y los KG que necesites.' },
 
-  /* ── Mortadelas (4) ── */
-  { id: 156, image: '/productos/mortadela-pollo-del-corral.webp', brand: 'Del Corral', name: 'Mortadela de Pollo Del Corral - Unidad', price: 2.70, category: 'Mortadelas', description: 'Mortadela de pollo Del Corral para sándwiches, arepas y desayunos. Se vende por pieza completa.' },
+  /* ── Mortadelas (5) ── */
+  { id: 344, image: '/productos/mortadela-pollo-del-corral-1kg.webp', brand: 'Del Corral', name: 'Mortadela de Pollo Especial Del Corral 1 KG - Unidad', price: 2.70, category: 'Mortadelas', description: 'Mortadela de pollo Del Corral para sándwiches, arepas y desayunos. Se vende por pieza completa.' },
+  { id: 156, image: '/productos/mortadela-pollo-del-corral.webp', brand: 'Del Corral', name: 'Mortadela de Pollo con Pimentón Del Corral 2,5 KG - Unidad', price: 2.70, category: 'Mortadelas', description: 'Mortadela de pollo Del Corral para sándwiches, arepas y desayunos. Se vende por pieza completa.' },
   { id: 157, image: '/productos/mortadela-pollo-punta-de-monte.webp', brand: 'Punta de Monte', name: 'Mortadela de Pollo Punta de Monte - Al peso', price: 5.64, soldByWeight: true, category: 'Mortadelas', description: 'Mortadela de pollo Punta de Monte para sándwiches, arepas y desayunos. Se vende al peso: pide desde 100 gr y los KG que necesites.' },
   { id: 158, image: '/productos/mortadela-extra-ahulux.webp', brand: 'Ahulux', name: 'Mortadela Extra Ahulux - Al peso', price: 7.50, soldByWeight: true, category: 'Mortadelas', description: 'Mortadela extra Ahulux para sándwiches, arepas y desayunos. Se vende al peso: pide desde 100 gr y los KG que necesites.' },
   { id: 159, image: '/productos/mortadela-pollo-la-patrona-900gr.webp', brand: 'La Patrona', name: 'Mortadela de Pollo La Patrona 900 gr - Unidad', price: 2.30, category: 'Mortadelas', description: 'Mortadela de pollo La Patrona para sándwiches, arepas y desayunos. Se vende por pieza completa.' },
