@@ -105,11 +105,13 @@ def recortar(im):
 
 
 nuevas = 0
+escritas = set()                 # para avisar de las fotos que ya no usa nadie
 for _, carpeta, archivo, slug, *_ in cat.CATALOGO:
     if archivo is None:          # producto publicado a la espera de su foto
         continue
     origen = buscar(carpeta, archivo)
     destino = f'{DESTINO}/{slug}.webp'
+    escritas.add(os.path.basename(destino))
 
     if os.path.exists(destino):          # ya optimizada en una pasada anterior
         peso_src += os.path.getsize(origen)
@@ -139,6 +141,7 @@ for _, carpeta, archivo, slug, *_ in cat.CATALOGO:
 for slug_base, colores in getattr(cat, 'VARIANTES', {}).items():
     for nombre_color, carpeta_c, archivo_c in colores[1:]:
         destino = f'{DESTINO}/{slug_base}--{_slug(nombre_color)}.webp'
+        escritas.add(os.path.basename(destino))
         if os.path.exists(destino):
             continue
         im = recortar(Image.open(buscar(carpeta_c, archivo_c)).convert('RGBA'))
@@ -151,6 +154,21 @@ for slug_base, colores in getattr(cat, 'VARIANTES', {}).items():
 
 print(f'{nuevas} fotos nuevas optimizadas de {len(cat.CATALOGO)}')
 print(f'catálogo completo: {peso_src/1048576:.1f} MB -> {peso_out/1048576:.1f} MB')
+
+# Las fotos que ya nadie usa se avisan, no se borran.
+#
+# Aparecen cuando un producto cambia de slug: la foto vieja se queda con su
+# nombre viejo, la tienda deja de nombrarla —y aun así se publica. Eso tiene
+# consecuencias, porque una dirección que existe en el servidor pero no en la
+# tienda es una dirección que alguien puede tener guardada y que no volverá a
+# actualizarse. Borrarlas aquí sería peligroso: un fallo al leer la tabla
+# dejaría el conjunto vacío y se llevaría el catálogo entero por delante.
+huerfanas = sorted(set(os.listdir(DESTINO)) - escritas)
+if huerfanas:
+    print(f'AVISO: {len(huerfanas)} foto(s) que ya no usa ningún producto '
+          f'(bórralas a mano si el cambio de nombre fue a propósito):')
+    for h in huerfanas:
+        print(f'   · {DESTINO}/{h}')
 
 # ── 2. Originales fuera de public/ para que no viajen en el build ───────────
 for carpeta in ('aderezos', 'bbq', 'mostazas', 'salsas-de-tomate', 'viveres',

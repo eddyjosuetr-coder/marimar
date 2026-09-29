@@ -334,7 +334,7 @@ CATALOGO = [
     (JAM, 'jamones', "jamon-pechuga-de-pavo-l'prado-unidad.png", 'pechuga-pavo-lprado', LPRADO, 'Pechuga de Pavo ' + LPRADO, PESO, 8.70),
 
     # -- Mortadelas ----------------------------------------------------------
-    (MOR, 'variedad', 'mortadela-de-pollo-el-corral.png', 'mortadela-pollo-del-corral-1kg', 'Del Corral', 'Mortadela de Pollo Especial Del Corral 1 KG', 'Unidad', 2.70),
+    (MOR, 'variedad', 'mortadela-de-pollo-el-corral.png', 'mortadela-pollo-especial-del-corral-1kg', 'Del Corral', 'Mortadela de Pollo Especial Del Corral 1 KG', 'Unidad', 2.70),
     (MOR, 'jamones', 'mostadela-de-pollo-del-corral-unidad.png', 'mortadela-pollo-del-corral', 'Del Corral', 'Mortadela de Pollo con Pimentón Del Corral 2,5 KG', 'Unidad', 2.70),
     (MOR, 'embutidos', 'mortadela-de-pollo-punta-de-monte-detallado.png', 'mortadela-pollo-punta-de-monte', 'Punta de Monte', 'Mortadela de Pollo Punta de Monte', PESO, 5.64),
     (MOR, 'jamones', 'mortadela-extra-ahulux-unidad.png', 'mortadela-extra-ahulux', 'Ahulux', 'Mortadela Extra Ahulux', PESO, 7.50),
